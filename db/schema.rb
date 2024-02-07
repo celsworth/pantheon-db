@@ -12,6 +12,24 @@
 
 ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
   create_table "items", force: :cascade do |t|
+    t.integer "monster_id", null: false
+    t.string "name", null: false
+    t.integer "vendor_copper"
+    t.decimal "weight", null: false
+    t.index ["monster_id"], name: "index_items_on_monster_id"
+  end
+
+  create_table "monsters", force: :cascade do |t|
+    t.integer "zone_id", null: false
+    t.string "name", null: false
+    t.integer "level", null: false
+    t.boolean "elite", default: false, null: false
+    t.boolean "named", default: false, null: false
+    t.index ["zone_id"], name: "index_monsters_on_zone_id"
+  end
+
+  create_table "zones", force: :cascade do |t|
+    t.string "name", null: false
   end
 
 end

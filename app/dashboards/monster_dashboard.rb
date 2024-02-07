@@ -1,6 +1,6 @@
 require 'administrate/base_dashboard'
 
-class ItemDashboard < Administrate::BaseDashboard
+class MonsterDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
   # a hash that describes the type of each of the model's fields.
   #
@@ -9,10 +9,12 @@ class ItemDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
-    monster: Field::BelongsTo,
+    zone: Field::BelongsTo,
+    items: Field::HasMany,
+    level: Field::Number,
     name: Field::String,
-    vendor_copper: Field::Number,
-    weight: Field::Number
+    elite: Field::Boolean,
+    named: Field::Boolean
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -22,18 +24,20 @@ class ItemDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
     name
-    monster
-    vendor_copper
-    weight
+    zone
+    level
+    elite
+    named
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
     name
-    monster
-    vendor_copper
-    weight
+    zone
+    level
+    elite
+    named
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -41,9 +45,11 @@ class ItemDashboard < Administrate::BaseDashboard
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
     name
-    monster
-    vendor_copper
-    weight
+    zone
+    items
+    elite
+    named
+    level
   ].freeze
 
   # COLLECTION_FILTERS
@@ -58,10 +64,10 @@ class ItemDashboard < Administrate::BaseDashboard
   #   }.freeze
   COLLECTION_FILTERS = {}.freeze
 
-  # Overwrite this method to customize how items are displayed
+  # Overwrite this method to customize how monsters are displayed
   # across all pages of the admin dashboard.
   #
-  def display_resource(item)
-    item.name
+  def display_resource(monster)
+    monster.name
   end
 end

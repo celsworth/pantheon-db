@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   namespace :admin do
+    resources :zones
+    resources :monsters
     resources :items
 
     root to: 'items#index'
