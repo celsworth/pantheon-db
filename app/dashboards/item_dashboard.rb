@@ -12,7 +12,9 @@ class ItemDashboard < Administrate::BaseDashboard
     monster: Field::BelongsTo,
     name: Field::String,
     vendor_copper: Field::Number,
-    weight: Field::Number
+    weight: Field::Number,
+    no_trade: Field::Boolean,
+    soulbound: Field::Boolean,
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -25,6 +27,8 @@ class ItemDashboard < Administrate::BaseDashboard
     monster
     vendor_copper
     weight
+    no_trade
+    soulbound
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -34,6 +38,8 @@ class ItemDashboard < Administrate::BaseDashboard
     monster
     vendor_copper
     weight
+    no_trade
+    soulbound
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -44,6 +50,8 @@ class ItemDashboard < Administrate::BaseDashboard
     monster
     vendor_copper
     weight
+    no_trade
+    soulbound
   ].freeze
 
   # COLLECTION_FILTERS

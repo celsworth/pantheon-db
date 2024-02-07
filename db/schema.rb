@@ -16,6 +16,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
     t.string "name", null: false
     t.integer "vendor_copper"
     t.decimal "weight", null: false
+    t.boolean "no_trade", default: false, null: false
+    t.boolean "soulbound", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["monster_id"], name: "index_items_on_monster_id"
