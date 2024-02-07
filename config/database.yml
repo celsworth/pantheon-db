@@ -22,4 +22,9 @@ test:
 
 production:
   <<: *default
-  url: <%= ENV.fetch('POSTGRES_URL', '') %>
+  # url: <%= ENV.fetch('POSTGRES_URL', '') %>
+  adapter: postgresql
+  database: pantheon
+  username: <%= ENV.fetch('POSTGRES_USER', 'pantheon') %>
+  password: <%= ENV.fetch('POSTGRES_PASSWORD', 'pantheon') %>
+

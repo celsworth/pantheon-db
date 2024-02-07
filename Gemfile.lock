@@ -109,7 +109,6 @@ GEM
       reline (>= 0.3.8)
     drb (2.2.0)
       ruby2_keywords
-    error_highlight (0.6.0)
     erubi (1.12.0)
     ffi (1.16.3)
     globalid (1.2.1)
@@ -286,7 +285,6 @@ DEPENDENCIES
   bootsnap
   capybara
   debug
-  error_highlight (>= 0.4.0)
   importmap-rails
   jbuilder
   pg
@@ -299,9 +297,6 @@ DEPENDENCIES
   turbo-rails
   tzinfo-data
   web-console
-
-RUBY VERSION
-   ruby 3.1.3p185
 
 BUNDLED WITH
    2.3.26

@@ -1,7 +1,5 @@
 source 'https://rubygems.org'
 
-ruby '3.1.3'
-
 gem 'rails', '~> 7.1.3'
 gem 'sprockets-rails'
 gem 'sqlite3', '~> 1.4'
@@ -46,8 +44,6 @@ group :development do
 
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
-
-  gem 'error_highlight', '>= 0.4.0', platforms: [:ruby]
 end
 
 group :test do
