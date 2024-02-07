@@ -1,24 +1,44 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## API
 
-Things you may want to cover:
+### Index
 
-* Ruby version
+```
+curl http://localhost:3000/zones
+```
+```json
+[{"id":1,"name":"Thronefast","created_at":"2024-02-07T12:01:34.630Z","updated_at":"2024-02-07T12:24:34.176Z"},{"id":2,"name":"Avendyr's Pass","created_at":"2024-02-07T12:01:34.632Z","updated_at":"2024-02-07T12:01:34.632Z"}]
+```
 
-* System dependencies
+### Get Single
 
-* Configuration
+```
+curl http://localhost:3000/zones/1
+```
 
-* Database creation
+```json
+{"zone":{"id":1,"name":"Thronefast","created_at":"2024-02-07T12:01:34.630Z","updated_at":"2024-02-07T12:24:34.176Z"}}
+```
 
-* Database initialization
+### Update
 
-* How to run the test suite
+```
+curl -d '{"zone_id": 2, "name":"Zirus the Bonewalker"}' -H "Content-Type: application/json" -X PUT http://localhost:3000/monsters/1
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+Success returns the new object as JSON:
 
-* Deployment instructions
+```json
+{"monster":{"zone_id":2,"name":"Zirus the Bonewalker","id":1,"level":4,"elite":true,"named":true,"created_at":"2024-02-07T12:01:34.640Z","updated_at":"2024-02-07T12:21:10.562Z"}}
+```
 
-* ...
+Errors give you an errors hash formatted like this:
+
+```json
+{"errors":{"name":["has already been taken"]}}
+```
+
+### Delete
+
+Not active yet
