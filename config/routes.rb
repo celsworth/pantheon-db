@@ -3,6 +3,9 @@ Rails.application.routes.draw do
     resources :zones
     resources :monsters
     resources :items
+    resources :npcs
+    resources :quests
+    resources :quest_objectives
 
     root to: 'items#index'
   end

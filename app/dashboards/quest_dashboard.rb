@@ -1,6 +1,6 @@
 require 'administrate/base_dashboard'
 
-class ZoneDashboard < Administrate::BaseDashboard
+class QuestDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
   # a hash that describes the type of each of the model's fields.
   #
@@ -10,8 +10,14 @@ class ZoneDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     name: Field::String,
-    monsters: Field::HasMany,
-    npcs: Field::HasMany
+    giver: Field::BelongsTo,
+    receiver: Field::BelongsTo,
+    drops_from: Field::BelongsTo,
+    text: Field::Text,
+    quest_objectives: Field::HasMany,
+    reward_xp: Field::Number,
+    reward_copper: Field::Number,
+    reward_standing: Field::Number
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -21,16 +27,24 @@ class ZoneDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
     name
-    monsters
-    npcs
+    giver
+    receiver
+    text
+    quest_objectives
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
     name
-    monsters
-    npcs
+    giver
+    receiver
+    drops_from
+    text
+    quest_objectives
+    reward_xp
+    reward_copper
+    reward_standing
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -38,8 +52,14 @@ class ZoneDashboard < Administrate::BaseDashboard
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
     name
-    monsters
-    npcs
+    giver
+    receiver
+    drops_from
+    text
+    quest_objectives
+    reward_xp
+    reward_copper
+    reward_standing
   ].freeze
 
   # COLLECTION_FILTERS
@@ -54,10 +74,10 @@ class ZoneDashboard < Administrate::BaseDashboard
   #   }.freeze
   COLLECTION_FILTERS = {}.freeze
 
-  # Overwrite this method to customize how zones are displayed
+  # Overwrite this method to customize how monsters are displayed
   # across all pages of the admin dashboard.
   #
-  def display_resource(zone)
-    zone.name
+  def display_resource(i)
+    i.name
   end
 end
