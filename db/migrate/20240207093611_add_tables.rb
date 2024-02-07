@@ -20,11 +20,14 @@ class AddTables < ActiveRecord::Migration[7.1]
     create_table :items do |t|
       t.references :monster, null: false, index: true
 
+      t.references :quest, index: true
+
       t.string :name, null: false, index: { unique: true }
       t.integer :vendor_copper
       t.decimal :weight, null: false
 
       t.string :category
+      t.string :classes, array: true, default: []
       t.string :slot
 
       t.boolean :no_trade, null: false, default: false

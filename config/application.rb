@@ -25,5 +25,6 @@ module PantheonDb
     # config.eager_load_paths << Rails.root.join("extras")
     #
     config.hosts << 'yrk.cae.me.uk:3000'
+    config.hosts << 'localhost:3000'
   end
 end

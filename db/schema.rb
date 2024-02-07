@@ -11,12 +11,17 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "items", force: :cascade do |t|
-    t.integer "monster_id", null: false
+    t.bigint "monster_id", null: false
+    t.bigint "quest_id"
     t.string "name", null: false
     t.integer "vendor_copper"
     t.decimal "weight", null: false
     t.string "category"
+    t.string "classes", default: [], array: true
     t.string "slot"
     t.boolean "no_trade", default: false, null: false
     t.boolean "soulbound", default: false, null: false
@@ -24,10 +29,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
     t.datetime "updated_at", null: false
     t.index ["monster_id"], name: "index_items_on_monster_id"
     t.index ["name"], name: "index_items_on_name", unique: true
+    t.index ["quest_id"], name: "index_items_on_quest_id"
   end
 
   create_table "monsters", force: :cascade do |t|
-    t.integer "zone_id", null: false
+    t.bigint "zone_id", null: false
     t.string "name", null: false
     t.integer "level", null: false
     t.boolean "elite", default: false, null: false
@@ -39,7 +45,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
   end
 
   create_table "npcs", force: :cascade do |t|
-    t.integer "zone_id", null: false
+    t.bigint "zone_id", null: false
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -48,9 +54,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
   end
 
   create_table "quest_objectives", force: :cascade do |t|
-    t.integer "quest_id", null: false
+    t.bigint "quest_id", null: false
     t.string "text", null: false
-    t.integer "item_id"
+    t.bigint "item_id"
     t.integer "item_amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -59,9 +65,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
   end
 
   create_table "quests", force: :cascade do |t|
-    t.integer "giver_id", null: false
-    t.integer "dropped_as_id"
-    t.integer "receiver_id"
+    t.bigint "giver_id", null: false
+    t.bigint "dropped_as_id"
+    t.bigint "receiver_id"
     t.string "name", null: false
     t.string "text", null: false
     t.integer "reward_xp", default: 0, null: false

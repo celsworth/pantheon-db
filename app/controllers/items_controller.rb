@@ -29,7 +29,7 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    params.permit(:monster_id, :name, :category, :vendor_copper, :weight, :slot,
+    params.permit(:monster_id, :quest_id, :name, :category, :vendor_copper, :weight, :slot,
                   :no_trade, :soulbound)
   end
 end

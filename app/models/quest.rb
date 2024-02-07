@@ -9,6 +9,8 @@ class Quest < ApplicationRecord
 
   has_many :quest_objectives
 
+  has_many :items
+
   validates :name, presence: true, uniqueness: true
   validates :giver, presence: true
   validates :text, presence: true

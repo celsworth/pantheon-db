@@ -10,11 +10,13 @@ class ItemDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     monster: Field::BelongsTo,
+    quest: Field::BelongsTo,
     name: Field::String,
-    category: Field::Select.with_options(include_blank: 'none'),
+    category: Field::Select.with_options(collection: Item::CATEGORIES, include_blank: 'none'),
     vendor_copper: Field::Number,
     weight: Field::Number,
-    slot: Field::Select.with_options(include_blank: 'none'),
+    classes: Field::Select.with_options(collection: Item::CLASSES, include_blank: 'any'),
+    slot: Field::Select.with_options(collection: Item::SLOTS, include_blank: 'none'),
     no_trade: Field::Boolean,
     soulbound: Field::Boolean
   }.freeze
@@ -33,6 +35,7 @@ class ItemDashboard < Administrate::BaseDashboard
     no_trade
     soulbound
     monster
+    quest
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -46,6 +49,7 @@ class ItemDashboard < Administrate::BaseDashboard
     no_trade
     soulbound
     monster
+    quest
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -60,6 +64,7 @@ class ItemDashboard < Administrate::BaseDashboard
     no_trade
     soulbound
     monster
+    quest
   ].freeze
 
   # COLLECTION_FILTERS
