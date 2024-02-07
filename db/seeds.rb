@@ -7,6 +7,8 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+#
+return if Zone.any?
 
 tf = Zone.create(name: 'Thronefast')
 Zone.create(name: "Avendyr's Pass")
