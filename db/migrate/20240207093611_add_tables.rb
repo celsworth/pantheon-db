@@ -24,6 +24,9 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.integer :vendor_copper
       t.decimal :weight, null: false
 
+      t.string :category
+      t.string :slot
+
       t.boolean :no_trade, null: false, default: false
       t.boolean :soulbound, null: false, default: false
 

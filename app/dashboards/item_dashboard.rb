@@ -11,10 +11,12 @@ class ItemDashboard < Administrate::BaseDashboard
     id: Field::Number,
     monster: Field::BelongsTo,
     name: Field::String,
+    category: Field::Select.with_options(include_blank: 'none'),
     vendor_copper: Field::Number,
     weight: Field::Number,
+    slot: Field::Select.with_options(include_blank: 'none'),
     no_trade: Field::Boolean,
-    soulbound: Field::Boolean,
+    soulbound: Field::Boolean
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -24,22 +26,26 @@ class ItemDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
     name
-    monster
+    category
     vendor_copper
     weight
+    slot
     no_trade
     soulbound
+    monster
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
     name
-    monster
+    category
     vendor_copper
     weight
+    slot
     no_trade
     soulbound
+    monster
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -47,11 +53,13 @@ class ItemDashboard < Administrate::BaseDashboard
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
     name
-    monster
+    category
     vendor_copper
     weight
+    slot
     no_trade
     soulbound
+    monster
   ].freeze
 
   # COLLECTION_FILTERS

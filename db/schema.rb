@@ -16,6 +16,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
     t.string "name", null: false
     t.integer "vendor_copper"
     t.decimal "weight", null: false
+    t.string "category"
+    t.string "slot"
     t.boolean "no_trade", default: false, null: false
     t.boolean "soulbound", default: false, null: false
     t.datetime "created_at", null: false
