@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   namespace :admin do
     resources :zones
@@ -7,14 +9,10 @@ Rails.application.routes.draw do
     resources :quests
     resources :quest_objectives
 
-    root to: 'items#index'
+    root to: 'zones#index'
   end
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get 'up' => 'rails/health#show', as: :rails_health_check
+  resources :zones
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # get 'up' => 'rails/health#show', as: :rails_health_check
 end

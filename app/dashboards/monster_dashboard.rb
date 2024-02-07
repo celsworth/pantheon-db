@@ -46,10 +46,10 @@ class MonsterDashboard < Administrate::BaseDashboard
   FORM_ATTRIBUTES = %i[
     name
     zone
-    items
+    level
     elite
     named
-    level
+    items
   ].freeze
 
   # COLLECTION_FILTERS

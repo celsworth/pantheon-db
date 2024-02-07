@@ -56,8 +56,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
 
   create_table "quests", force: :cascade do |t|
     t.integer "giver_id", null: false
+    t.integer "dropped_as_id"
     t.integer "receiver_id"
-    t.integer "drops_from_id"
     t.string "name", null: false
     t.string "text", null: false
     t.integer "reward_xp", default: 0, null: false
@@ -65,7 +65,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
     t.decimal "reward_standing", default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["drops_from_id"], name: "index_quests_on_drops_from_id"
+    t.index ["dropped_as_id"], name: "index_quests_on_dropped_as_id"
     t.index ["giver_id"], name: "index_quests_on_giver_id"
     t.index ["name"], name: "index_quests_on_name", unique: true
     t.index ["receiver_id"], name: "index_quests_on_receiver_id"
@@ -78,7 +78,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
     t.index ["name"], name: "index_zones_on_name", unique: true
   end
 
-  add_foreign_key "quests", "npcs", column: "drops_from_id"
+  add_foreign_key "quests", "items", column: "dropped_as_id"
   add_foreign_key "quests", "npcs", column: "giver_id"
   add_foreign_key "quests", "npcs", column: "receiver_id"
 end

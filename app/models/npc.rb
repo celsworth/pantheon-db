@@ -5,4 +5,7 @@ class Npc < ApplicationRecord
 
   has_many :quests_given, class_name: 'Quest', foreign_key: :giver_id
   has_many :quests_received, class_name: 'Quest', foreign_key: :receiver_id
+
+  validates :name, presence: true, uniqueness: true
+  validates :zone, presence: true
 end

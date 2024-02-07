@@ -12,7 +12,7 @@ class QuestDashboard < Administrate::BaseDashboard
     name: Field::String,
     giver: Field::BelongsTo,
     receiver: Field::BelongsTo,
-    drops_from: Field::BelongsTo,
+    dropped_as: Field::BelongsTo,
     text: Field::Text,
     quest_objectives: Field::HasMany,
     reward_xp: Field::Number,
@@ -39,7 +39,7 @@ class QuestDashboard < Administrate::BaseDashboard
     name
     giver
     receiver
-    drops_from
+    dropped_as
     text
     quest_objectives
     reward_xp
@@ -54,7 +54,7 @@ class QuestDashboard < Administrate::BaseDashboard
     name
     giver
     receiver
-    drops_from
+    dropped_as
     text
     quest_objectives
     reward_xp
