@@ -6,12 +6,12 @@ class ZonesController < ApplicationController
   end
 
   def show
-    render json: { zone: }
+    render json: { zone: zone }
   end
 
   def update
     if zone.update(zone_params)
-      render json: { zone: }
+      render json: { zone: zone }
     else
       render json: { errors: zone.errors }
     end

@@ -6,12 +6,12 @@ class ItemsController < ApplicationController
   end
 
   def show
-    render json: { item: }
+    render json: { item: item }
   end
 
   def update
     if item.update(item_params)
-      render json: { item: }
+      render json: { item: item }
     else
       render json: { errors: item.errors }
     end

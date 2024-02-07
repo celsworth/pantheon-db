@@ -6,12 +6,12 @@ class MonstersController < ApplicationController
   end
 
   def show
-    render json: { monster: }
+    render json: { monster: monster }
   end
 
   def update
     if monster.update(monster_params)
-      render json: { monster: }
+      render json: { monster: monster }
     else
       render json: { errors: monster.errors }
     end
