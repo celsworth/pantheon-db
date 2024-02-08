@@ -8,7 +8,10 @@ class Item < ApplicationRecord
 
   accepts_nested_attributes_for :stats
 
-  CATEGORIES = %w[general armour weapon held jewellery reagent].freeze
+  CATEGORIES = %w[general schematic
+                  potion ingredient food drink
+                  armour weapon shield held jewellery
+                  reagent resource].freeze
   SLOTS = %w[head shoulders hands back chest waist legs feet ears fingers neck relic].freeze
   CLASSES = %w[cleric direlord druid enchanter monk paladin ranger rogue
                shaman summoner warrior wizard].freeze
