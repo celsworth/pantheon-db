@@ -40,7 +40,7 @@ module Api
       end
 
       def blueprint(npc)
-        NpcBlueprint.render(npc)
+        NpcBlueprint.render(npc, view: :full)
       end
 
       def npc_params

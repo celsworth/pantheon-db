@@ -9,7 +9,7 @@ module Api
       end
 
       def show
-        render json: MonsterBlueprint.render(monster)
+        render json: blueprint(monster)
       end
 
       def create
