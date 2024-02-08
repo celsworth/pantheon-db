@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This file should ensure the existence of records required to run the application in every environment (production,
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
@@ -25,7 +27,7 @@ Npc.create(zone: tf, name: 'The Scavenger')
 s = Item.create(monsters: [z], name: "Gnossa's Walking Stick", weight: 4.0, vendor_copper: 1750, category: 'weapon')
 Stat.create(item: s, stat: 'intellect', amount: 1)
 Stat.create(item: s, stat: 'spell-crit-chance', amount: 2)
-Stat.create(item: s, stat: 'damage', amount: 22) # physical
+Stat.create(item: s, stat: 'damage', amount: 22) # is this always physical?
 Stat.create(item: s, stat: 'delay', amount: 5.9)
 # stave weapon
 # two-handed quarter staff

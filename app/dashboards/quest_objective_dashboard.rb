@@ -1,4 +1,6 @@
-require "administrate/base_dashboard"
+# frozen_string_literal: true
+
+require 'administrate/base_dashboard'
 
 class QuestObjectiveDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
@@ -14,7 +16,7 @@ class QuestObjectiveDashboard < Administrate::BaseDashboard
     quest: Field::BelongsTo,
     text: Field::String,
     created_at: Field::DateTime,
-    updated_at: Field::DateTime,
+    updated_at: Field::DateTime
   }.freeze
 
   # COLLECTION_ATTRIBUTES

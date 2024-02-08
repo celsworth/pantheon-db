@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'administrate/base_dashboard'
 
 class NpcDashboard < Administrate::BaseDashboard
@@ -12,7 +14,7 @@ class NpcDashboard < Administrate::BaseDashboard
     name: Field::String,
     zone: Field::BelongsTo,
     quests_given: Field::HasMany,
-    quests_received: Field::HasMany,
+    quests_received: Field::HasMany
   }.freeze
 
   # COLLECTION_ATTRIBUTES
