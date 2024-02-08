@@ -6,8 +6,13 @@ module Api
       def search; end
 
       def index
-        items = Item.includes(:quest, :stats, monsters: :zone).all
-        render json: blueprint(items)
+        # experimenting with very short term caching
+        json = Rails.cache.fetch('items', expires_in: 5.seconds) do
+          items = Item.includes(:quest, :stats, monsters: :zone).all
+          blueprint(items)
+        end
+
+        render json: json
       end
 
       def show
