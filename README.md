@@ -1,5 +1,8 @@
 # README
 
+Base URL for now is http://yrk.cae.me.uk:3000 - this will change eventually.
+
+
 ## Admin Dashboard
 
 See /admin for a quick and dirty display to see what's in db and edit things in a UI.
@@ -7,7 +10,7 @@ See /admin for a quick and dirty display to see what's in db and edit things in 
 
 ## API
 
-Simple REST API with a base of /api/v1.
+Simple REST API at /api/v1/
 
 Currently implemented resources are items, monsters, npcs, quest_objectives, quests, zones.
 
@@ -15,7 +18,7 @@ stats don't have a controller, use nested attributes (example below). Considerin
 
 No auth yet, this will change :)
 
-### Index
+### Get all Zones (or any resource)
 
 ```
 curl http://localhost:3000/api/v1/zones
@@ -25,7 +28,7 @@ curl http://localhost:3000/api/v1/zones
 [{"id":1,"name":"Thronefast"},{"id":2,"name":"Avendyr's Pass"}]
 ```
 
-### Get Single
+### Get Single Zone
 
 ```
 curl http://localhost:3000/api/v1/zones/1
@@ -35,8 +38,22 @@ curl http://localhost:3000/api/v1/zones/1
 "id":1,"name":"Thronefast"}
 ```
 
+Most associated resources just return the id for now to keep it simple, ie on a monster, you get zone_id:
 
-### Create
+```
+{"id":1,"elite":true,"level":13,"name":"Zirus the Bonewalker","named":true,"zone_id":1}
+```
+
+The exceptions are the nested attributes mentioned above, so if an item has stats (remember stats are their own resource), you get those since I think you'll probably always need them.
+
+```
+{"id":1,"category":"weapon","classes":[],"created_at":"2024-02-08 08:20:59 UTC","monster_id":1,"name":"Gnossa's Walking Stick","no_trade":false,"quest_id":null,"slot":null,"soulbound":false,"stats":[{"id":1,"amount":5,"item_id":1,"stat":"endurance"}],"updated_at":"2024-02-08 08:20:59 UTC","vendor_copper":null,"weight":"0.5"}
+```
+
+I can add more nesting but the more there is, the slower the API gets, and we run into the risk of circular dependencies, it gets messy.
+
+
+### Create Zone
 
 ```
 curl -d '{"name": "Silent Plains"}' -H "Content-Type: application/json" -X POST http://localhost:3000/api/v1/zones
@@ -46,7 +63,7 @@ curl -d '{"name": "Silent Plains"}' -H "Content-Type: application/json" -X POST 
 {"id":4,"name":"Silent Plains"}
 ```
 
-### Update
+### Update Zone
 
 ```
 curl -d '{"zone_id": 2, "name":"Zirus the Bonewalker"}' -H "Content-Type: application/json" -X PUT http://localhost:3000/api/v1/monsters/1
@@ -79,7 +96,7 @@ Creating a nested attribute example:
 curl -d '{"stats_attributes": [{"stat": "endurance", "amount": 4}]}' -H "Content-Type: application/json" -X PUT http://localhost:3000/api/v1/items/1
 ```
 
-Supply the existing id to update an existing stat
+Supply the existing id to update an existing stat:
 
 ```
 curl -d '{"stats_attributes": [{"id":3, "stat": "endurance", "amount": 6}]}' -H "Content-Type: application/json" -X PUT http://localhost:3000/api/v1/items/1
