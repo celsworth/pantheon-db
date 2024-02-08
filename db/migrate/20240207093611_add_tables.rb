@@ -54,11 +54,11 @@ class AddTables < ActiveRecord::Migration[7.1]
     create_table :quest_objectives do |t|
       t.references :quest, null: false, index: true
 
-      t.string :text, null: false
-
       t.references :monster
       t.references :item
       t.integer :amount
+
+      t.string :text
 
       t.timestamps
     end

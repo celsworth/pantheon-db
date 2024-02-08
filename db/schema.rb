@@ -60,10 +60,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
 
   create_table "quest_objectives", force: :cascade do |t|
     t.bigint "quest_id", null: false
-    t.string "text", null: false
     t.bigint "monster_id"
     t.bigint "item_id"
     t.integer "amount"
+    t.string "text"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["item_id"], name: "index_quest_objectives_on_item_id"
