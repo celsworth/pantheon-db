@@ -9,6 +9,7 @@ WORKDIR /rails
 
 # Set production environment
 ENV RAILS_ENV="production" \
+    PATH="/rails/bin:$PATH" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development"

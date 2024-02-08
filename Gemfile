@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
 gem 'pg'
-gem 'puma', '>= 5.0'
-gem 'rails', '~> 7.1.3'
+gem 'puma'
+gem 'rails'
 gem 'sprockets-rails'
 
 gem 'administrate'
