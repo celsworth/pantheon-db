@@ -33,10 +33,7 @@ class ItemDashboard < Administrate::BaseDashboard
     stats
     vendor_copper
     weight
-    classes
     slot
-    no_trade
-    soulbound
     monster
     quest
   ].freeze
