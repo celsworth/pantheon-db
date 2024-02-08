@@ -6,7 +6,7 @@ module Api
       def search; end
 
       def index
-        items = Item.includes(monsters: :zone).all
+        items = Item.includes(:quest, :stats, monsters: :zone).all
         render json: blueprint(items)
       end
 
