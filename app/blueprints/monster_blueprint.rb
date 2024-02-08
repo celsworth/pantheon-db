@@ -11,6 +11,8 @@ class MonsterBlueprint < Blueprinter::Base
     include_view :name_only
     fields :level, :elite, :named
 
+    fields :created_at, :updated_at
+
     association :zone, blueprint: ZoneBlueprint, view: :name_only
   end
 end

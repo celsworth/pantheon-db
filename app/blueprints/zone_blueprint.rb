@@ -9,5 +9,7 @@ class ZoneBlueprint < Blueprinter::Base
 
   view :full do
     include_view :name_only
+
+    fields :created_at, :updated_at
   end
 end
