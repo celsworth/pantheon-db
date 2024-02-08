@@ -83,6 +83,7 @@ GEM
       kaminari (~> 1.2.2)
       sassc-rails (~> 2.1)
       selectize-rails (~> 0.6)
+    ar_lazy_preload (2.0.0)
     ast (2.4.2)
     base64 (0.2.0)
     bigdecimal (3.1.6)
@@ -259,6 +260,7 @@ PLATFORMS
 
 DEPENDENCIES
   administrate
+  ar_lazy_preload
   blueprinter
   bootsnap
   pg

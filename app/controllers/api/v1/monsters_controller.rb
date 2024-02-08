@@ -4,7 +4,7 @@ module Api
   module V1
     class MonstersController < ApplicationController
       def index
-        monsters = Monster.includes(:items, :zone).all
+        monsters = Monster.all
         render json: blueprint(monsters)
       end
 

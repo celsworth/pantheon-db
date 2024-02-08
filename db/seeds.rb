@@ -22,7 +22,7 @@ Item.create(monsters: [m], name: 'Spider Egg', weight: 0.2, vendor_copper: 23, c
 Item.create(monsters: [m], name: 'Spider Legs', weight: 0.3, vendor_copper: 32, category: 'general')
 
 huntress = Npc.create(zone: tf, name: 'The Huntress')
-b = Monster.create(zone: tf, name: 'Bear', level: 10, named: true)
+b = Monster.create(zone: tf, name: 'elder greatpaw', level: 10, named: true)
 bp = Item.create(monsters: [b], name: 'Bear Paw', weight: 0.1, category: 'general')
 q = Quest.create(text: 'todo', receiver: huntress, name: 'Bear Paw Quest', dropped_as: bp)
 

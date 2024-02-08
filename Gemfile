@@ -2,6 +2,7 @@
 
 source 'https://rubygems.org'
 
+gem 'ar_lazy_preload'
 gem 'pg'
 gem 'puma'
 gem 'rails'

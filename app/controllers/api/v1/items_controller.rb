@@ -8,7 +8,7 @@ module Api
       def index
         # experimenting with very short term caching
         json = Rails.cache.fetch('items', expires_in: 5.seconds) do
-          items = Item.includes(:reward_from_quest, :stats, monsters: :zone).all
+          items = Item.all
           blueprint(items)
         end
 
