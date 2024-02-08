@@ -36,6 +36,13 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
+    create_table :stats do |t|
+      t.references :item, index: true
+
+      t.string :stat, null: false, index: true
+      t.integer :amount, null: false
+    end
+
     create_table :npcs do |t|
       t.references :zone, null: false, index: true
 

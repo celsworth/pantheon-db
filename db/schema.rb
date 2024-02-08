@@ -81,6 +81,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
     t.index ["receiver_id"], name: "index_quests_on_receiver_id"
   end
 
+  create_table "stats", force: :cascade do |t|
+    t.bigint "item_id"
+    t.string "stat", null: false
+    t.integer "amount", null: false
+    t.index ["item_id"], name: "index_stats_on_item_id"
+    t.index ["stat"], name: "index_stats_on_stat"
+  end
+
   create_table "zones", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false

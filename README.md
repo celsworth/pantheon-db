@@ -5,32 +5,38 @@
 ### Index
 
 ```
-curl http://localhost:3000/zones
+curl curl http://localhost:3000/api/v1/zones
 ```
 ```json
-[{"id":1,"name":"Thronefast","created_at":"2024-02-07T12:01:34.630Z","updated_at":"2024-02-07T12:24:34.176Z"},{"id":2,"name":"Avendyr's Pass","created_at":"2024-02-07T12:01:34.632Z","updated_at":"2024-02-07T12:01:34.632Z"}]
+[{"id":1,"name":"Thronefast"},{"id":2,"name":"Avendyr's Pass"}]
 ```
 
 ### Get Single
 
 ```
-curl http://localhost:3000/zones/1
+curl http://localhost:3000/api/v1/zones/1
 ```
 
 ```json
-{"zone":{"id":1,"name":"Thronefast","created_at":"2024-02-07T12:01:34.630Z","updated_at":"2024-02-07T12:24:34.176Z"}}
+"id":1,"name":"Thronefast"}
 ```
+
+
+### Create
+
+Soon
+
 
 ### Update
 
 ```
-curl -d '{"zone_id": 2, "name":"Zirus the Bonewalker"}' -H "Content-Type: application/json" -X PUT http://localhost:3000/monsters/1
+curl -d '{"zone_id": 2, "name":"Zirus the Bonewalker"}' -H "Content-Type: application/json" -X PUT http://localhost:3000/api/v1/monsters/1
 ```
 
-Success returns the new object as JSON:
+Success returns the updated object as JSON:
 
 ```json
-{"monster":{"zone_id":2,"name":"Zirus the Bonewalker","id":1,"level":4,"elite":true,"named":true,"created_at":"2024-02-07T12:01:34.640Z","updated_at":"2024-02-07T12:21:10.562Z"}}
+{"id":1,"elite":true,"level":13,"name":"Zirus the Bonewalker","named":true,"zone_id":2}
 ```
 
 Errors give you an errors hash formatted like this:
@@ -38,6 +44,19 @@ Errors give you an errors hash formatted like this:
 ```json
 {"errors":{"name":["has already been taken"]}}
 ```
+
+Creating a nested attribute example:
+
+```
+curl -d '{"name":"stick","stats_attributes": [{"stat":"endurance", "amount": 4}]}' -H "Content-Type: application/json" -X PUT http://localhost:3000/api/v1/items/1
+```
+
+Supply the existing id to update an existing stat
+
+```
+curl -d '{"name":"stick","stats_attributes": [{"id":3, "stat":"endurance", "amount": 6}]}' -H "Content-Type: application/json" -X PUT http://localhost:3000/api/v1/items/1
+```
+
 
 ### Delete
 
