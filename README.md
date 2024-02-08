@@ -40,14 +40,52 @@ curl http://localhost:3000/api/v1/zones/1
 
 Most associated resources just return the id/name for now to keep it simple, ie on a monster, you get:
 
-```
-{"id":1,"elite":true,"level":13,"name":"Zirus the Bonewalker","named":true,"zone":{"id":1,"name":"Thronefast"}}
+```json
+{
+    "id": 1,
+    "elite": true,
+    "level": 13,
+    "name": "Zirus the Bonewalker",
+    "named": true,
+    "zone": {
+        "id": 1,
+        "name": "Thronefast"
+    }
+}
 ```
 
 The exceptions are the nested attributes mentioned above, so if an item has stats (remember stats are their own resource), you get full details since I think you'll probably always need them.
 
-```
-{"id":1,"category":"weapon","classes":[],"created_at":"2024-02-08 08:20:59 UTC","monster":{"id":1,"name":"Zirus the Bonewalker"},"name":"Gnossa's Walking Stick","no_trade":false,"quest":null,"slot":null,"soulbound":false,"stats":[{"id":1,"amount":5,"item":{"id":1,"name":"Gnossa's Walking Stick"},"stat":"endurance"}],"updated_at":"2024-02-08 08:20:59 UTC","vendor_copper":null,"weight":"0.5"}
+```json
+{
+    "id": 1,
+    "category": "weapon",
+    "classes": [],
+    "created_at": "2024-02-08 08:20:59 UTC",
+    "monster": {
+        "id": 1,
+        "name": "Zirus the Bonewalker"
+    },
+    "name": "Gnossa's Walking Stick",
+    "no_trade": false,
+    "quest": null,
+    "slot": null,
+    "soulbound": false,
+    "stats": [
+        {
+            "id": 1,
+            "amount": 5,
+            "item": {
+                "id": 1,
+                "name": "Gnossa's Walking Stick"
+            },
+            "stat": "endurance"
+        }
+    ],
+    "updated_at": "2024-02-08 08:20:59 UTC",
+    "vendor_copper": null,
+    "weight": "0.5"
+}
 ```
 
 I can add more nesting but the more there is, the slower the API gets, and we run into the risk of circular dependencies, it gets messy.
