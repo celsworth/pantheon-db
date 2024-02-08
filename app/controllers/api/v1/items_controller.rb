@@ -5,17 +5,17 @@ module Api
     class ItemsController < ApplicationController
       def index
         items = Item.includes(monster: :zone).all
-        render json: ItemBlueprint.render(items)
+        render json: blueprint(items)
       end
 
       def show
-        render json: ItemBlueprint.render(item)
+        render json: blueprint(item)
       end
 
       def create
         item = Item.new(item_params)
         if item.save
-          render json: itemBlueprint.render(item)
+          render json: blueprint(item)
         else
           render json: { errors: item.errors }
         end
@@ -23,7 +23,7 @@ module Api
 
       def update
         if item.update(item_params)
-          render json: ItemBlueprint.render(item)
+          render json: blueprint(item)
         else
           render json: { errors: item.errors }
         end
@@ -38,6 +38,10 @@ module Api
 
       def item
         @item ||= Item.find(params[:id])
+      end
+
+      def blueprint(item)
+        ItemBlueprint.render(item, view: :full)
       end
 
       def item_params

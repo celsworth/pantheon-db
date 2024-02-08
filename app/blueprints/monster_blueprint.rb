@@ -3,9 +3,14 @@
 class MonsterBlueprint < Blueprinter::Base
   identifier :id
 
-  fields :name, :level, :elite, :named
+  view :name_only do
+    fields :name
+  end
 
-  fields :zone_id
+  view :full do
+    include_view :name_only
+    fields :level, :elite, :named
 
-  # association :zone, blueprint: ZoneBlueprint
+    association :zone, blueprint: ZoneBlueprint, view: :name_only
+  end
 end

@@ -5,7 +5,7 @@ module Api
     class MonstersController < ApplicationController
       def index
         monsters = Monster.includes(:zone).all
-        render json: MonsterBlueprint.render(monsters)
+        render json: blueprint(monsters)
       end
 
       def show
@@ -15,7 +15,7 @@ module Api
       def create
         monster = Monster.new(monster_params)
         if monster.save
-          render json: monsterBlueprint.render(monster)
+          render json: blueprint(monster)
         else
           render json: { errors: monster.errors }
         end
@@ -23,7 +23,7 @@ module Api
 
       def update
         if monster.update(monster_params)
-          render json: MonsterBlueprint.render(monster)
+          render json: blueprint(monster)
         else
           render json: { errors: monster.errors }
         end
@@ -38,6 +38,10 @@ module Api
 
       def monster
         @monster ||= Monster.find(params[:id])
+      end
+
+      def blueprint(monster)
+        MonsterBlueprint.render(monster, view: :full)
       end
 
       def monster_params

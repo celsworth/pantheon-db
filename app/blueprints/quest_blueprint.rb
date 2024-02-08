@@ -3,13 +3,17 @@
 class QuestBlueprint < Blueprinter::Base
   identifier :id
 
-  fields :name, :text, :reward_xp, :reward_copper, :reward_standing
+  view :name_only do
+    fields :name
+  end
 
-  fields :giver_id, :receiver_id, :dropped_as_id
+  view :full do
+    fields :text, :reward_xp, :reward_copper, :reward_standing
 
-  # association :giver, blueprint: NpcBlueprint
-  # association :receiver, blueprint: NpcBlueprint
-  # association :dropped_as, blueprint: ItemBlueprint
+    association :giver, blueprint: NpcBlueprint, view: :name_only
+    association :receiver, blueprint: NpcBlueprint, view: :name_only
+    association :dropped_as, blueprint: ItemBlueprint, view: :name_only
 
-  association :quest_objectives, blueprint: QuestObjectiveBlueprint
+    association :quest_objectives, blueprint: QuestObjectiveBlueprint, view: :full
+  end
 end

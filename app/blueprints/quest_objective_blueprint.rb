@@ -3,9 +3,9 @@
 class QuestObjectiveBlueprint < Blueprinter::Base
   identifier :id
 
-  fields :text, :item_amount
+  view :full do
+    fields :text, :item_amount
 
-  fields :item_id
-
-  # association :item, blueprint: ItemBlueprint
+    association :item, blueprint: ItemBlueprint, view: :name_only
+  end
 end

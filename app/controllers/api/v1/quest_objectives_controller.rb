@@ -4,17 +4,17 @@ module Api
   module V1
     class QuestObjectivesController < ApplicationController
       def index
-        render json: QuestObjective.all
+        render json: blueprint(QuestObjective.all)
       end
 
       def show
-        render json: { quest_objective: quest_objective }
+        render json: blueprint(quest_objective)
       end
 
       def create
         quest_objective = QuestObjective.new(quest_objective_params)
         if quest_objective.save
-          render json: quest_objectiveBlueprint.render(quest_objective)
+          render json: blueprint(quest_objective)
         else
           render json: { errors: quest_objective.errors }
         end
@@ -22,7 +22,7 @@ module Api
 
       def update
         if quest_objective.update(quest_objective_params)
-          render json: { quest_objective: quest_objective }
+          render json: blueprint(quest_objective)
         else
           render json: { errors: quest_objective.errors }
         end
@@ -37,6 +37,10 @@ module Api
 
       def quest_objective
         @quest_objective ||= QuestObjective.find(params[:id])
+      end
+
+      def blueprint(quest_objective)
+        QuestObjectiveBlueprint.render(quest_objective, view: :full)
       end
 
       def quest_objective_params

@@ -4,17 +4,17 @@ module Api
   module V1
     class ZonesController < ApplicationController
       def index
-        render json: ZoneBlueprint.render(Zone.all)
+        render json: blueprint(Zone.all)
       end
 
       def show
-        render json: ZoneBlueprint.render(zone)
+        render json: blueprint(zone)
       end
 
       def create
         zone = Zone.new(zone_params)
         if zone.save
-          render json: ZoneBlueprint.render(zone)
+          render json: blueprint(zone)
         else
           render json: { errors: zone.errors }
         end
@@ -22,7 +22,7 @@ module Api
 
       def update
         if zone.update(zone_params)
-          render json: ZoneBlueprint.render(zone)
+          render json: blueprint(zone)
         else
           render json: { errors: zone.errors }
         end
@@ -37,6 +37,10 @@ module Api
 
       def zone
         @zone ||= Zone.find(params[:id])
+      end
+
+      def blueprint(zone)
+        ZoneBlueprint.render(zone, view: :full)
       end
 
       def zone_params

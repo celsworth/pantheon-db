@@ -4,17 +4,17 @@ module Api
   module V1
     class NpcsController < ApplicationController
       def index
-        render json: NpcBlueprint.render(Npc.all)
+        render json: blueprint(Npc.all)
       end
 
       def show
-        render json: NpcBlueprint.render(npc)
+        render json: blueprint(npc)
       end
 
       def create
         npc = Npc.new(npc_params)
         if npc.save
-          render json: npcBlueprint.render(npc)
+          render json: blueprint(npc)
         else
           render json: { errors: npc.errors }
         end
@@ -22,7 +22,7 @@ module Api
 
       def update
         if npc.update(npc_params)
-          render json: NpcBlueprint.render(npc)
+          render json: blueprint(npc)
         else
           render json: { errors: npc.errors }
         end
@@ -37,6 +37,10 @@ module Api
 
       def npc
         @npc ||= Npc.find(params[:id])
+      end
+
+      def blueprint(npc)
+        NpcBlueprint.render(npc)
       end
 
       def npc_params

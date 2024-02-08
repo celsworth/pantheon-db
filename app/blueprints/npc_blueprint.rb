@@ -3,9 +3,12 @@
 class NpcBlueprint < Blueprinter::Base
   identifier :id
 
-  fields :name
+  view :name_only do
+    fields :name
+  end
 
-  fields :zone_id
-
-  # association :zone, blueprint: ZoneBlueprint, options: { from: :npc }
+  view :full do
+    include_view :name_only
+    association :zone, blueprint: ZoneBlueprint, view: :name_only
+  end
 end

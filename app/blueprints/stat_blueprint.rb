@@ -3,9 +3,8 @@
 class StatBlueprint < Blueprinter::Base
   identifier :id
 
-  fields :stat, :amount
-
-  fields :item_id
-
-  # association :item, blueprint: ItemBlueprint
+  view :full do
+    fields :stat, :amount
+    association :item, blueprint: ItemBlueprint, view: :name_only
+  end
 end

@@ -5,17 +5,17 @@ module Api
     class QuestsController < ApplicationController
       def index
         quests = Quest.all
-        render json: QuestBlueprint.render(quests)
+        render json: blueprint(quests)
       end
 
       def show
-        render json: QuestBlueprint.render(quest)
+        render json: blueprint(quest)
       end
 
       def create
         quest = Quest.new(quest_params)
         if quest.save
-          render json: questBlueprint.render(quest)
+          render json: blueprint(quest)
         else
           render json: { errors: quest.errors }
         end
@@ -23,7 +23,7 @@ module Api
 
       def update
         if quest.update(quest_params)
-          render json: QuestBlueprint.render(quest)
+          render json: blueprint(quest)
         else
           render json: { errors: quest.errors }
         end
@@ -38,6 +38,10 @@ module Api
 
       def quest
         @quest ||= Quest.find(params[:id])
+      end
+
+      def blueprint(quest)
+        QuestBlueprint.render(quest, view: :full)
       end
 
       def quest_params
