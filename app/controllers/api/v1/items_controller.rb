@@ -3,8 +3,10 @@
 module Api
   module V1
     class ItemsController < ApplicationController
+      def search; end
+
       def index
-        items = Item.includes(monster: :zone).all
+        items = Item.includes(monsters: :zone).all
         render json: blueprint(items)
       end
 
@@ -34,6 +36,22 @@ module Api
       #  item.destroy
       # end
 
+      def assign
+        # assign an item_id to a monster_id
+        monster = Monster.find(params[:monster_id])
+        item.monsters << monster unless item.monsters.include?(monster)
+
+        head 204
+      end
+
+      def unassign
+        # remove an item_id from a monster_id
+        monster = Monster.find(params[:monster_id])
+        item.monsters -= [monster]
+
+        head 204
+      end
+
       private
 
       def item
@@ -45,7 +63,7 @@ module Api
       end
 
       def item_params
-        params.permit(:monster_id, :quest_id, :name, :category, :vendor_copper, :weight, :slot,
+        params.permit(:quest_id, :name, :category, :vendor_copper, :weight, :slot,
                       :no_trade, :soulbound,
                       classes: [],
                       stats_attributes: %i[id stat amount])

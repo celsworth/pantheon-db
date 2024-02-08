@@ -15,7 +15,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
   enable_extension "plpgsql"
 
   create_table "items", force: :cascade do |t|
-    t.bigint "monster_id", null: false
     t.bigint "quest_id"
     t.string "name", null: false
     t.integer "vendor_copper"
@@ -27,9 +26,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
     t.boolean "soulbound", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["monster_id"], name: "index_items_on_monster_id"
     t.index ["name"], name: "index_items_on_name", unique: true
     t.index ["quest_id"], name: "index_items_on_quest_id"
+  end
+
+  create_table "items_monsters", id: false, force: :cascade do |t|
+    t.bigint "item_id", null: false
+    t.bigint "monster_id", null: false
+    t.index ["item_id", "monster_id"], name: "index_items_monsters_on_item_id_and_monster_id"
+    t.index ["monster_id", "item_id"], name: "index_items_monsters_on_monster_id_and_item_id"
   end
 
   create_table "monsters", force: :cascade do |t|

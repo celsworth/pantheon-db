@@ -16,4 +16,4 @@ Zone.create(name: "Avendyr's Pass")
 z = Monster.create(zone: tf, name: 'Zirus the Bonewalker', elite: true, named: true, level: 13)
 Npc.create(zone: tf, name: 'The Scavenger')
 
-Item.create(monster: z, name: "Gnossa's Walking Stick", weight: 0.5, category: 'weapon')
+Item.create(monsters: [z], name: "Gnossa's Walking Stick", weight: 0.5, category: 'weapon')

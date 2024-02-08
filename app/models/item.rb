@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Item < ApplicationRecord
-  belongs_to :monster
+  has_and_belongs_to_many :monsters
   belongs_to :quest, optional: true
 
   has_many :stats
@@ -14,10 +14,13 @@ class Item < ApplicationRecord
                shaman summoner warrior wizard].freeze
 
   validates :name, presence: true, uniqueness: true
-  validates :monster, presence: true
   validates :weight, presence: true
 
   validates :category, presence: true, inclusion: { in: CATEGORIES }
   validates :slot, allow_blank: true, inclusion: { in: SLOTS }
   validates :classes, allow_blank: true, inclusion: { in: CLASSES }
+
+  def self.search(text)
+    where('name LIKE ?', "%#{sanitize_sql_like(text)}%")
+  end
 end

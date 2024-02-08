@@ -91,7 +91,7 @@ The exceptions are the nested attributes mentioned above, so if an item has stat
 I can add more nesting but the more there is, the slower the API gets, and we run into the risk of circular dependencies, it gets messy.
 
 
-### Create Zone
+### Create
 
 ```
 curl -d '{"name": "Silent Plains"}' -H "Content-Type: application/json" -X POST http://localhost:3000/api/v1/zones
@@ -101,7 +101,7 @@ curl -d '{"name": "Silent Plains"}' -H "Content-Type: application/json" -X POST 
 {"id":4,"name":"Silent Plains"}
 ```
 
-### Update Zone
+### Update
 
 ```
 curl -d '{"zone_id": 2, "name":"Zirus the Bonewalker"}' -H "Content-Type: application/json" -X PUT http://localhost:3000/api/v1/monsters/1
@@ -112,6 +112,30 @@ Success returns the updated object as JSON:
 ```json
 {"id":1,"elite":true,"level":13,"name":"Zirus the Bonewalker","named":true,"zone":{"id":1,"name":"Thronefast"}}
 ```
+
+### Many-to-many Assignments
+
+Some relations are many-to-many, for example items to monsters (an item can be dropped by several different monsters; and monsters can drop several different items).
+
+So these have a special assign/unassign in order to manage that relationship.
+
+Assignment:
+
+```
+curl -d '{"monster_id":1}' -H "Content-Type: application/json" -X POST http://localhost:3000/api/v1/items/2/assign
+```
+
+So after this, monster_id=1 is linked to item_id 2 (ie, it can drop it)
+
+Unassignment:
+```
+curl -d '{"monster_id":1}' -H "Content-Type: application/json" -X POST http://localhost:3000/api/v1/items/2/unassign
+```
+
+After this, the link is broken again and monster_id=1 is no longer dropping item_id=2.
+
+These return HTTP 201 on success.
+
 
 ### Errors
 

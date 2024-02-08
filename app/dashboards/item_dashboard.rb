@@ -9,7 +9,7 @@ class ItemDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
-    monster: Field::BelongsTo,
+    monsters: Field::HasMany,
     quest: Field::BelongsTo,
     name: Field::String,
     stats: Field::HasMany,
@@ -34,7 +34,7 @@ class ItemDashboard < Administrate::BaseDashboard
     vendor_copper
     weight
     slot
-    monster
+    monsters
     quest
   ].freeze
 
@@ -50,7 +50,7 @@ class ItemDashboard < Administrate::BaseDashboard
     slot
     no_trade
     soulbound
-    monster
+    monsters
     quest
   ].freeze
 
@@ -68,7 +68,7 @@ class ItemDashboard < Administrate::BaseDashboard
     slot
     no_trade
     soulbound
-    monster
+    monsters
     quest
   ].freeze
 

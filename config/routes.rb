@@ -17,7 +17,12 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :zones
       resources :monsters
-      resources :items
+      resources :items do
+        member do
+          post :assign
+          post :unassign
+        end
+      end
       resources :npcs
       resources :quests
       resources :quest_objectives
