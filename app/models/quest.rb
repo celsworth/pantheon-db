@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Quest < ApplicationRecord
+  belongs_to :after_quest, class_name: 'Quest', optional: true
+
   belongs_to :giver, class_name: 'Npc'
   belongs_to :receiver, class_name: 'Npc', optional: true
 

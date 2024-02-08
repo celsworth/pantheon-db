@@ -70,6 +70,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
   end
 
   create_table "quests", force: :cascade do |t|
+    t.bigint "after_quest_id"
     t.bigint "giver_id", null: false
     t.bigint "dropped_as_id"
     t.bigint "receiver_id"
@@ -80,6 +81,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
     t.decimal "reward_standing", default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["after_quest_id"], name: "index_quests_on_after_quest_id"
     t.index ["dropped_as_id"], name: "index_quests_on_dropped_as_id"
     t.index ["giver_id"], name: "index_quests_on_giver_id"
     t.index ["name"], name: "index_quests_on_name", unique: true
@@ -90,6 +92,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
     t.bigint "item_id"
     t.string "stat", null: false
     t.decimal "amount", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["item_id"], name: "index_stats_on_item_id"
     t.index ["stat"], name: "index_stats_on_stat"
   end
@@ -104,4 +108,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
   add_foreign_key "quests", "items", column: "dropped_as_id"
   add_foreign_key "quests", "npcs", column: "giver_id"
   add_foreign_key "quests", "npcs", column: "receiver_id"
+  add_foreign_key "quests", "quests", column: "after_quest_id"
 end

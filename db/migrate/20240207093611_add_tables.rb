@@ -65,6 +65,8 @@ class AddTables < ActiveRecord::Migration[7.1]
     end
 
     create_table :quests do |t|
+      t.references :after_quest, foreign_key: { to_table: :quests }
+
       t.references :giver, null: false, foreign_key: { to_table: :npcs }
       t.references :dropped_as, foreign_key: { to_table: :items }
 

@@ -4,7 +4,8 @@ module Api
   module V1
     class QuestsController < ApplicationController
       def index
-        quests = Quest.all
+        quests = Quest.includes(:after_quest, :giver, :receiver, :dropped_as,
+                                :quest_objectives).all
         render json: blueprint(quests)
       end
 
@@ -45,7 +46,9 @@ module Api
       end
 
       def quest_params
-        params.permit(:name, :giver_id, :receiver_id, :dropped_as_id, :text,
+        params.permit(:name,
+                      :after_quest_id, :giver_id, :receiver_id, :dropped_as_id,
+                      :text,
                       :reward_xp, :reward_copper, :reward_standing,
                       quest_objectives_attributes: %i[id quest_id item_id item_amount])
       end
