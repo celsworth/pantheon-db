@@ -35,7 +35,7 @@ curl http://localhost:3000/api/v1/zones/1
 ```
 
 ```json
-"id":1,"name":"Thronefast"}
+{"id":1,"name":"Thronefast"}
 ```
 
 Most associated resources just return the id/name for now to keep it simple, ie on a monster, you get:
