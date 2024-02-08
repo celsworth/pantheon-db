@@ -39,6 +39,8 @@ class AddTables < ActiveRecord::Migration[7.1]
 
       t.string :stat, null: false, index: true
       t.decimal :amount, null: false
+
+      t.timestamps
     end
 
     create_table :npcs do |t|
