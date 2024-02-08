@@ -38,7 +38,7 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.references :item, index: true
 
       t.string :stat, null: false, index: true
-      t.integer :amount, null: false
+      t.decimal :amount, null: false
     end
 
     create_table :npcs do |t|

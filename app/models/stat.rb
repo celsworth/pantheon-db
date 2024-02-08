@@ -3,7 +3,10 @@
 class Stat < ApplicationRecord
   belongs_to :item
 
-  STATS = %w[endurance intellect spell-crit-chance].freeze
+  STATS = %w[damage delay
+             endurance
+             intellect
+             spell-crit-chance].freeze
 
   validates :item, presence: true
   validates :stat, presence: true, inclusion: { in: STATS }
