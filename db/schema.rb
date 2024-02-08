@@ -33,8 +33,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
   create_table "items_monsters", id: false, force: :cascade do |t|
     t.bigint "item_id", null: false
     t.bigint "monster_id", null: false
-    t.index ["item_id", "monster_id"], name: "index_items_monsters_on_item_id_and_monster_id"
-    t.index ["monster_id", "item_id"], name: "index_items_monsters_on_monster_id_and_item_id"
+    t.index ["item_id", "monster_id"], name: "index_items_monsters_on_item_id_and_monster_id", unique: true
+    t.index ["monster_id", "item_id"], name: "index_items_monsters_on_monster_id_and_item_id", unique: true
   end
 
   create_table "monsters", force: :cascade do |t|
