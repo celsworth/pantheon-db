@@ -15,7 +15,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
   enable_extension "plpgsql"
 
   create_table "items", force: :cascade do |t|
-    t.bigint "quest_id"
     t.string "name", null: false
     t.integer "vendor_copper"
     t.decimal "weight", null: false
@@ -26,8 +25,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
     t.boolean "soulbound", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "reward_from_quest_id"
     t.index ["name"], name: "index_items_on_name", unique: true
-    t.index ["quest_id"], name: "index_items_on_quest_id"
+    t.index ["reward_from_quest_id"], name: "index_items_on_reward_from_quest_id"
   end
 
   create_table "items_monsters", id: false, force: :cascade do |t|
@@ -105,6 +105,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
     t.index ["name"], name: "index_zones_on_name", unique: true
   end
 
+  add_foreign_key "items", "quests", column: "reward_from_quest_id"
   add_foreign_key "quests", "items", column: "dropped_as_id"
   add_foreign_key "quests", "npcs", column: "giver_id"
   add_foreign_key "quests", "npcs", column: "receiver_id"

@@ -12,6 +12,8 @@ class QuestBlueprint < Blueprinter::Base
 
     fields :created_at, :updated_at
 
+    association :reward_items, blueprint: ItemBlueprint, view: :name_only
+
     association :after_quest, blueprint: QuestBlueprint, view: :name_only
     association :giver, blueprint: NpcBlueprint, view: :name_only
     association :receiver, blueprint: NpcBlueprint, view: :name_only

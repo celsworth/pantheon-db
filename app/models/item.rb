@@ -2,9 +2,10 @@
 
 class Item < ApplicationRecord
   has_and_belongs_to_many :monsters
-  belongs_to :quest, optional: true
+  has_one :starts_quest, class_name: 'Quest', inverse_of: :dropped_as
+  belongs_to :reward_from_quest, class_name: 'Quest', optional: true, inverse_of: :reward_items
 
-  has_many :stats
+  has_many :stats, inverse_of: :item
 
   accepts_nested_attributes_for :stats
 

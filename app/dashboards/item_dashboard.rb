@@ -12,7 +12,8 @@ class ItemDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     monsters: Field::HasMany,
-    quest: Field::BelongsTo,
+    starts_quest: Field::HasOne,
+    reward_from_quest: Field::BelongsTo,
     name: Field::String,
     stats: Field::HasMany,
     category: Field::Select.with_options(collection: Item::CATEGORIES, include_blank: 'none'),
@@ -37,7 +38,7 @@ class ItemDashboard < Administrate::BaseDashboard
     weight
     slot
     monsters
-    quest
+    starts_quest
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -53,7 +54,8 @@ class ItemDashboard < Administrate::BaseDashboard
     no_trade
     soulbound
     monsters
-    quest
+    starts_quest
+    reward_from_quest
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -71,7 +73,7 @@ class ItemDashboard < Administrate::BaseDashboard
     no_trade
     soulbound
     monsters
-    quest
+    reward_from_quest
   ].freeze
 
   # COLLECTION_FILTERS

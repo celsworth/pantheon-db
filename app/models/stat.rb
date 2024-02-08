@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Stat < ApplicationRecord
-  belongs_to :item
+  belongs_to :item, inverse_of: :stats
 
   STATS = %w[damage attack-power hit-rating
              spell-power spell-crit-chance

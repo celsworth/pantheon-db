@@ -20,7 +20,8 @@ class QuestDashboard < Administrate::BaseDashboard
     quest_objectives: Field::HasMany,
     reward_xp: Field::Number,
     reward_copper: Field::Number,
-    reward_standing: Field::Number
+    reward_standing: Field::Number,
+    reward_items: Field::HasMany
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -49,6 +50,7 @@ class QuestDashboard < Administrate::BaseDashboard
     reward_xp
     reward_copper
     reward_standing
+    reward_items
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -65,6 +67,7 @@ class QuestDashboard < Administrate::BaseDashboard
     reward_xp
     reward_copper
     reward_standing
+    reward_items
   ].freeze
 
   # COLLECTION_FILTERS

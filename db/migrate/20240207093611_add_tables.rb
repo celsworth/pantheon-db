@@ -20,8 +20,6 @@ class AddTables < ActiveRecord::Migration[7.1]
     end
 
     create_table :items do |t|
-      t.references :quest, index: true
-
       t.string :name, null: false, index: { unique: true }
       t.integer :vendor_copper
       t.decimal :weight, null: false
@@ -81,6 +79,8 @@ class AddTables < ActiveRecord::Migration[7.1]
 
       t.timestamps
     end
+
+    add_reference :items, :reward_from_quest, foreign_key: { to_table: :quests }
 
     create_join_table :items, :monsters do |t|
       t.index %i[item_id monster_id], unique: true

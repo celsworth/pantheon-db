@@ -8,7 +8,7 @@ module Api
       def index
         # experimenting with very short term caching
         json = Rails.cache.fetch('items', expires_in: 5.seconds) do
-          items = Item.includes(:quest, :stats, monsters: :zone).all
+          items = Item.includes(:reward_from_quest, :stats, monsters: :zone).all
           blueprint(items)
         end
 
@@ -68,7 +68,7 @@ module Api
       end
 
       def item_params
-        params.permit(:quest_id, :name, :category, :vendor_copper, :weight, :slot,
+        params.permit(:reward_from_quest_id, :name, :category, :vendor_copper, :weight, :slot,
                       :no_trade, :soulbound,
                       classes: [],
                       stats_attributes: %i[id stat amount])
