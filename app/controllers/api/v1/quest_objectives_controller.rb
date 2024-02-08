@@ -11,6 +11,15 @@ module Api
         render json: { quest_objective: quest_objective }
       end
 
+      def create
+        quest_objective = QuestObjective.new(quest_objective_params)
+        if quest_objective.save
+          render json: quest_objectiveBlueprint.render(quest_objective)
+        else
+          render json: { errors: quest_objective.errors }
+        end
+      end
+
       def update
         if quest_objective.update(quest_objective_params)
           render json: { quest_objective: quest_objective }

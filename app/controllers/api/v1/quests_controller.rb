@@ -12,6 +12,15 @@ module Api
         render json: QuestBlueprint.render(quest)
       end
 
+      def create
+        quest = Quest.new(quest_params)
+        if quest.save
+          render json: questBlueprint.render(quest)
+        else
+          render json: { errors: quest.errors }
+        end
+      end
+
       def update
         if quest.update(quest_params)
           render json: QuestBlueprint.render(quest)
@@ -33,7 +42,8 @@ module Api
 
       def quest_params
         params.permit(:name, :giver_id, :receiver_id, :dropped_as_id, :text,
-                      :reward_xp, :reward_copper, :reward_standing)
+                      :reward_xp, :reward_copper, :reward_standing,
+                      quest_objectives_attributes: %i[id quest_id item_id item_amount])
       end
     end
   end

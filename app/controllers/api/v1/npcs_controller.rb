@@ -11,6 +11,15 @@ module Api
         render json: NpcBlueprint.render(npc)
       end
 
+      def create
+        npc = Npc.new(npc_params)
+        if npc.save
+          render json: npcBlueprint.render(npc)
+        else
+          render json: { errors: npc.errors }
+        end
+      end
+
       def update
         if npc.update(npc_params)
           render json: NpcBlueprint.render(npc)

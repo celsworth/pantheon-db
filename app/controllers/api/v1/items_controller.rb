@@ -12,6 +12,15 @@ module Api
         render json: ItemBlueprint.render(item)
       end
 
+      def create
+        item = Item.new(item_params)
+        if item.save
+          render json: itemBlueprint.render(item)
+        else
+          render json: { errors: item.errors }
+        end
+      end
+
       def update
         if item.update(item_params)
           render json: ItemBlueprint.render(item)

@@ -11,6 +11,15 @@ module Api
         render json: ZoneBlueprint.render(zone)
       end
 
+      def create
+        zone = Zone.new(zone_params)
+        if zone.save
+          render json: ZoneBlueprint.render(zone)
+        else
+          render json: { errors: zone.errors }
+        end
+      end
+
       def update
         if zone.update(zone_params)
           render json: ZoneBlueprint.render(zone)

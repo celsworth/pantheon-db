@@ -12,6 +12,15 @@ module Api
         render json: MonsterBlueprint.render(monster)
       end
 
+      def create
+        monster = Monster.new(monster_params)
+        if monster.save
+          render json: monsterBlueprint.render(monster)
+        else
+          render json: { errors: monster.errors }
+        end
+      end
+
       def update
         if monster.update(monster_params)
           render json: MonsterBlueprint.render(monster)

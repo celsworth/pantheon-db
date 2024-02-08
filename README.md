@@ -24,8 +24,13 @@ curl http://localhost:3000/api/v1/zones/1
 
 ### Create
 
-Soon
+```
+curl -d '{"name": "Silent Plains"}' -H "Content-Type: application/json" -X POST http://localhost:3000/api/v1/zones
+```
 
+```json
+{"id":4,"name":"Silent Plains"}
+```
 
 ### Update
 
@@ -39,11 +44,20 @@ Success returns the updated object as JSON:
 {"id":1,"elite":true,"level":13,"name":"Zirus the Bonewalker","named":true,"zone_id":2}
 ```
 
-Errors give you an errors hash formatted like this:
+### Errors
+
+Errors for create/update give you an errors hash formatted like this:
 
 ```json
 {"errors":{"name":["has already been taken"]}}
 ```
+
+### Nested Attributes (WIP)
+
+Supported nested attributes are currently:
+
+* `stats` on an `item`
+* `quest_objectives` on a `quest`
 
 Creating a nested attribute example:
 
