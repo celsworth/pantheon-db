@@ -56,8 +56,9 @@ class AddTables < ActiveRecord::Migration[7.1]
 
       t.string :text, null: false
 
+      t.references :monster
       t.references :item
-      t.integer :item_amount
+      t.integer :amount
 
       t.timestamps
     end
@@ -65,7 +66,7 @@ class AddTables < ActiveRecord::Migration[7.1]
     create_table :quests do |t|
       t.references :after_quest, foreign_key: { to_table: :quests }
 
-      t.references :giver, null: false, foreign_key: { to_table: :npcs }
+      t.references :giver, foreign_key: { to_table: :npcs }
       t.references :dropped_as, foreign_key: { to_table: :items }
 
       t.references :receiver, foreign_key: { to_table: :npcs }

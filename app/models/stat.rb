@@ -5,10 +5,11 @@ class Stat < ApplicationRecord
 
   STATS = %w[damage attack-power hit-rating
              spell-power spell-crit-chance
-             armor
+             health mana armor
              block-rating
              delay
              endurance
+             magic-resist
              strength stamina constitution agility dexterity intellect wisdom charisma].freeze
 
   validates :item, presence: true

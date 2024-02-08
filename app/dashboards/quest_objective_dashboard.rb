@@ -12,7 +12,8 @@ class QuestObjectiveDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     item: Field::BelongsTo,
-    item_amount: Field::Number,
+    monster: Field::BelongsTo,
+    amount: Field::Number,
     quest: Field::BelongsTo,
     text: Field::String,
     created_at: Field::DateTime,
@@ -27,7 +28,8 @@ class QuestObjectiveDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i[
     quest
     item
-    item_amount
+    monster
+    amount
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -36,7 +38,8 @@ class QuestObjectiveDashboard < Administrate::BaseDashboard
     quest
     text
     item
-    item_amount
+    monster
+    amount
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -46,7 +49,8 @@ class QuestObjectiveDashboard < Administrate::BaseDashboard
     quest
     text
     item
-    item_amount
+    monster
+    amount
   ].freeze
 
   # COLLECTION_FILTERS

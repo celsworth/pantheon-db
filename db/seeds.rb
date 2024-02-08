@@ -21,13 +21,18 @@ Item.create(monsters: [m], name: 'Spider Fangs', weight: 0.1, vendor_copper: 19,
 Item.create(monsters: [m], name: 'Spider Egg', weight: 0.2, vendor_copper: 23, category: 'general')
 Item.create(monsters: [m], name: 'Spider Legs', weight: 0.3, vendor_copper: 32, category: 'general')
 
+huntress = Npc.create(zone: tf, name: 'The Huntress')
+b = Monster.create(zone: tf, name: 'Bear', level: 10, named: true)
+bp = Item.create(monsters: [b], name: 'Bear Paw', weight: 0.1, category: 'general')
+q = Quest.create(text: 'todo', receiver: huntress, name: 'Bear Paw Quest', dropped_as: bp)
+
 z = Monster.create(zone: tf, name: 'Zirus the Bonewalker', elite: true, named: true, level: 13)
 Npc.create(zone: tf, name: 'The Scavenger')
 
-s = Item.create(monsters: [z], name: "Gnossa's Walking Stick", weight: 4.0, vendor_copper: 1750, category: 'weapon')
+s = Item.create(monsters: [z], name: "Gnossa's Walking Stick", weight: 4.0, vendor_copper: 1750,
+                category: 'stave-weapon')
 Stat.create(item: s, stat: 'intellect', amount: 1)
 Stat.create(item: s, stat: 'spell-crit-chance', amount: 2)
 Stat.create(item: s, stat: 'damage', amount: 22) # is this always physical?
 Stat.create(item: s, stat: 'delay', amount: 5.9)
-# stave weapon
 # two-handed quarter staff

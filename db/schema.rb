@@ -61,17 +61,19 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
   create_table "quest_objectives", force: :cascade do |t|
     t.bigint "quest_id", null: false
     t.string "text", null: false
+    t.bigint "monster_id"
     t.bigint "item_id"
-    t.integer "item_amount"
+    t.integer "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["item_id"], name: "index_quest_objectives_on_item_id"
+    t.index ["monster_id"], name: "index_quest_objectives_on_monster_id"
     t.index ["quest_id"], name: "index_quest_objectives_on_quest_id"
   end
 
   create_table "quests", force: :cascade do |t|
     t.bigint "after_quest_id"
-    t.bigint "giver_id", null: false
+    t.bigint "giver_id"
     t.bigint "dropped_as_id"
     t.bigint "receiver_id"
     t.string "name", null: false

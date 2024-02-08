@@ -11,7 +11,9 @@ class Item < ApplicationRecord
 
   CATEGORIES = %w[general schematic
                   potion ingredient food drink
-                  armour weapon shield held jewellery
+                  armour
+                  crushing-weapon stave-weapon spear-weapon
+                  shield held jewellery
                   reagent resource].freeze
   SLOTS = %w[head shoulders hands back chest waist legs feet ears fingers neck relic].freeze
   CLASSES = %w[cleric direlord druid enchanter monk paladin ranger rogue

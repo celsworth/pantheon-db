@@ -5,7 +5,7 @@ module Api
     class QuestsController < ApplicationController
       def index
         quests = Quest.includes(:after_quest, :giver, :receiver, :dropped_as,
-                                :reward_items, :quest_objectives).all
+                                :reward_items, quest_objectives: %i[monster item]).all
         render json: blueprint(quests)
       end
 
@@ -50,7 +50,7 @@ module Api
                       :after_quest_id, :giver_id, :receiver_id, :dropped_as_id,
                       :text,
                       :reward_xp, :reward_copper, :reward_standing,
-                      quest_objectives_attributes: %i[id quest_id item_id item_amount])
+                      quest_objectives_attributes: %i[id quest_id item_id monster_id amount])
       end
     end
   end
