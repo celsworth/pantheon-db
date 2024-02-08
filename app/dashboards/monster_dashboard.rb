@@ -38,6 +38,7 @@ class MonsterDashboard < Administrate::BaseDashboard
     level
     elite
     named
+    items
   ].freeze
 
   # FORM_ATTRIBUTES
