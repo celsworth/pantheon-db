@@ -8,4 +8,6 @@ class Stat < ApplicationRecord
   validates :item, presence: true
   validates :stat, presence: true, inclusion: { in: STATS }
   validates :amount, presence: true
+
+  validates :stat, uniqueness: { scope: :item_id }
 end
