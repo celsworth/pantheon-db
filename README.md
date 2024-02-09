@@ -109,28 +109,6 @@ Errors for create/update give you an errors hash formatted like this:
 {"errors":{"name":["has already been taken"]}}
 ```
 
-### Nested Attributes (WIP)
-
-*Probably being removed, ignore*
-
-Supported nested attributes are currently:
-
-* `quest_objectives` on a `quest`
-
-Creating a nested attribute example:
-
-```
-curl -d '{"stats_attributes": [{"stat": "endurance", "amount": 4}]}' -H "Content-Type: application/json" -X PUT http://localhost:3000/api/v1/items/1
-```
-
-Supply the existing id to update an existing stat:
-
-```
-curl -d '{"stats_attributes": [{"id":3, "stat": "endurance", "amount": 6}]}' -H "Content-Type: application/json" -X PUT http://localhost:3000/api/v1/items/1
-```
-
-Destroying nested attributes TBD.
-
 
 ### Delete
 
