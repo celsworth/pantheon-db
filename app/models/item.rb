@@ -10,13 +10,15 @@ class Item < ApplicationRecord
   has_one :starts_quest, class_name: 'Quest', inverse_of: :dropped_as
   belongs_to :reward_from_quest, class_name: 'Quest', optional: true, inverse_of: :reward_items
 
-  CATEGORIES = %w[general schematic
+  CATEGORIES = %w[general schematic container clickie scroll
                   potion ingredient food drink
-                  armour
-                  crushing-weapon stave-weapon spear-weapon
+                  cloth-armor leather-armor chain-armor plate-armor
+                  blade-weapon dagger-weapon stave-weapon spear-weapon
                   shield held jewellery
-                  reagent resource].freeze
+                  catalyst component material reagent resource].freeze
+
   SLOTS = %w[head shoulders hands back chest waist legs feet ears fingers neck relic].freeze
+
   CLASSES = %w[cleric direlord druid enchanter monk paladin ranger rogue
                shaman summoner warrior wizard].freeze
 
@@ -26,7 +28,7 @@ class Item < ApplicationRecord
              block-rating
              delay
              endurance
-             magic-resist
+             fire-resist cold-resist poison-resist chemical-resist nature-resist magic-resist
              strength stamina constitution agility dexterity intellect wisdom charisma].freeze
 
   validates :name, presence: true, uniqueness: true
@@ -41,6 +43,8 @@ class Item < ApplicationRecord
   def self.search(text)
     where('name LIKE ?', "%#{sanitize_sql_like(text)}%")
   end
+
+  private
 
   def stat_hash_valid
     unless stats.is_a?(Hash)
