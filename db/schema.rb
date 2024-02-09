@@ -21,6 +21,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.decimal "weight", null: false
     t.string "category"
     t.string "slot"
+    t.jsonb "stats", default: {}
     t.jsonb "classes", default: []
     t.jsonb "attrs", default: []
     t.integer "required_level"

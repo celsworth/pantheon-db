@@ -15,12 +15,12 @@ class ItemDashboard < Administrate::BaseDashboard
     starts_quest: Field::HasOne,
     reward_from_quest: Field::BelongsTo,
     name: Field::String,
-    stats: Field::HasMany,
     category: Field::Select.with_options(collection: Item::CATEGORIES, include_blank: 'none'),
     required_level: Field::Number,
     vendor_copper: Field::Number,
     weight: Field::Number,
     slot: Field::Select.with_options(collection: Item::SLOTS, include_blank: 'none'),
+    stats: Field::JSONB,
     classes: Field::JSONB,
     attrs: Field::JSONB,
     patch: Field::BelongsTo
@@ -50,13 +50,14 @@ class ItemDashboard < Administrate::BaseDashboard
     stats
     vendor_copper
     weight
-    classes
-    attrs
     required_level
     slot
     dropped_by
     starts_quest
     reward_from_quest
+    stats
+    classes
+    attrs
     patch
   ].freeze
 
@@ -70,13 +71,14 @@ class ItemDashboard < Administrate::BaseDashboard
     category
     stats
     vendor_copper
-    attrs
-    classes
     weight
     required_level
     slot
     dropped_by
     reward_from_quest
+    stats
+    classes
+    attrs
   ].freeze
 
   # COLLECTION_FILTERS

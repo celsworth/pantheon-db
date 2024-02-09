@@ -39,6 +39,7 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.string :category
       t.string :slot
 
+      t.jsonb :stats, default: {}
       t.jsonb :classes, default: []
       t.jsonb :attrs, default: []
 
@@ -49,17 +50,6 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.boolean :deathbound, null: false, default: false
       t.boolean :temporary, null: false, default: false
       t.boolean :magic, null: false, default: false
-
-      t.timestamps
-    end
-
-    create_table :stats do |t|
-      t.references :patch, null: false, index: true
-
-      t.references :item, null: false, index: true
-
-      t.string :stat, null: false, index: true
-      t.decimal :amount, null: false
 
       t.timestamps
     end

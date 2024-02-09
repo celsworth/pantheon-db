@@ -5,7 +5,6 @@ Rails.application.routes.draw do
     resources :zones
     resources :monsters
     resources :items
-    resources :stats
     resources :npcs
     resources :quests
     resources :quest_objectives

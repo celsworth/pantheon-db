@@ -22,7 +22,6 @@ class ItemBlueprint < Blueprinter::Base
     association :starts_quest, blueprint: QuestBlueprint, view: :name_only
 
     association :dropped_by, blueprint: MonsterBlueprint, view: :name_only
-    association :stats, blueprint: StatBlueprint, view: :full
 
     association :patch, blueprint: PatchBlueprint
   end
