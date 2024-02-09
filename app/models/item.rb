@@ -3,7 +3,7 @@
 class Item < ApplicationRecord
   has_paper_trail
 
-  has_and_belongs_to_many :monsters
+  has_and_belongs_to_many :dropped_by, class_name: 'Monster'
   has_one :starts_quest, class_name: 'Quest', inverse_of: :dropped_as
   belongs_to :reward_from_quest, class_name: 'Quest', optional: true, inverse_of: :reward_items
 

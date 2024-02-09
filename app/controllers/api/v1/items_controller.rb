@@ -44,7 +44,7 @@ module Api
       def assign
         # assign an item_id to a monster_id
         monster = Monster.find(params[:monster_id])
-        item.monsters << monster unless item.monsters.include?(monster)
+        item.dropped_by << monster unless item.dropped_by.include?(monster)
 
         head 204
       end
@@ -52,7 +52,7 @@ module Api
       def unassign
         # remove an item_id from a monster_id
         monster = Monster.find(params[:monster_id])
-        item.monsters -= [monster]
+        item.dropped_by -= [monster]
 
         head 204
       end

@@ -20,7 +20,7 @@ class ItemBlueprint < Blueprinter::Base
     association :reward_from_quest, blueprint: QuestBlueprint, view: :name_only
     association :starts_quest, blueprint: QuestBlueprint, view: :name_only
 
-    association :monsters, blueprint: MonsterBlueprint, view: :name_only
+    association :dropped_by, blueprint: MonsterBlueprint, view: :name_only
     association :stats, blueprint: StatBlueprint, view: :full
   end
 end
