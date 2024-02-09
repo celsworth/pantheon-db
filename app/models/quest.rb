@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Quest < ApplicationRecord
+  has_paper_trail
+
   belongs_to :after_quest, class_name: 'Quest', optional: true, inverse_of: :successive_quests
 
   belongs_to :giver, class_name: 'Npc', optional: true

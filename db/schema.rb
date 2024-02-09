@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -98,6 +98,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_07_093611) do
     t.datetime "updated_at", null: false
     t.index ["item_id"], name: "index_stats_on_item_id"
     t.index ["stat"], name: "index_stats_on_stat"
+  end
+
+  create_table "versions", force: :cascade do |t|
+    t.string "item_type", null: false
+    t.bigint "item_id", null: false
+    t.string "event", null: false
+    t.string "whodunnit"
+    t.text "object"
+    t.datetime "created_at"
+    t.text "object_changes"
+    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
   create_table "zones", force: :cascade do |t|

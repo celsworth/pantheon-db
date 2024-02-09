@@ -28,5 +28,9 @@ module PantheonDb
     #
     config.hosts << 'yrk.cae.me.uk:3000'
     config.hosts << 'localhost:3000'
+
+    # fix Tried to load unspecified class: ActiveSupport::TimeWithZone (Psych::DisallowedClass)
+    config.active_record.yaml_column_permitted_classes =
+      [Symbol, Date, Time, ActiveSupport::TimeWithZone, ActiveSupport::TimeZone]
   end
 end

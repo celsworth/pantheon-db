@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Stat < ApplicationRecord
+  has_paper_trail
+
   belongs_to :item, inverse_of: :stats
 
   STATS = %w[damage attack-power hit-rating
