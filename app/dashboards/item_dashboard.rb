@@ -17,6 +17,7 @@ class ItemDashboard < Administrate::BaseDashboard
     name: Field::String,
     stats: Field::HasMany,
     category: Field::Select.with_options(collection: Item::CATEGORIES, include_blank: 'none'),
+    required_level: Field::Number,
     vendor_copper: Field::Number,
     weight: Field::Number,
     classes: Field::String,
@@ -54,6 +55,7 @@ class ItemDashboard < Administrate::BaseDashboard
     vendor_copper
     weight
     classes
+    required_level
     slot
     no_trade
     lifebound
@@ -77,6 +79,7 @@ class ItemDashboard < Administrate::BaseDashboard
     stats
     vendor_copper
     weight
+    required_level
     slot
     no_trade
     lifebound

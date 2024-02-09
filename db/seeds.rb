@@ -31,14 +31,25 @@ i = Item.create(dropped_by: [m], name: 'Bear Paw', weight: 0.1, category: 'gener
 Quest.create(text: 'todo', receiver: huntress, name: 'Bear Paw Quest', dropped_as: i)
 
 m = Monster.create(zone: tf, name: 'a jacked rabbit', level: 10, named: true)
-i = Item.create(dropped_by: [m], name: 'Tarnished Band', weight: 0.1, category: 'jewellery', slot: 'fingers')
+i = Item.create(dropped_by: [m], name: 'Tarnished Band', weight: 0.1, category: 'jewellery', slot: 'fingers',
+                magic: true)
 Stat.create(item: i, stat: 'agility', amount: 2)
 
 m = Monster.create(zone: tf, name: 'Zirus the Bonewalker', elite: true, named: true, level: 13)
-i = Item.create(dropped_by: [m], name: "Gnossa's Walking Stick", weight: 4.0, vendor_copper: 1750,
-                category: 'stave-weapon')
+i = Item.create(dropped_by: [m], name: "Gnossa's Walking Stick",
+                weight: 4.0, vendor_copper: 1750,
+                category: 'stave-weapon', magic: true)
 Stat.create(item: i, stat: 'intellect', amount: 1)
 Stat.create(item: i, stat: 'spell-crit-chance', amount: 2)
 Stat.create(item: i, stat: 'damage', amount: 22) # is this always physical?
 Stat.create(item: i, stat: 'delay', amount: 5.9)
 # two-handed quarter staff
+#
+i = Item.create(name: 'Tattered Pelt', weight: 0.8, category: 'resource')
+
+i = Item.create(name: 'Blood-Soaked Shield', weight: 6.5, category: 'shield',
+                magic: true, required_level: 6,
+                classes: %w[warrior cleric paladin ranger shaman])
+Stat.create(item: i, stat: 'armor', amount: 4)
+Stat.create(item: i, stat: 'block-rating', amount: 155)
+Stat.create(item: i, stat: 'stamina', amount: 1)

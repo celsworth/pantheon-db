@@ -40,6 +40,8 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.string :classes, array: true, default: []
       t.string :slot
 
+      t.integer :required_level
+
       t.boolean :no_trade, null: false, default: false
       t.boolean :lifebound, null: false, default: false
       t.boolean :deathbound, null: false, default: false
