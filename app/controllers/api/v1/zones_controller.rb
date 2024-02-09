@@ -7,6 +7,12 @@ module Api
         render json: blueprint(Zone.all)
       end
 
+      def history
+        # unversioned_attributes: :nil or :preserve could be useful for diffs
+        versions = zone.versions.map { |o| o.reify(dup: true) }.compact
+        render json: blueprint(versions) # view: :fields_only # no associations
+      end
+
       def show
         render json: blueprint(zone)
       end

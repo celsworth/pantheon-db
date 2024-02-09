@@ -15,7 +15,11 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :zones
+      resources :zones do
+        member do
+          get :history
+        end
+      end
       resources :monsters
       resources :items do
         member do
