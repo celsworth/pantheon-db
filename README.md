@@ -14,8 +14,6 @@ Simple REST API at /api/v1/
 
 Currently implemented resources are items, monsters, npcs, quest_objectives, quests, zones.
 
-stats don't have a controller, use nested attributes (example below). Considering removing quest_objectives controller but we'll see how it goes.
-
 No auth yet, this will change :)
 
 ### Get all Zones (or any resource)
