@@ -70,8 +70,7 @@ module Api
       def item_params
         params.permit(:reward_from_quest_id, :name, :category, :vendor_copper, :weight, :slot,
                       :required_level,
-                      :no_trade, :lifebound, :deathbound, :temporary, :magic,
-                      classes: [],
+                      classes: [], attrs: [],
                       stats_attributes: %i[id stat amount])
       end
     end
