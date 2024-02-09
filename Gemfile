@@ -3,6 +3,7 @@
 source 'https://rubygems.org'
 
 gem 'administrate'
+gem 'administrate-field-jsonb'
 gem 'ar_lazy_preload'
 gem 'blueprinter'
 gem 'paper_trail'

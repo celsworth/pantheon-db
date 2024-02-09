@@ -20,13 +20,9 @@ class ItemDashboard < Administrate::BaseDashboard
     required_level: Field::Number,
     vendor_copper: Field::Number,
     weight: Field::Number,
-    classes: Field::String,
     slot: Field::Select.with_options(collection: Item::SLOTS, include_blank: 'none'),
-    no_trade: Field::Boolean,
-    lifebound: Field::Boolean,
-    deathbound: Field::Boolean,
-    temporary: Field::Boolean,
-    magic: Field::Boolean,
+    classes: Field::JSONB,
+    attrs: Field::JSONB,
     patch: Field::BelongsTo
   }.freeze
 
@@ -55,13 +51,9 @@ class ItemDashboard < Administrate::BaseDashboard
     vendor_copper
     weight
     classes
+    attrs
     required_level
     slot
-    no_trade
-    lifebound
-    deathbound
-    temporary
-    magic
     dropped_by
     starts_quest
     reward_from_quest
@@ -78,14 +70,11 @@ class ItemDashboard < Administrate::BaseDashboard
     category
     stats
     vendor_copper
+    attrs
+    classes
     weight
     required_level
     slot
-    no_trade
-    lifebound
-    deathbound
-    temporary
-    magic
     dropped_by
     reward_from_quest
   ].freeze

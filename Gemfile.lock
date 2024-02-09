@@ -83,6 +83,9 @@ GEM
       kaminari (~> 1.2.2)
       sassc-rails (~> 2.1)
       selectize-rails (~> 0.6)
+    administrate-field-jsonb (0.4.6)
+      administrate (< 1.0.0)
+      rails (>= 4.2)
     ar_lazy_preload (2.0.0)
     ast (2.4.2)
     base64 (0.2.0)
@@ -267,6 +270,7 @@ PLATFORMS
 
 DEPENDENCIES
   administrate
+  administrate-field-jsonb
   ar_lazy_preload
   blueprinter
   bootsnap

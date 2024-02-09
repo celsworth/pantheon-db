@@ -14,7 +14,7 @@ class ItemBlueprint < Blueprinter::Base
            :required_level,
            :no_trade, :lifebound, :deathbound, :temporary, :magic,
            :classes,
-           :stats
+           :attrs, :stats
 
     fields :created_at, :updated_at
 

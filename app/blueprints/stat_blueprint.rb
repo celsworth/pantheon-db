@@ -8,8 +8,7 @@ class StatBlueprint < Blueprinter::Base
 
     fields :created_at, :updated_at
 
-    association :item, blueprint: ItemBlueprint, view: :name_only
-
-    association :patch, blueprint: PatchBlueprint
+    # association :item, blueprint: ItemBlueprint, view: :name_only
+    # association :patch, blueprint: PatchBlueprint
   end
 end

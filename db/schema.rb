@@ -20,8 +20,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.integer "vendor_copper"
     t.decimal "weight", null: false
     t.string "category"
-    t.string "classes", default: [], array: true
     t.string "slot"
+    t.jsonb "classes", default: []
+    t.jsonb "attrs", default: []
     t.integer "required_level"
     t.boolean "no_trade", default: false, null: false
     t.boolean "lifebound", default: false, null: false
