@@ -80,8 +80,10 @@ module Api
 
       def search_params
         params.permit(
-          :name, :class,
+          :name, :category, :class, :slot,
           attrs: [],
+          weight: %i[operator value],
+          required_level: %i[operator value],
           stats: %i[stat operator value]
         )
       end

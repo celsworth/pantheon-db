@@ -22,7 +22,8 @@ Given a data.json input like this:
 
 ```json
 {
-  "name": "shield",
+  "name": "blood",
+  "category": "shield",
   "stats": [
     {
       "stat": "armor",
@@ -30,6 +31,10 @@ Given a data.json input like this:
       "value": 3
     }
   ],
+  "required_level": {
+    "operator": ">",
+    "value": 5
+  },
   "attrs": [
     "magic"
   ],
@@ -46,6 +51,31 @@ curl -H "Content-Type: application/json" -X POST -d @data.json http://localhost:
 Which will return matching items (a Blood-soaked Shield from the sample data)
 
 You can filter on multiple stats and multiple attrs, items that match them all will be returned. Valid operators are `>`, `<`, `>=`, `<=`, `=`.
+
+Other filters possible are `required_level`, `weight`, like iin this tenuous example:
+
+```json
+{
+  "required_level": [
+    {
+      "operator": ">",
+      "value": 3
+    },
+  ],
+  "weight": [
+    {
+      "operator": ">",
+      "value": 3
+    },
+    {
+      "operator": "<=",
+      "value": 4
+    }
+  ]
+}
+```
+
+Note they're arrays so you can specify > and < for a range.
 
 
 ### Get all Zones (or any resource)
