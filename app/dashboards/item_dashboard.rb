@@ -37,7 +37,6 @@ class ItemDashboard < Administrate::BaseDashboard
     vendor_copper
     weight
     slot
-    dropped_by
     starts_quest
   ].freeze
 
