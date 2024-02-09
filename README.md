@@ -16,6 +16,38 @@ Currently implemented resources are items, monsters, npcs, quest_objectives, que
 
 No auth yet, this will change :)
 
+### Search Items
+
+Given a data.json input like this:
+
+```json
+{
+  "name": "shield",
+  "stats": [
+    {
+      "stat": "armor",
+      "operator": ">",
+      "value": 3
+    }
+  ],
+  "attrs": [
+    "magic"
+  ],
+  "class": "shaman"
+}
+```
+
+You can POST it with curl like this:
+
+```
+curl -H "Content-Type: application/json" -X POST -d @data.json http://localhost:3000/api/v1/items/search
+```
+
+Which will return matching items (a Blood-soaked Shield from the sample data)
+
+You can filter on multiple stats and multiple attrs, items that match them all will be returned. Valid operators are `>`, `<`, `>=`, `<=`, `=`.
+
+
 ### Get all Zones (or any resource)
 
 ```

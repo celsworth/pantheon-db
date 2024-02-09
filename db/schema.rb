@@ -33,9 +33,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "reward_from_quest_id"
+    t.index ["attrs"], name: "index_items_on_attrs"
+    t.index ["classes"], name: "index_items_on_classes"
     t.index ["name"], name: "index_items_on_name", unique: true
     t.index ["patch_id"], name: "index_items_on_patch_id"
     t.index ["reward_from_quest_id"], name: "index_items_on_reward_from_quest_id"
+    t.index ["stats"], name: "index_items_on_stats"
   end
 
   create_table "items_monsters", id: false, force: :cascade do |t|
@@ -111,18 +114,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.index ["patch_id"], name: "index_quests_on_patch_id"
     t.index ["prereq_quest_id"], name: "index_quests_on_prereq_quest_id"
     t.index ["receiver_id"], name: "index_quests_on_receiver_id"
-  end
-
-  create_table "stats", force: :cascade do |t|
-    t.bigint "patch_id", null: false
-    t.bigint "item_id", null: false
-    t.string "stat", null: false
-    t.decimal "amount", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["item_id"], name: "index_stats_on_item_id"
-    t.index ["patch_id"], name: "index_stats_on_patch_id"
-    t.index ["stat"], name: "index_stats_on_stat"
   end
 
   create_table "versions", force: :cascade do |t|

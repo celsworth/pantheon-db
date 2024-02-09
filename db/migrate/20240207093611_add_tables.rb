@@ -39,9 +39,9 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.string :category
       t.string :slot
 
-      t.jsonb :stats, default: {}
-      t.jsonb :classes, default: []
-      t.jsonb :attrs, default: []
+      t.jsonb :stats, default: {}, index: :gin
+      t.jsonb :classes, default: [], index: :gin
+      t.jsonb :attrs, default: [], index: :gin
 
       t.integer :required_level
 

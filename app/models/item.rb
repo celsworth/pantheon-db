@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Item < ApplicationRecord
+  InvalidOperator = Class.new(StandardError)
+
   has_paper_trail
 
   belongs_to :patch
@@ -40,8 +42,36 @@ class Item < ApplicationRecord
 
   validate :stat_hash_valid
 
-  def self.search(text)
-    where('name LIKE ?', "%#{sanitize_sql_like(text)}%")
+  class << self
+    # Item.search(name: 'shield', klass: 'shaman', stats: [{ stat: 'armor', operator: '>', value: 3}], attrs: ['magic'])
+    def search(name: nil, klass: nil, attrs: [], stats: [])
+      q = self
+
+      q = q.where(id: for_class(klass)) if klass
+      stats.each { |stat| q = q.where(id: with_stat(**stat)) }
+      attrs.each { |attr| q = q.where(id: with_attr(attr)) }
+      q = q.where(id: with_name(name)) if name
+
+      q
+    end
+
+    def with_name(name)
+      where('name ILIKE ?', "%#{sanitize_sql_like(name)}%") if name
+    end
+
+    def with_stat(stat:, operator:, value:)
+      raise InvalidOperator unless ['>=', '>', '<=', '<', '='].include?(operator)
+
+      where("(stats->>?)::decimal #{operator} ?", stat, value)
+    end
+
+    def with_attr(attr)
+      where('attrs @> ?', "[#{attr.to_json}]")
+    end
+
+    def for_class(klass)
+      where('classes @> ?', "[#{klass.to_json}]")
+    end
   end
 
   private

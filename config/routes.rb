@@ -21,6 +21,9 @@ Rails.application.routes.draw do
       end
       resources :monsters
       resources :items do
+        collection do
+          post :search
+        end
         member do
           post :assign
           post :unassign

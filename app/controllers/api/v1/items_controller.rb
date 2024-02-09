@@ -3,7 +3,12 @@
 module Api
   module V1
     class ItemsController < ApplicationController
-      def search; end
+      def search
+        params = search_params.to_unsafe_hash.deep_symbolize_keys
+        params[:klass] = params.delete(:class) # rename param for method
+        items = Item.search(**params).all
+        render json: blueprint(items)
+      end
 
       def index
         # experimenting with very short term caching
@@ -71,6 +76,14 @@ module Api
         params.permit(:reward_from_quest_id, :name, :category, :vendor_copper, :weight, :slot,
                       :required_level,
                       classes: [], attrs: [], stats: {})
+      end
+
+      def search_params
+        params.permit(
+          :name, :class,
+          attrs: [],
+          stats: %i[stat operator value]
+        )
       end
     end
   end
