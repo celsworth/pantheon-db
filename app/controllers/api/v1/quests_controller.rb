@@ -46,7 +46,7 @@ module Api
 
       def quest_params
         params.permit(:name,
-                      :after_quest_id, :giver_id, :receiver_id, :dropped_as_id,
+                      :prereq_quest_id, :giver_id, :receiver_id, :dropped_as_id,
                       :text,
                       :reward_xp, :reward_copper, :reward_standing,
                       quest_objectives_attributes: %i[id quest_id item_id monster_id amount])

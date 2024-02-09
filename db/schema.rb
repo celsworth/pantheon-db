@@ -72,7 +72,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
   end
 
   create_table "quests", force: :cascade do |t|
-    t.bigint "after_quest_id"
+    t.bigint "prereq_quest_id"
     t.bigint "giver_id"
     t.bigint "dropped_as_id"
     t.bigint "receiver_id"
@@ -83,10 +83,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.decimal "reward_standing", default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["after_quest_id"], name: "index_quests_on_after_quest_id"
     t.index ["dropped_as_id"], name: "index_quests_on_dropped_as_id"
     t.index ["giver_id"], name: "index_quests_on_giver_id"
     t.index ["name"], name: "index_quests_on_name", unique: true
+    t.index ["prereq_quest_id"], name: "index_quests_on_prereq_quest_id"
     t.index ["receiver_id"], name: "index_quests_on_receiver_id"
   end
 
@@ -122,5 +122,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
   add_foreign_key "quests", "items", column: "dropped_as_id"
   add_foreign_key "quests", "npcs", column: "giver_id"
   add_foreign_key "quests", "npcs", column: "receiver_id"
-  add_foreign_key "quests", "quests", column: "after_quest_id"
+  add_foreign_key "quests", "quests", column: "prereq_quest_id"
 end

@@ -14,7 +14,7 @@ class QuestBlueprint < Blueprinter::Base
 
     association :reward_items, blueprint: ItemBlueprint, view: :name_only
 
-    association :after_quest, blueprint: QuestBlueprint, view: :name_only
+    association :prereq_quest, blueprint: QuestBlueprint, view: :name_only
     association :giver, blueprint: NpcBlueprint, view: :name_only
     association :receiver, blueprint: NpcBlueprint, view: :name_only
     association :dropped_as, blueprint: ItemBlueprint, view: :name_only
