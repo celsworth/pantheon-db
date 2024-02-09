@@ -12,9 +12,7 @@ class ItemBlueprint < Blueprinter::Base
 
     fields :category, :vendor_copper, :weight, :slot,
            :required_level,
-           :no_trade, :lifebound, :deathbound, :temporary, :magic,
-           :classes,
-           :attrs, :stats
+           :classes, :attrs, :stats
 
     fields :created_at, :updated_at
 
