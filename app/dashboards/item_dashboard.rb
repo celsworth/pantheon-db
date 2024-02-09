@@ -47,7 +47,6 @@ class ItemDashboard < Administrate::BaseDashboard
   SHOW_PAGE_ATTRIBUTES = %i[
     name
     category
-    stats
     vendor_copper
     weight
     required_level
@@ -69,7 +68,6 @@ class ItemDashboard < Administrate::BaseDashboard
   FORM_ATTRIBUTES = %i[
     name
     category
-    stats
     vendor_copper
     weight
     required_level
