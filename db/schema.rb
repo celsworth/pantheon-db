@@ -22,7 +22,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.string "classes", default: [], array: true
     t.string "slot"
     t.boolean "no_trade", default: false, null: false
-    t.boolean "soulbound", default: false, null: false
+    t.boolean "lifebound", default: false, null: false
+    t.boolean "deathbound", default: false, null: false
+    t.boolean "temporary", default: false, null: false
+    t.boolean "magic", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "reward_from_quest_id"

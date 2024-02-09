@@ -29,7 +29,10 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.string :slot
 
       t.boolean :no_trade, null: false, default: false
-      t.boolean :soulbound, null: false, default: false
+      t.boolean :lifebound, null: false, default: false
+      t.boolean :deathbound, null: false, default: false
+      t.boolean :temporary, null: false, default: false
+      t.boolean :magic, null: false, default: false
 
       t.timestamps
     end

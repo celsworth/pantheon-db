@@ -11,7 +11,7 @@ class ItemBlueprint < Blueprinter::Base
     include_view :name_only
 
     fields :category, :vendor_copper, :weight, :slot,
-           :no_trade, :soulbound,
+           :no_trade, :lifebound, :deathbound, :temporary, :magic,
            :classes,
            :stats
 

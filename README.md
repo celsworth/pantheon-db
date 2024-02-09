@@ -70,7 +70,7 @@ The exceptions are the nested attributes mentioned above, so if an item has stat
     "no_trade": false,
     "quest": null,
     "slot": null,
-    "soulbound": false,
+    "lifebound": false,
     "stats": [
         {
             "id": 1,

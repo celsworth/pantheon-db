@@ -22,7 +22,10 @@ class ItemDashboard < Administrate::BaseDashboard
     classes: Field::String,
     slot: Field::Select.with_options(collection: Item::SLOTS, include_blank: 'none'),
     no_trade: Field::Boolean,
-    soulbound: Field::Boolean
+    lifebound: Field::Boolean,
+    deathbound: Field::Boolean,
+    temporary: Field::Boolean,
+    magic: Field::Boolean
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -51,7 +54,10 @@ class ItemDashboard < Administrate::BaseDashboard
     classes
     slot
     no_trade
-    soulbound
+    lifebound
+    deathbound
+    temporary
+    magic
     dropped_by
     starts_quest
     reward_from_quest
@@ -70,7 +76,10 @@ class ItemDashboard < Administrate::BaseDashboard
     weight
     slot
     no_trade
-    soulbound
+    lifebound
+    deathbound
+    temporary
+    magic
     dropped_by
     reward_from_quest
   ].freeze
