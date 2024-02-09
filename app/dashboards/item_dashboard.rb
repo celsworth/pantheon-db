@@ -34,7 +34,6 @@ class ItemDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i[
     name
     category
-    stats
     vendor_copper
     weight
     slot
