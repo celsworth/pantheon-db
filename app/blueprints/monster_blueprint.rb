@@ -13,7 +13,7 @@ class MonsterBlueprint < Blueprinter::Base
 
     fields :created_at, :updated_at
 
-    association :items, blueprint: ItemBlueprint, view: :name_only
+    association :drops, blueprint: ItemBlueprint, view: :name_only
     association :zone, blueprint: ZoneBlueprint, view: :name_only
   end
 end

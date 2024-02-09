@@ -12,7 +12,7 @@ class MonsterDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     zone: Field::BelongsTo,
-    items: Field::HasMany,
+    drops: Field::HasMany,
     level: Field::Number,
     name: Field::String,
     elite: Field::Boolean,
@@ -40,7 +40,7 @@ class MonsterDashboard < Administrate::BaseDashboard
     level
     elite
     named
-    items
+    drops
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -52,7 +52,7 @@ class MonsterDashboard < Administrate::BaseDashboard
     level
     elite
     named
-    items
+    drops
   ].freeze
 
   # COLLECTION_FILTERS
