@@ -25,7 +25,8 @@ class ItemDashboard < Administrate::BaseDashboard
     lifebound: Field::Boolean,
     deathbound: Field::Boolean,
     temporary: Field::Boolean,
-    magic: Field::Boolean
+    magic: Field::Boolean,
+    patch: Field::BelongsTo
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -41,6 +42,7 @@ class ItemDashboard < Administrate::BaseDashboard
     weight
     slot
     starts_quest
+    patch
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -61,6 +63,7 @@ class ItemDashboard < Administrate::BaseDashboard
     dropped_by
     starts_quest
     reward_from_quest
+    patch
   ].freeze
 
   # FORM_ATTRIBUTES

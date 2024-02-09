@@ -11,5 +11,7 @@ class ZoneBlueprint < Blueprinter::Base
     include_view :name_only
 
     fields :created_at, :updated_at
+
+    association :patch, blueprint: PatchBlueprint
   end
 end

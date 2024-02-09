@@ -3,6 +3,9 @@
 class Stat < ApplicationRecord
   has_paper_trail
 
+  belongs_to :patch
+  before_validation { self.patch = Patch.current }
+
   belongs_to :item, inverse_of: :stats
 
   STATS = %w[damage attack-power hit-rating

@@ -3,6 +3,9 @@
 class Zone < ApplicationRecord
   has_paper_trail
 
+  belongs_to :patch
+  before_validation { self.patch = Patch.current }
+
   has_many :monsters
   has_many :npcs
 

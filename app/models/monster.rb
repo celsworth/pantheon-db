@@ -3,6 +3,9 @@
 class Monster < ApplicationRecord
   has_paper_trail
 
+  belongs_to :patch
+  before_validation { self.patch = Patch.current }
+
   belongs_to :zone
 
   has_and_belongs_to_many :drops, class_name: 'Item'

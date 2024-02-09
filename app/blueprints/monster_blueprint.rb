@@ -15,5 +15,7 @@ class MonsterBlueprint < Blueprinter::Base
 
     association :drops, blueprint: ItemBlueprint, view: :name_only
     association :zone, blueprint: ZoneBlueprint, view: :name_only
+
+    association :patch, blueprint: PatchBlueprint
   end
 end

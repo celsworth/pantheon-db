@@ -10,5 +10,7 @@ class QuestObjectiveBlueprint < Blueprinter::Base
 
     association :item, blueprint: ItemBlueprint, view: :name_only
     association :monster, blueprint: MonsterBlueprint, view: :name_only
+
+    association :patch, blueprint: PatchBlueprint
   end
 end

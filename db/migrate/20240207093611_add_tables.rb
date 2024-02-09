@@ -2,13 +2,23 @@
 
 class AddTables < ActiveRecord::Migration[7.1]
   def change
+    create_table :patches do |t|
+      t.string :version, null: false, index: { unique: true }
+
+      t.timestamps
+    end
+
     create_table :zones do |t|
+      t.references :patch, null: false, index: true
+
       t.string :name, null: false, index: { unique: true }
 
       t.timestamps
     end
 
     create_table :monsters do |t|
+      t.references :patch, null: false, index: true
+
       t.references :zone, null: false, index: true
 
       t.string :name, null: false, index: { unique: true }
@@ -20,6 +30,8 @@ class AddTables < ActiveRecord::Migration[7.1]
     end
 
     create_table :items do |t|
+      t.references :patch, null: false, index: true
+
       t.string :name, null: false, index: { unique: true }
       t.integer :vendor_copper
       t.decimal :weight, null: false
@@ -38,7 +50,9 @@ class AddTables < ActiveRecord::Migration[7.1]
     end
 
     create_table :stats do |t|
-      t.references :item, index: true
+      t.references :patch, null: false, index: true
+
+      t.references :item, null: false, index: true
 
       t.string :stat, null: false, index: true
       t.decimal :amount, null: false
@@ -47,6 +61,8 @@ class AddTables < ActiveRecord::Migration[7.1]
     end
 
     create_table :npcs do |t|
+      t.references :patch, null: false, index: true
+
       t.references :zone, null: false, index: true
 
       t.string :name, null: false, index: { unique: true }
@@ -55,6 +71,8 @@ class AddTables < ActiveRecord::Migration[7.1]
     end
 
     create_table :quest_objectives do |t|
+      t.references :patch, null: false, index: true
+
       t.references :quest, null: false, index: true
 
       t.references :monster
@@ -67,6 +85,8 @@ class AddTables < ActiveRecord::Migration[7.1]
     end
 
     create_table :quests do |t|
+      t.references :patch, null: false, index: true
+
       t.references :prereq_quest, foreign_key: { to_table: :quests }
 
       t.references :giver, foreign_key: { to_table: :npcs }

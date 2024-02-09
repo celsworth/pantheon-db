@@ -3,6 +3,9 @@
 class Quest < ApplicationRecord
   has_paper_trail
 
+  belongs_to :patch
+  before_validation { self.patch = Patch.current }
+
   belongs_to :prereq_quest, class_name: 'Quest', optional: true, inverse_of: :successive_quests
 
   belongs_to :giver, class_name: 'Npc', optional: true
@@ -10,7 +13,7 @@ class Quest < ApplicationRecord
   # if set, this quest starts with this dropped item
   belongs_to :dropped_as, class_name: 'Item', optional: true, inverse_of: :starts_quest
 
-  # TODO validation of either dropped_as or giver?
+  # TODO: validation of either dropped_as or giver?
 
   has_many :quest_objectives, inverse_of: :quest
   has_many :reward_items, class_name: 'Item', inverse_of: :reward_from_quest

@@ -21,7 +21,8 @@ class QuestDashboard < Administrate::BaseDashboard
     reward_xp: Field::Number,
     reward_copper: Field::Number,
     reward_standing: Field::Number,
-    reward_items: Field::HasMany
+    reward_items: Field::HasMany,
+    patch: Field::BelongsTo
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -35,6 +36,7 @@ class QuestDashboard < Administrate::BaseDashboard
     receiver
     text
     quest_objectives
+    patch
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -51,6 +53,7 @@ class QuestDashboard < Administrate::BaseDashboard
     reward_copper
     reward_standing
     reward_items
+    patch
   ].freeze
 
   # FORM_ATTRIBUTES

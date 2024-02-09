@@ -12,6 +12,8 @@
 #
 return if Zone.any?
 
+Patch.create(version: '0.13.85')
+
 tf = Zone.create(name: 'Thronefast')
 Zone.create(name: "Avendyr's Pass")
 

@@ -13,5 +13,7 @@ class NpcBlueprint < Blueprinter::Base
     fields :created_at, :updated_at
 
     association :zone, blueprint: ZoneBlueprint, view: :name_only
+
+    association :patch, blueprint: PatchBlueprint
   end
 end

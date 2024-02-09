@@ -3,6 +3,9 @@
 class Npc < ApplicationRecord
   has_paper_trail
 
+  belongs_to :patch
+  before_validation { self.patch = Patch.current }
+
   belongs_to :zone
 
   has_many :quests_given, class_name: 'Quest', foreign_key: :giver_id

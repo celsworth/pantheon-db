@@ -14,7 +14,8 @@ class NpcDashboard < Administrate::BaseDashboard
     name: Field::String,
     zone: Field::BelongsTo,
     quests_given: Field::HasMany,
-    quests_received: Field::HasMany
+    quests_received: Field::HasMany,
+    patch: Field::BelongsTo
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -27,6 +28,7 @@ class NpcDashboard < Administrate::BaseDashboard
     zone
     quests_given
     quests_received
+    patch
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -36,6 +38,7 @@ class NpcDashboard < Administrate::BaseDashboard
     zone
     quests_given
     quests_received
+    patch
   ].freeze
 
   # FORM_ATTRIBUTES

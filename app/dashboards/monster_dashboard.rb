@@ -16,7 +16,8 @@ class MonsterDashboard < Administrate::BaseDashboard
     level: Field::Number,
     name: Field::String,
     elite: Field::Boolean,
-    named: Field::Boolean
+    named: Field::Boolean,
+    patch: Field::BelongsTo
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -30,6 +31,7 @@ class MonsterDashboard < Administrate::BaseDashboard
     level
     elite
     named
+    patch
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -41,6 +43,7 @@ class MonsterDashboard < Administrate::BaseDashboard
     elite
     named
     drops
+    patch
   ].freeze
 
   # FORM_ATTRIBUTES

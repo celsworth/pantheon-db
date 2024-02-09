@@ -13,7 +13,8 @@ class ZoneDashboard < Administrate::BaseDashboard
     id: Field::Number,
     name: Field::String,
     monsters: Field::HasMany,
-    npcs: Field::HasMany
+    npcs: Field::HasMany,
+    patch: Field::BelongsTo
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -25,6 +26,7 @@ class ZoneDashboard < Administrate::BaseDashboard
     name
     monsters
     npcs
+    patch
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -33,6 +35,7 @@ class ZoneDashboard < Administrate::BaseDashboard
     name
     monsters
     npcs
+    patch
   ].freeze
 
   # FORM_ATTRIBUTES

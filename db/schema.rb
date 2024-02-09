@@ -15,6 +15,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
   enable_extension "plpgsql"
 
   create_table "items", force: :cascade do |t|
+    t.bigint "patch_id", null: false
     t.string "name", null: false
     t.integer "vendor_copper"
     t.decimal "weight", null: false
@@ -30,6 +31,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.datetime "updated_at", null: false
     t.bigint "reward_from_quest_id"
     t.index ["name"], name: "index_items_on_name", unique: true
+    t.index ["patch_id"], name: "index_items_on_patch_id"
     t.index ["reward_from_quest_id"], name: "index_items_on_reward_from_quest_id"
   end
 
@@ -41,6 +43,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
   end
 
   create_table "monsters", force: :cascade do |t|
+    t.bigint "patch_id", null: false
     t.bigint "zone_id", null: false
     t.string "name", null: false
     t.integer "level", null: false
@@ -49,19 +52,30 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_monsters_on_name", unique: true
+    t.index ["patch_id"], name: "index_monsters_on_patch_id"
     t.index ["zone_id"], name: "index_monsters_on_zone_id"
   end
 
   create_table "npcs", force: :cascade do |t|
+    t.bigint "patch_id", null: false
     t.bigint "zone_id", null: false
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_npcs_on_name", unique: true
+    t.index ["patch_id"], name: "index_npcs_on_patch_id"
     t.index ["zone_id"], name: "index_npcs_on_zone_id"
   end
 
+  create_table "patches", force: :cascade do |t|
+    t.string "version", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["version"], name: "index_patches_on_version", unique: true
+  end
+
   create_table "quest_objectives", force: :cascade do |t|
+    t.bigint "patch_id", null: false
     t.bigint "quest_id", null: false
     t.bigint "monster_id"
     t.bigint "item_id"
@@ -71,10 +85,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.datetime "updated_at", null: false
     t.index ["item_id"], name: "index_quest_objectives_on_item_id"
     t.index ["monster_id"], name: "index_quest_objectives_on_monster_id"
+    t.index ["patch_id"], name: "index_quest_objectives_on_patch_id"
     t.index ["quest_id"], name: "index_quest_objectives_on_quest_id"
   end
 
   create_table "quests", force: :cascade do |t|
+    t.bigint "patch_id", null: false
     t.bigint "prereq_quest_id"
     t.bigint "giver_id"
     t.bigint "dropped_as_id"
@@ -89,17 +105,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.index ["dropped_as_id"], name: "index_quests_on_dropped_as_id"
     t.index ["giver_id"], name: "index_quests_on_giver_id"
     t.index ["name"], name: "index_quests_on_name", unique: true
+    t.index ["patch_id"], name: "index_quests_on_patch_id"
     t.index ["prereq_quest_id"], name: "index_quests_on_prereq_quest_id"
     t.index ["receiver_id"], name: "index_quests_on_receiver_id"
   end
 
   create_table "stats", force: :cascade do |t|
-    t.bigint "item_id"
+    t.bigint "patch_id", null: false
+    t.bigint "item_id", null: false
     t.string "stat", null: false
     t.decimal "amount", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["item_id"], name: "index_stats_on_item_id"
+    t.index ["patch_id"], name: "index_stats_on_patch_id"
     t.index ["stat"], name: "index_stats_on_stat"
   end
 
@@ -115,10 +134,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
   end
 
   create_table "zones", force: :cascade do |t|
+    t.bigint "patch_id", null: false
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_zones_on_name", unique: true
+    t.index ["patch_id"], name: "index_zones_on_patch_id"
   end
 
   add_foreign_key "items", "quests", column: "reward_from_quest_id"
