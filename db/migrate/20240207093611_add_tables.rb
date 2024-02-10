@@ -35,6 +35,7 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.string :name, null: false, index: { unique: true }
       t.integer :vendor_copper
       t.decimal :weight, null: false
+      t.integer :required_level
 
       t.string :category
       t.string :slot
@@ -42,14 +43,6 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.jsonb :stats, default: {}, index: :gin
       t.jsonb :classes, default: [], index: :gin
       t.jsonb :attrs, default: [], index: :gin
-
-      t.integer :required_level
-
-      t.boolean :no_trade, null: false, default: false
-      t.boolean :lifebound, null: false, default: false
-      t.boolean :deathbound, null: false, default: false
-      t.boolean :temporary, null: false, default: false
-      t.boolean :magic, null: false, default: false
 
       t.timestamps
     end

@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Item < ApplicationRecord
-  InvalidOperator = Class.new(StandardError)
-
   has_paper_trail
 
   belongs_to :patch
@@ -41,56 +39,6 @@ class Item < ApplicationRecord
   validates :classes, allow_blank: true, inclusion: { in: CLASSES }
 
   validate :stat_hash_valid
-
-  class << self
-    def search(name: nil, category: nil, klass: nil, required_level: nil, weight: [],
-               slot: nil, attrs: [], stats: [])
-      q = self
-
-      q = q.where(id: for_class(klass)) if klass
-      q = q.where(category: category) if category
-      q = q.where(id: in_slot(slot)) if slot
-      Array(stats).each { |stat| q = q.where(id: with_stat(**stat)) }
-      Array(attrs).each { |attr| q = q.where(id: with_attr(attr)) }
-      q = q.where(id: with_name(name)) if name
-      Array(required_level).each { |r_l| q = q.where(id: with_required_level(**r_l)) }
-      Array(weight).each { |w| q = q.where(id: with_weight(**w)) }
-
-      q
-    end
-
-    def with_name(name)
-      where('name ILIKE ?', "%#{sanitize_sql_like(name)}%") if name
-    end
-
-    def with_weight(operator:, value:)
-      where("weight #{operator} ?", value)
-    end
-
-    def in_slot(slot)
-      where('slot = ?', slot)
-    end
-
-    def with_stat(stat:, operator:, value:)
-      raise InvalidOperator unless ['>=', '>', '<=', '<', '='].include?(operator)
-
-      where("(stats->>?)::decimal #{operator} ?", stat, value)
-    end
-
-    def with_required_level(operator:, value:)
-      raise InvalidOperator unless ['>=', '>', '<=', '<', '='].include?(operator)
-
-      where("required_level #{operator} ?", value)
-    end
-
-    def with_attr(attr)
-      where('attrs @> ?', "[#{attr.to_json}]")
-    end
-
-    def for_class(klass)
-      where('classes @> ?', "[#{klass.to_json}]")
-    end
-  end
 
   private
 

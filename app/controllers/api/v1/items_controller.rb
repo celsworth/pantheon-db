@@ -3,10 +3,13 @@
 module Api
   module V1
     class ItemsController < ApplicationController
+      rescue_from ItemSearch::InvalidOperator do
+        render json: { error: 'invalid operator' }
+      end
+
       def search
-        params = search_params.to_unsafe_hash.deep_symbolize_keys
-        params[:klass] = params.delete(:class) # rename param for method
-        items = Item.search(**params).all
+        params = search_params.to_hash.deep_symbolize_keys
+        items = ItemSearch.new(**params).search.all
         render json: blueprint(items)
       end
 
