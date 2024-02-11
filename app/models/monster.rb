@@ -13,5 +13,4 @@ class Monster < ApplicationRecord
   validates :name, presence: true, uniqueness: true
   validates :zone, presence: true
   validates :level, presence: true
-  validates :level, presence: true
 end
