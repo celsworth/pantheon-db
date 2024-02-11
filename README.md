@@ -24,6 +24,7 @@ Given a data.json input like this:
 {
   "name": "blood",
   "category": "shield",
+  "class": "shaman",
   "stats": [
     {
       "stat": "armor",
@@ -31,37 +32,37 @@ Given a data.json input like this:
       "value": 3
     }
   ],
-  "required_level": {
-    "operator": ">",
-    "value": 5
-  },
+  "required_level": [
+    {
+      "operator": ">",
+      "value": 5
+    }
+  ],
   "attrs": [
     "magic"
-  ],
-  "class": "shaman"
+  ]
 }
 ```
 
 You can POST it with curl like this:
 
 ```
-curl -H "Content-Type: application/json" -X POST -d @data.json http://localhost:3000/api/v1/items/search
+curl -H "Content-Type: application/json" -X POST -d @data.json http://yrk.cae.me.uk:3000/api/v1/items/search
 ```
 
-Which will return matching items (a Blood-soaked Shield from the sample data)
+Which will return matching items (a Blood-soaked Shield from the sample data).
 
 You can filter on multiple stats and multiple attrs, items that match them all will be returned. Valid operators are `>`, `<`, `>=`, `<=`, `=`.
 
-Other filters possible are `required_level`, `weight`, like iin this tenuous example:
+Note some are arrays so you can specify multiple filters for a parameter, like > and < for a range.
+
+Other filters are shown in this tenuous example:
 
 ```json
 {
-  "required_level": [
-    {
-      "operator": ">",
-      "value": 3
-    },
-  ],
+  "dropped_by": 1,
+  "reward_from_quest": 1,
+  "slot": "chest",
   "weight": [
     {
       "operator": ">",
@@ -75,13 +76,14 @@ Other filters possible are `required_level`, `weight`, like iin this tenuous exa
 }
 ```
 
-Note they're arrays so you can specify > and < for a range.
+`dropped_by` should be a monster.id to limit the search to items dropped by that monster. `reward_from_quest` should be a quest.id to show items rewarded by that quest.
+
 
 
 ### Get all Zones (or any resource)
 
 ```
-curl http://localhost:3000/api/v1/zones
+curl http://yrk.cae.me.uk:3000/api/v1/zones
 ```
 
 ```json
@@ -91,7 +93,7 @@ curl http://localhost:3000/api/v1/zones
 ### Get Single Zone
 
 ```
-curl http://localhost:3000/api/v1/zones/1
+curl http://yrk.cae.me.uk:3000/api/v1/zones/1
 ```
 
 ```json
@@ -118,7 +120,7 @@ Most associated resources just return the id/name for now to keep it simple, ie 
 ### Create
 
 ```
-curl -d '{"name": "Silent Plains"}' -H "Content-Type: application/json" -X POST http://localhost:3000/api/v1/zones
+curl -d '{"name": "Silent Plains"}' -H "Content-Type: application/json" -X POST http://yrk.cae.me.uk:3000/api/v1/zones
 ```
 
 ```json
@@ -128,7 +130,7 @@ curl -d '{"name": "Silent Plains"}' -H "Content-Type: application/json" -X POST 
 ### Update
 
 ```
-curl -d '{"zone_id": 2, "name":"Zirus the Bonewalker"}' -H "Content-Type: application/json" -X PUT http://localhost:3000/api/v1/monsters/1
+curl -d '{"zone_id": 2, "name":"Zirus the Bonewalker"}' -H "Content-Type: application/json" -X PUT http://yrk.cae.me.uk:3000/api/v1/monsters/1
 ```
 
 Success returns the updated object as JSON:
@@ -146,14 +148,14 @@ So these have a special assign/unassign in order to manage that relationship.
 Assignment:
 
 ```
-curl -d '{"monster_id":1}' -H "Content-Type: application/json" -X POST http://localhost:3000/api/v1/items/2/assign
+curl -d '{"monster_id":1}' -H "Content-Type: application/json" -X POST http://yrk.cae.me.uk:3000/api/v1/items/2/assign
 ```
 
 So after this, monster_id=1 is linked to item_id 2 (ie, it can drop it)
 
 Unassignment:
 ```
-curl -d '{"monster_id":1}' -H "Content-Type: application/json" -X POST http://localhost:3000/api/v1/items/2/unassign
+curl -d '{"monster_id":1}' -H "Content-Type: application/json" -X POST http://yrk.cae.me.uk:3000/api/v1/items/2/unassign
 ```
 
 After this, the link is broken again and monster_id=1 is no longer dropping item_id=2.

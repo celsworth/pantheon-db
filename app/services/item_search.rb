@@ -5,20 +5,20 @@ class ItemSearch
 
   InvalidOperator = Class.new(StandardError)
 
+  FILTERS = %i[
+    filter_name filter_weight filter_required_level filter_category
+    filter_slot filter_stats filter_class filter_attrs
+    filter_dropped_by filter_reward_from_quest
+  ].freeze
+
   def initialize(**params)
     @params = params
-    @dataset = Item
   end
 
   def search
-    filter_name
-    filter_weight
-    filter_required_level
-    filter_category
-    filter_slot
-    filter_stats
-    filter_class
-    filter_attrs
+    @dataset = Item
+
+    FILTERS.each { send(_1) }
 
     @dataset
   end
@@ -37,6 +37,8 @@ class ItemSearch
              end
 
     weight.each do |h|
+      raise InvalidOperator unless ['>=', '>', '<=', '<', '='].include?(h[:operator])
+
       where("weight #{h[:operator]} ?", h[:value])
     end
   end
@@ -56,7 +58,10 @@ class ItemSearch
   end
 
   def filter_category
-    where(category: @params[:category]) if @params[:category]
+    # override some meta-categories
+    category = Item::META_CATEGORIES[@params[:category]] || @params[:category]
+
+    where(category: category) if category
   end
 
   def filter_slot
@@ -91,6 +96,22 @@ class ItemSearch
     attrs.each do |attr|
       where('attrs @> ?', "[#{attr.to_json}]")
     end
+  end
+
+  def filter_dropped_by
+    return unless @params[:dropped_by]
+
+    # @params[:dropped_by] should be a monster id
+    ids = Item.joins(:dropped_by).where('dropped_by.id': @params[:dropped_by])
+    where(id: ids)
+  end
+
+  def filter_reward_from_quest
+    return unless @params[:reward_from_quest]
+
+    # @params[:reward_from_quest,] should be a quest id
+    ids = Item.joins(:reward_from_quest).where('reward_from_quest.id': @params[:reward_from_quest,])
+    where(id: ids)
   end
 
   def where(...)

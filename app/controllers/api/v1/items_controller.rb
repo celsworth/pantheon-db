@@ -84,6 +84,7 @@ module Api
       def search_params
         params.permit(
           :name, :category, :class, :slot,
+          :reward_from_quest, :dropped_by,
           attrs: [],
           weight: %i[operator value],
           required_level: %i[operator value],

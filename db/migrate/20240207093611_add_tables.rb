@@ -62,8 +62,8 @@ class AddTables < ActiveRecord::Migration[7.1]
 
       t.references :quest, null: false, index: true
 
-      t.references :monster
-      t.references :item
+      t.references :monster, index: true
+      t.references :item, index: true
       t.integer :amount
 
       t.string :text
@@ -74,12 +74,12 @@ class AddTables < ActiveRecord::Migration[7.1]
     create_table :quests do |t|
       t.references :patch, null: false, index: true
 
-      t.references :prereq_quest, foreign_key: { to_table: :quests }
+      t.references :prereq_quest, foreign_key: { to_table: :quests }, index: true
 
-      t.references :giver, foreign_key: { to_table: :npcs }
-      t.references :dropped_as, foreign_key: { to_table: :items }
+      t.references :giver, foreign_key: { to_table: :npcs }, index: true
+      t.references :dropped_as, foreign_key: { to_table: :items }, index: true
 
-      t.references :receiver, foreign_key: { to_table: :npcs }
+      t.references :receiver, foreign_key: { to_table: :npcs }, index: true
 
       t.string :name, null: false, index: { unique: true }
       t.string :text, null: false
@@ -91,7 +91,7 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
-    add_reference :items, :reward_from_quest, foreign_key: { to_table: :quests }
+    add_reference :items, :reward_from_quest, foreign_key: { to_table: :quests }, index: true
 
     create_join_table :items, :monsters do |t|
       t.index %i[item_id monster_id], unique: true

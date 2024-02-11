@@ -10,12 +10,16 @@ class Item < ApplicationRecord
   has_one :starts_quest, class_name: 'Quest', inverse_of: :dropped_as
   belongs_to :reward_from_quest, class_name: 'Quest', optional: true, inverse_of: :reward_items
 
+  META_CATEGORIES = {
+    'armor' => %w[cloth-armor leather-armor chain-armor plate-armor].freeze,
+    'weapon' => %w[blade-weapon dagger-weapon stave-weapon spear-weapon].freeze
+  }.freeze
   CATEGORIES = %w[general schematic container clickie scroll
                   potion ingredient food drink
-                  cloth-armor leather-armor chain-armor plate-armor
-                  blade-weapon dagger-weapon stave-weapon spear-weapon
                   shield held jewellery
-                  catalyst component material reagent resource].freeze
+                  catalyst component material reagent resource]
+               .concat(META_CATEGORIES.values.flatten)
+               .freeze
 
   SLOTS = %w[head shoulders hands back chest waist legs feet ears fingers neck relic].freeze
 
