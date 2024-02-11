@@ -8,9 +8,14 @@ module Api
       end
 
       def search
-        params = search_params.to_hash.deep_symbolize_keys
-        items = ItemSearch.new(**params).search.all
-        render json: blueprint(items)
+        params = search_params.to_hash.sort.to_h.deep_symbolize_keys
+        fingerprint = Digest::MD5.hexdigest(params.to_s)
+        json = Rails.cache.fetch("items-search-#{fingerprint}", expires_in: 5.minutes) do
+          items = ItemSearch.new(**params).search.all
+          blueprint(items)
+        end
+
+        render json:
       end
 
       def index
@@ -20,7 +25,7 @@ module Api
           blueprint(items)
         end
 
-        render json: json
+        render json:
       end
 
       def show
@@ -30,6 +35,7 @@ module Api
       def create
         item = Item.new(item_params)
         if item.save
+          Rails.cache.clear
           render json: blueprint(item)
         else
           render json: { errors: item.errors }
@@ -38,6 +44,7 @@ module Api
 
       def update
         if item.update(item_params)
+          Rails.cache.clear
           render json: blueprint(item)
         else
           render json: { errors: item.errors }

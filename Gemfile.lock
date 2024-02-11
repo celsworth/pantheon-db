@@ -155,8 +155,6 @@ GEM
       racc (~> 1.4)
     nokogiri (1.16.2-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.16.2-x86_64-linux)
-      racc (~> 1.4)
     paper_trail (15.1.0)
       activerecord (>= 6.1)
       request_store (~> 1.4)
@@ -265,8 +263,7 @@ GEM
 
 PLATFORMS
   aarch64-linux
-  arm64-darwin-21
-  x86_64-linux
+  arm64-darwin-23
 
 DEPENDENCIES
   administrate
@@ -283,4 +280,4 @@ DEPENDENCIES
   sprockets-rails
 
 BUNDLED WITH
-   2.3.26
+   2.4.19

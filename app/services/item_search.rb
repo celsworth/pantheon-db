@@ -61,7 +61,7 @@ class ItemSearch
     # override some meta-categories
     category = Item::META_CATEGORIES[@params[:category]] || @params[:category]
 
-    where(category: category) if category
+    where(category:) if category
   end
 
   def filter_slot
