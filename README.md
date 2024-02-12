@@ -7,10 +7,14 @@ Base URL for now is http://yrk.cae.me.uk:3000 - this will change eventually.
 
 See /admin for a quick and dirty display to see what's in db and edit things in a UI.
 
+## GraphQL
 
-## API
+Experimental non-exhaustive GraphQL is implemented; have a play with http://yrk.cae.me.uk:3000/graphiql
 
-Simple REST API at /api/v1/
+
+## REST API
+
+REST API is at /api/v1/
 
 Currently implemented resources are items, monsters, npcs, quest_objectives, quests, zones.
 
