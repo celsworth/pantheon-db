@@ -163,6 +163,15 @@ After this, the link is broken again and monster_id=1 is no longer dropping item
 These return HTTP 201 on success.
 
 
+### Delete
+
+```
+curl -X DELETE http://yrk.cae.me.uk:3000/api/v1/zones/2
+```
+
+HTTP 204 (no content in response).
+
+
 ### Errors
 
 Errors for create/update give you an errors hash formatted like this:
@@ -172,6 +181,3 @@ Errors for create/update give you an errors hash formatted like this:
 ```
 
 
-### Delete
-
-Not active yet
