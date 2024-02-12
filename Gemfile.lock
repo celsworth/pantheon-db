@@ -98,6 +98,8 @@ GEM
     connection_pool (2.4.1)
     crass (1.0.6)
     date (3.3.4)
+    discard (1.3.0)
+      activerecord (>= 4.2, < 8)
     drb (2.2.0)
       ruby2_keywords
     erubi (1.12.0)
@@ -278,6 +280,7 @@ DEPENDENCIES
   ar_lazy_preload
   blueprinter
   bootsnap
+  discard (~> 1.3)
   graphiql-rails
   graphql (~> 2.2)
   paper_trail

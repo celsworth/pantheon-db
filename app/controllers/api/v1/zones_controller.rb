@@ -34,10 +34,11 @@ module Api
         end
       end
 
-      # def destroy
-      #  zone = Zone.find(params[:id])
-      #  zone.destroy
-      # end
+      def destroy
+        zone = Zone.find(params[:id])
+        zone.discard
+        head 204
+      end
 
       private
 

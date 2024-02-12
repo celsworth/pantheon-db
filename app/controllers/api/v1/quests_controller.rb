@@ -29,10 +29,11 @@ module Api
         end
       end
 
-      # def destroy
-      #  quest = Quest.find(params[:id])
-      #  quest.destroy
-      # end
+      def destroy
+        quest = Quest.find(params[:id])
+        quest.discard
+        head 204
+      end
 
       private
 

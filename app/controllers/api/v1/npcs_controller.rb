@@ -28,10 +28,10 @@ module Api
         end
       end
 
-      # def destroy
-      #  npc = Npc.find(params[:id])
-      #  npc.destroy
-      # end
+      def destroy
+        npc = Npc.find(params[:id])
+        npc.discard
+      end
 
       private
 

@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class Npc < ApplicationRecord
+  include Discard::Model
+  default_scope -> { kept }
+
   has_paper_trail
 
   belongs_to :patch

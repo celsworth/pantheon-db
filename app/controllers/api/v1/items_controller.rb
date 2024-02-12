@@ -51,10 +51,11 @@ module Api
         end
       end
 
-      # def destroy
-      #  item = Item.find(params[:id])
-      #  item.destroy
-      # end
+      def destroy
+        item = Item.find(params[:id])
+        item.discard
+        head 204
+      end
 
       def assign
         # assign an item_id to a monster_id

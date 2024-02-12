@@ -19,22 +19,19 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.string "name", null: false
     t.integer "vendor_copper"
     t.decimal "weight", null: false
+    t.integer "required_level"
     t.string "category"
     t.string "slot"
     t.jsonb "stats", default: {}
     t.jsonb "classes", default: []
     t.jsonb "attrs", default: []
-    t.integer "required_level"
-    t.boolean "no_trade", default: false, null: false
-    t.boolean "lifebound", default: false, null: false
-    t.boolean "deathbound", default: false, null: false
-    t.boolean "temporary", default: false, null: false
-    t.boolean "magic", default: false, null: false
+    t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "reward_from_quest_id"
     t.index ["attrs"], name: "index_items_on_attrs"
     t.index ["classes"], name: "index_items_on_classes"
+    t.index ["discarded_at"], name: "index_items_on_discarded_at"
     t.index ["name"], name: "index_items_on_name", unique: true
     t.index ["patch_id"], name: "index_items_on_patch_id"
     t.index ["reward_from_quest_id"], name: "index_items_on_reward_from_quest_id"
@@ -55,8 +52,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.integer "level", null: false
     t.boolean "elite", default: false, null: false
     t.boolean "named", default: false, null: false
+    t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_monsters_on_discarded_at"
     t.index ["name"], name: "index_monsters_on_name", unique: true
     t.index ["patch_id"], name: "index_monsters_on_patch_id"
     t.index ["zone_id"], name: "index_monsters_on_zone_id"
@@ -66,8 +65,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.bigint "patch_id", null: false
     t.bigint "zone_id", null: false
     t.string "name", null: false
+    t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_npcs_on_discarded_at"
     t.index ["name"], name: "index_npcs_on_name", unique: true
     t.index ["patch_id"], name: "index_npcs_on_patch_id"
     t.index ["zone_id"], name: "index_npcs_on_zone_id"
@@ -87,8 +88,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.bigint "item_id"
     t.integer "amount"
     t.string "text"
+    t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_quest_objectives_on_discarded_at"
     t.index ["item_id"], name: "index_quest_objectives_on_item_id"
     t.index ["monster_id"], name: "index_quest_objectives_on_monster_id"
     t.index ["patch_id"], name: "index_quest_objectives_on_patch_id"
@@ -106,8 +109,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.integer "reward_xp", default: 0, null: false
     t.integer "reward_copper", default: 0, null: false
     t.decimal "reward_standing", default: "0.0", null: false
+    t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_quests_on_discarded_at"
     t.index ["dropped_as_id"], name: "index_quests_on_dropped_as_id"
     t.index ["giver_id"], name: "index_quests_on_giver_id"
     t.index ["name"], name: "index_quests_on_name", unique: true
@@ -130,8 +135,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
   create_table "zones", force: :cascade do |t|
     t.bigint "patch_id", null: false
     t.string "name", null: false
+    t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_zones_on_discarded_at"
     t.index ["name"], name: "index_zones_on_name", unique: true
     t.index ["patch_id"], name: "index_zones_on_patch_id"
   end

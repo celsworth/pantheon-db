@@ -19,3 +19,5 @@ gem 'bootsnap', require: false
 
 gem 'graphiql-rails'
 gem 'graphql', '~> 2.2'
+
+gem "discard", "~> 1.3"

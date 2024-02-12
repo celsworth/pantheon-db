@@ -13,6 +13,7 @@ class AddTables < ActiveRecord::Migration[7.1]
 
       t.string :name, null: false, index: { unique: true }
 
+      t.datetime :discarded_at, index: true
       t.timestamps
     end
 
@@ -26,6 +27,7 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.boolean :elite, null: false, default: false
       t.boolean :named, null: false, default: false
 
+      t.datetime :discarded_at, index: true
       t.timestamps
     end
 
@@ -44,6 +46,7 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.jsonb :classes, default: [], index: :gin
       t.jsonb :attrs, default: [], index: :gin
 
+      t.datetime :discarded_at, index: true
       t.timestamps
     end
 
@@ -54,6 +57,7 @@ class AddTables < ActiveRecord::Migration[7.1]
 
       t.string :name, null: false, index: { unique: true }
 
+      t.datetime :discarded_at, index: true
       t.timestamps
     end
 
@@ -68,6 +72,7 @@ class AddTables < ActiveRecord::Migration[7.1]
 
       t.string :text
 
+      t.datetime :discarded_at, index: true
       t.timestamps
     end
 
@@ -88,6 +93,7 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.integer :reward_copper, null: false, default: 0
       t.decimal :reward_standing, null: false, default: 0
 
+      t.datetime :discarded_at, index: true
       t.timestamps
     end
 
