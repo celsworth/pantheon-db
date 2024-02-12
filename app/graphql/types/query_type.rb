@@ -20,8 +20,8 @@ module Types
       argument :slot, String, required: false
       argument :class, String, required: false
 
-      argument :dropped_by, Integer, required: false
-      argument :reward_from_quest, Integer, required: false
+      argument :dropped_by, ID, required: false
+      argument :reward_from_quest, ID, required: false
 
       argument :stats, [Inputs::StatInputFilterType], required: false
       argument :required_level, [Inputs::FloatOperatorInputFilterType], required: false
@@ -41,6 +41,30 @@ module Types
     field :monsters, [Types::MonsterType]
     def monsters
       Monster.all
+    end
+
+    field :npc, Types::NpcType do
+      argument :id, ID
+    end
+    def npc(id:)
+      Npc.find(id)
+    end
+
+    field :npcs, [Types::NpcType]
+    def npcs
+      Npc.all
+    end
+
+    field :quest, Types::QuestType do
+      argument :id, ID
+    end
+    def quest(id:)
+      Quest.find(id)
+    end
+
+    field :quests, [Types::QuestType]
+    def quests
+      Quest.all
     end
 
     field :zone, Types::ZoneType do
