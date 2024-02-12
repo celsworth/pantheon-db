@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 module Resolvers
-  class ZoneResolver < BaseResolver
-    type Types::ZoneType, null: true
+  class QuestResolver < BaseResolver
+    type Types::QuestType, null: true
 
     argument :id, ID
 
     def resolve(id:)
-      Zone.find(id)
+      Quest.find(id)
     end
   end
 end

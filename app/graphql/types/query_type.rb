@@ -2,17 +2,8 @@
 
 module Types
   class QueryType < Types::BaseObject
-    field :item, Types::ItemType do
-      argument :id, ID
-    end
-    def item(id:)
-      Item.find(id)
-    end
-
-    field :items, [Types::ItemType]
-    def items
-      Item.all
-    end
+    field :item, resolver: Resolvers::ItemResolver
+    field :items, resolver: Resolvers::ItemsResolver
 
     field :item_search, [Types::ItemType] do
       argument :name, String, required: false
@@ -31,52 +22,16 @@ module Types
       ItemSearch.new(**params).search.all
     end
 
-    field :monster, Types::MonsterType do
-      argument :id, ID
-    end
-    def monster(id:)
-      Monster.find(id)
-    end
+    field :monster, resolver: Resolvers::MonsterResolver
+    field :monsters, resolver: Resolvers::MonstersResolver
 
-    field :monsters, [Types::MonsterType]
-    def monsters
-      Monster.all
-    end
+    field :npc, resolver: Resolvers::NpcResolver
+    field :npcs, resolver: Resolvers::NpcsResolver
 
-    field :npc, Types::NpcType do
-      argument :id, ID
-    end
-    def npc(id:)
-      Npc.find(id)
-    end
+    field :quest, resolver: Resolvers::QuestResolver
+    field :quests, resolver: Resolvers::QuestsResolver
 
-    field :npcs, [Types::NpcType]
-    def npcs
-      Npc.all
-    end
-
-    field :quest, Types::QuestType do
-      argument :id, ID
-    end
-    def quest(id:)
-      Quest.find(id)
-    end
-
-    field :quests, [Types::QuestType]
-    def quests
-      Quest.all
-    end
-
-    field :zone, Types::ZoneType do
-      argument :id, ID
-    end
-    def zone(id:)
-      Zone.find(id)
-    end
-
-    field :zones, [Types::ZoneType]
-    def zones
-      Zone.all
-    end
+    field :zone, resolver: Resolvers::ZoneResolver
+    field :zones, resolver: Resolvers::ZonesResolver
   end
 end
