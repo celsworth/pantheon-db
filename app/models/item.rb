@@ -47,6 +47,21 @@ class Item < ApplicationRecord
 
   validate :stat_hash_valid
 
+  # Support for Administrate gem saving JSONB as a string
+  def classes=(value)
+    self[:classes] = value.is_a?(String) ? JSON.parse(value) : value
+  end
+
+  # Support for Administrate gem saving JSONB as a string
+  def attrs=(value)
+    self[:attrs] = value.is_a?(String) ? JSON.parse(value) : value
+  end
+
+  # Support for Administrate gem saving JSONB as a string
+  def stats=(value)
+    self[:stats] = value.is_a?(String) ? JSON.parse(value) : value
+  end
+
   private
 
   def stat_hash_valid
