@@ -2,7 +2,7 @@
 
 module Api
   module V1
-    class ZonesController < ApplicationController
+    class ZonesController < ApiController
       def index
         render json: blueprint(Zone.all)
       end

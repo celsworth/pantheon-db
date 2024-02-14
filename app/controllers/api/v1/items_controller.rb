@@ -2,7 +2,7 @@
 
 module Api
   module V1
-    class ItemsController < ApplicationController
+    class ItemsController < ApiController
       rescue_from ItemSearch::InvalidOperator do
         render json: { error: 'invalid operator' }
       end

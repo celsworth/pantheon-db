@@ -2,7 +2,7 @@
 
 module Api
   module V1
-    class NpcsController < ApplicationController
+    class NpcsController < ApiController
       def index
         render json: blueprint(Npc.all)
       end

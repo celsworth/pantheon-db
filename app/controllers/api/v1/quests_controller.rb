@@ -2,7 +2,7 @@
 
 module Api
   module V1
-    class QuestsController < ApplicationController
+    class QuestsController < ApiController
       def index
         quests = Quest.all
         render json: blueprint(quests)
