@@ -2,8 +2,8 @@
 
 module Types
   module Inputs
-    class CreateZoneAttributesType < GraphQL::Schema::InputObject
-      argument_class(Types::BaseArgument)
+    class ZoneAttributesType < GraphQL::Schema::InputObject
+      argument_class Types::BaseArgument
 
       argument :name, String, required: true
     end

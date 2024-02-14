@@ -3,10 +3,9 @@
 module Mutations
   module Zone
     class Create < BaseMutation
-      argument :attributes, Types::Inputs::CreateZoneAttributesType
+      type Types::Payloads::ZonePayloadType
 
-      field :zone, Types::ZoneType
-      field :errors, [String], null: false
+      argument :attributes, Types::Inputs::ZoneAttributesType
 
       def resolve(attributes:)
         zone = ::Zone.new(**attributes)
