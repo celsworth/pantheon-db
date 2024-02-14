@@ -8,7 +8,7 @@
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.2",
-    "elm": "^0.19.1-6",
+    "@lydell/elm": "^0.19.1-14",
     "esbuild-plugin-elm": "^0.0.12"
   }
 }

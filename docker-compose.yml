@@ -1,6 +1,15 @@
 version: "3.8"
 
 services:
+  watch:
+    volumes:
+      - elm-stuff:/rails/elm-stuff
+    build:
+      context: .
+    command: npm run build:watch
+    environment:
+      - ELM_HOME=/tmp
+
   postgres:
     image: postgres:15
     environment:
@@ -30,3 +39,4 @@ services:
 
 volumes:
   postgres-data:
+  elm-stuff:

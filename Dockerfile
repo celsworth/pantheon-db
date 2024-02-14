@@ -20,13 +20,17 @@ FROM base as build
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
-  apt-get install --no-install-recommends -y build-essential git libvips pkg-config libpq-dev
+  apt-get install --no-install-recommends -y npm build-essential git libvips pkg-config libpq-dev
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
 RUN bundle install -j8 && \
   rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
   bundle exec bootsnap precompile --gemfile
+
+# Install application node stuff
+COPY package.json package-lock.json ./
+RUN npm install
 
 # Copy application code
 COPY . .
@@ -43,7 +47,7 @@ FROM base
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-  apt-get install --no-install-recommends -y curl libsqlite3-0 libvips postgresql-client && \
+  apt-get install --no-install-recommends -y npm nodejs curl libsqlite3-0 libvips postgresql-client && \
   rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application
