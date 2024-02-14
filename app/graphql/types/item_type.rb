@@ -17,6 +17,6 @@ module Types
     field :classes, [String], null: false
     field :attrs, [String], null: false
 
-    field :dropped_by, [NpcType]
+    field :dropped_by, [MonsterType]
   end
 end
