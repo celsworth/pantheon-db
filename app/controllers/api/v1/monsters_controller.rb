@@ -2,7 +2,7 @@
 
 module Api
   module V1
-    class MonstersController < ApplicationController
+    class MonstersController < ApiController
       def index
         monsters = Monster.all
         render json: blueprint(monsters)
