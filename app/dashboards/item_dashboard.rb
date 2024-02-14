@@ -12,6 +12,7 @@ class ItemDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     dropped_by: Field::HasMany,
+    sold_by: Field::HasMany,
     starts_quest: Field::HasOne,
     reward_from_quest: Field::BelongsTo,
     name: Field::String,
@@ -51,6 +52,7 @@ class ItemDashboard < Administrate::BaseDashboard
     required_level
     slot
     dropped_by
+    sold_by
     starts_quest
     reward_from_quest
     stats
@@ -72,6 +74,7 @@ class ItemDashboard < Administrate::BaseDashboard
     required_level
     slot
     dropped_by
+    sold_by
     reward_from_quest
     stats
     classes

@@ -15,6 +15,7 @@ class NpcDashboard < Administrate::BaseDashboard
     zone: Field::BelongsTo,
     quests_given: Field::HasMany,
     quests_received: Field::HasMany,
+    sells_items: Field::HasMany,
     patch: Field::BelongsTo
   }.freeze
 
@@ -38,6 +39,7 @@ class NpcDashboard < Administrate::BaseDashboard
     zone
     quests_given
     quests_received
+    sells_items
     patch
   ].freeze
 
@@ -49,6 +51,7 @@ class NpcDashboard < Administrate::BaseDashboard
     zone
     quests_given
     quests_received
+    sells_items
   ].freeze
 
   # COLLECTION_FILTERS

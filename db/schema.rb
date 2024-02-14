@@ -45,6 +45,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.index ["monster_id", "item_id"], name: "index_items_monsters_on_monster_id_and_item_id", unique: true
   end
 
+  create_table "items_npcs", id: false, force: :cascade do |t|
+    t.bigint "item_id", null: false
+    t.bigint "npc_id", null: false
+    t.index ["item_id", "npc_id"], name: "index_items_npcs_on_item_id_and_npc_id", unique: true
+    t.index ["npc_id", "item_id"], name: "index_items_npcs_on_npc_id_and_item_id"
+  end
+
   create_table "monsters", force: :cascade do |t|
     t.bigint "patch_id", null: false
     t.bigint "zone_id", null: false

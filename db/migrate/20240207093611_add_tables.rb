@@ -101,7 +101,12 @@ class AddTables < ActiveRecord::Migration[7.1]
 
     create_join_table :items, :monsters do |t|
       t.index %i[item_id monster_id], unique: true
-      t.index %i[monster_id item_id], unique: true
+      t.index %i[monster_id item_id]
+    end
+
+    create_join_table :items, :npcs do |t|
+      t.index %i[item_id npc_id], unique: true
+      t.index %i[npc_id item_id]
     end
   end
 end
