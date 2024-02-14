@@ -39,4 +39,9 @@ class PantheonDbSchema < GraphQL::Schema
   #  # For example, use Rails' GlobalID library (https://github.com/rails/globalid):
   #  GlobalID.find(global_id)
   # end
+
+  rescue_from(ActiveRecord::RecordNotFound) do |_err, _obj, _args, _ctx, _field|
+    # Raise a graphql-friendly error with a custom message
+    raise GraphQL::ExecutionError, 'not found'
+  end
 end
