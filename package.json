@@ -2,7 +2,8 @@
   "name": "app",
   "private": true,
   "scripts": {
-    "build": "node ./esbuild.config.js"
+    "build": "node ./esbuild.config.js",
+    "build:watch": "node ./esbuild.config.js -- --watch"
   },
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
