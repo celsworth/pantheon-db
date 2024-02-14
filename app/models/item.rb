@@ -50,16 +50,19 @@ class Item < ApplicationRecord
   # Support for Administrate gem saving JSONB as a string
   def classes=(value)
     self[:classes] = value.is_a?(String) ? JSON.parse(value) : value
+    self[:classes] = [] if classes.nil?
   end
 
   # Support for Administrate gem saving JSONB as a string
   def attrs=(value)
     self[:attrs] = value.is_a?(String) ? JSON.parse(value) : value
+    self[:attrs] = [] if attrs.nil?
   end
 
   # Support for Administrate gem saving JSONB as a string
   def stats=(value)
     self[:stats] = value.is_a?(String) ? JSON.parse(value) : value
+    self[:stats] = {} if stats.nil?
   end
 
   private
