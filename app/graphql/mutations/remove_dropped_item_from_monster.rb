@@ -5,8 +5,8 @@ module Mutations
     type Types::Results::SuccessResultType
 
     description <<~DESC
-      Remove an item from a monster's drop table. This never fails, removing an item
-      that was not present is a no-op and will return success true.
+      Remove an item from a monster's drop table.
+      This never fails, removing an item that was not present is a no-op and will return success true.
     DESC
 
     argument :monster_id, ID, description: 'ID of Monster to remove from'

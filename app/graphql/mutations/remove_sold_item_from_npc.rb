@@ -6,8 +6,7 @@ module Mutations
 
     description <<~DESC
       Remove an item from an NPC's vendor sell list.
-      This never fails, removing an item that was not present is a no-op and
-      will return success true.
+      This never fails, removing an item that was not present is a no-op and will return success true.
     DESC
 
     argument :npc_id, ID, description: 'ID of NPC to remove from'
