@@ -8,7 +8,7 @@ class ItemSearch
   FILTERS = %i[
     filter_name filter_weight filter_required_level filter_category
     filter_slot filter_stats filter_class filter_attrs
-    filter_dropped_by filter_reward_from_quest
+    filter_dropped_by filter_reward_from_quest filter_starts_quest
   ].freeze
 
   def initialize(**params)
@@ -109,8 +109,15 @@ class ItemSearch
   def filter_reward_from_quest
     return unless @params[:reward_from_quest]
 
-    # @params[:reward_from_quest,] should be a quest id
-    ids = Item.joins(:reward_from_quest).where('reward_from_quest.id': @params[:reward_from_quest,])
+    # @params[:reward_from_quest] should be a quest id
+    ids = Item.joins(:reward_from_quest).where('reward_from_quest.id': @params[:reward_from_quest])
+    where(id: ids)
+  end
+
+  def filter_starts_quest
+    return unless @params[:starts_quest]
+
+    ids = Item.joins(:starts_quest).where('starts_quest.id': @params[:starts_quest])
     where(id: ids)
   end
 

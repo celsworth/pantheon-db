@@ -10,6 +10,7 @@ module Resolvers
     argument :class, String, required: false
 
     argument :dropped_by, ID, required: false
+    argument :starts_quest, ID, required: false
     argument :reward_from_quest, ID, required: false
 
     argument :stats, [Types::Inputs::StatInputFilterType], required: false
