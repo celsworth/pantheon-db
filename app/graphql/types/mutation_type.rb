@@ -15,6 +15,12 @@ module Types
     field :assign_sold_item_to_npc, mutation: Mutations::AssignSoldItemToNpc
     field :remove_sold_item_from_npc, mutation: Mutations::RemoveSoldItemFromNpc
 
+    field :create_quest, mutation: Mutations::Quest::Create
+    field :update_quest, mutation: Mutations::Quest::Update
+
+    field :create_quest_objective, mutation: Mutations::QuestObjective::Create
+    field :update_quest_objective, mutation: Mutations::QuestObjective::Update
+
     field :create_zone, mutation: Mutations::Zone::Create
     field :update_zone, mutation: Mutations::Zone::Update
   end
