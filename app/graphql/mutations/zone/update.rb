@@ -3,7 +3,7 @@
 module Mutations
   module Zone
     class Update < BaseMutation
-      type Types::Payloads::ZonePayloadType
+      type Types::Results::ZoneResultType
 
       argument :id, ID
       argument :attributes, Types::Inputs::ZoneAttributesType

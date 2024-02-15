@@ -3,7 +3,7 @@
 module Mutations
   module Zone
     class Create < BaseMutation
-      type Types::Payloads::ZonePayloadType
+      type Types::Results::ZoneResultType
 
       argument :attributes, Types::Inputs::ZoneAttributesType
 
