@@ -2,6 +2,10 @@
 
 module Types
   class MutationType < Types::BaseObject
+    field :create_item, mutation: Mutations::Item::Create
+    field :update_item, mutation: Mutations::Item::Update
+    field :delete_item, mutation: Mutations::Item::Delete
+
     field :create_npc, mutation: Mutations::Npc::Create
     field :update_npc, mutation: Mutations::Npc::Update
     field :delete_npc, mutation: Mutations::Npc::Delete
