@@ -5,8 +5,8 @@ module Types
     class FloatOperatorInputFilterType < GraphQL::Schema::InputObject
       argument_class(Types::BaseArgument)
 
-      argument :operator, OperatorType, required: true
-      argument :value, Float, required: true
+      argument :operator, OperatorType
+      argument :value, Float
     end
   end
 end

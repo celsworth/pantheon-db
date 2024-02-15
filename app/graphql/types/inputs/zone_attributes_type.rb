@@ -5,7 +5,7 @@ module Types
     class ZoneAttributesType < GraphQL::Schema::InputObject
       argument_class Types::BaseArgument
 
-      argument :name, String, required: true
+      argument :name, String
     end
   end
 end

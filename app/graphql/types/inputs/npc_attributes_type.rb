@@ -5,8 +5,8 @@ module Types
     class NpcAttributesType < GraphQL::Schema::InputObject
       argument_class Types::BaseArgument
 
-      argument :name, String, required: true
-      argument :zone_id, ID, required: true
+      argument :name, String
+      argument :zone_id, ID
     end
   end
 end
