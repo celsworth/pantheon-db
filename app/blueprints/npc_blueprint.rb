@@ -15,5 +15,7 @@ class NpcBlueprint < Blueprinter::Base
     association :zone, blueprint: ZoneBlueprint, view: :name_only
 
     association :patch, blueprint: PatchBlueprint
+
+    association :sells_items, blueprint: ItemBlueprint, view: :name_only
   end
 end

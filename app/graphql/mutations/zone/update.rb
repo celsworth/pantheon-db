@@ -2,15 +2,16 @@
 
 module Mutations
   module Zone
-    class Create < BaseMutation
+    class Update < BaseMutation
       type Types::Results::ZoneResultType
 
+      argument :id, ID
       argument :attributes, Types::Inputs::ZoneAttributesType
 
-      def resolve(attributes:)
-        zone = ::Zone.new(**attributes)
+      def resolve(id:, attributes:)
+        zone = ::Zone.find(id)
 
-        if zone.save
+        if zone.update(**attributes)
           { zone:, errors: [] }
         else
           { zone: nil, errors: zone.errors.full_messages }

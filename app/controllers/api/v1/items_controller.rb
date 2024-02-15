@@ -84,7 +84,8 @@ module Api
       end
 
       def item_params
-        params.permit(:reward_from_quest_id, :name, :category, :vendor_copper, :weight, :slot,
+        params.permit(:reward_from_quest_id, :name, :category, :weight, :slot,
+                      :buy_price, :sell_price,
                       :required_level,
                       classes: [], attrs: [], stats: {})
       end

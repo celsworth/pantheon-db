@@ -12,12 +12,14 @@ class ItemDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     dropped_by: Field::HasMany,
+    sold_by: Field::HasMany,
     starts_quest: Field::HasOne,
     reward_from_quest: Field::BelongsTo,
     name: Field::String,
     category: Field::Select.with_options(collection: Item::CATEGORIES, include_blank: 'none'),
     required_level: Field::Number,
-    vendor_copper: Field::Number,
+    buy_price: Field::Number,
+    sell_price: Field::Number,
     weight: Field::Number,
     slot: Field::Select.with_options(collection: Item::SLOTS, include_blank: 'none'),
     stats: Field::JSONB,
@@ -34,7 +36,8 @@ class ItemDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i[
     name
     category
-    vendor_copper
+    buy_price
+    sell_price
     weight
     slot
     starts_quest
@@ -46,11 +49,12 @@ class ItemDashboard < Administrate::BaseDashboard
   SHOW_PAGE_ATTRIBUTES = %i[
     name
     category
-    vendor_copper
+    sell_price
     weight
     required_level
     slot
     dropped_by
+    sold_by
     starts_quest
     reward_from_quest
     stats
@@ -67,11 +71,13 @@ class ItemDashboard < Administrate::BaseDashboard
   FORM_ATTRIBUTES = %i[
     name
     category
-    vendor_copper
+    buy_price
+    sell_price
     weight
     required_level
     slot
     dropped_by
+    sold_by
     reward_from_quest
     stats
     classes
