@@ -35,7 +35,8 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.references :patch, null: false, index: true
 
       t.string :name, null: false, index: { unique: true }
-      t.integer :vendor_copper
+      t.integer :buy_price
+      t.integer :sell_price
       t.decimal :weight, null: false
       t.integer :required_level
 

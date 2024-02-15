@@ -6,7 +6,8 @@ module Types
     field :patch, PatchType, null: false
 
     field :name, String, null: false
-    field :vendor_copper, Integer
+    field :buy_price, Integer
+    field :sell_price, Integer
     field :weight, Float, null: false
     field :required_level, Integer
 
