@@ -19,5 +19,7 @@ module Types
     field :attrs, [String], null: false
 
     field :dropped_by, [MonsterType]
+    field :starts_quest, QuestType
+    field :reward_from_quest, QuestType
   end
 end
