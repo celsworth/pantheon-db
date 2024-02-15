@@ -11,9 +11,18 @@ class Monster < ApplicationRecord
 
   belongs_to :zone
 
-  has_and_belongs_to_many :drops, class_name: 'Item'
+  has_and_belongs_to_many :drops, class_name: 'Item', before_add: :check_drops
 
   validates :name, presence: true, uniqueness: true
   validates :zone, presence: true
   validates :level, presence: true
+
+  private
+
+  def check_drops(item)
+    return unless drops.include?(item)
+
+    errors.add :base, 'already dropped by this monster'
+    raise ActiveRecord::Rollback
+  end
 end

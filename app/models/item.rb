@@ -9,8 +9,8 @@ class Item < ApplicationRecord
   belongs_to :patch
   before_validation { self.patch = Patch.current }
 
-  has_and_belongs_to_many :dropped_by, class_name: 'Monster'
-  has_and_belongs_to_many :sold_by, class_name: 'Npc'
+  has_and_belongs_to_many :dropped_by, class_name: 'Monster', before_add: :check_dropped_by
+  has_and_belongs_to_many :sold_by, class_name: 'Npc', before_add: :check_sold_by
   has_one :starts_quest, class_name: 'Quest', inverse_of: :dropped_as
   belongs_to :reward_from_quest, class_name: 'Quest', optional: true, inverse_of: :reward_items
 
@@ -81,5 +81,19 @@ class Item < ApplicationRecord
         errors.add(:stats, "#{k} is not a valid stats key")
       end
     end
+  end
+
+  def check_dropped_by(monster)
+    return unless dropped_by.include?(monster)
+
+    errors.add :base, 'already dropped by this monster'
+    raise ActiveRecord::Rollback
+  end
+
+  def check_sold_by(npc)
+    return unless sold_by.include?(npc)
+
+    errors.add :base, 'already sold by this npc'
+    raise ActiveRecord::Rollback
   end
 end

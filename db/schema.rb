@@ -17,6 +17,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
   create_table "items", force: :cascade do |t|
     t.bigint "patch_id", null: false
     t.string "name", null: false
+    t.integer "buy_price"
     t.integer "sell_price"
     t.decimal "weight", null: false
     t.integer "required_level"
@@ -29,7 +30,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "reward_from_quest_id"
-    t.integer "buy_price"
     t.index ["attrs"], name: "index_items_on_attrs"
     t.index ["classes"], name: "index_items_on_classes"
     t.index ["discarded_at"], name: "index_items_on_discarded_at"
@@ -43,7 +43,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.bigint "item_id", null: false
     t.bigint "monster_id", null: false
     t.index ["item_id", "monster_id"], name: "index_items_monsters_on_item_id_and_monster_id", unique: true
-    t.index ["monster_id", "item_id"], name: "index_items_monsters_on_monster_id_and_item_id", unique: true
+    t.index ["monster_id", "item_id"], name: "index_items_monsters_on_monster_id_and_item_id"
   end
 
   create_table "items_npcs", id: false, force: :cascade do |t|
