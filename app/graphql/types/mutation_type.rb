@@ -9,6 +9,8 @@ module Types
     field :create_npc, mutation: Mutations::Npc::Create
     field :update_npc, mutation: Mutations::Npc::Update
     field :delete_npc, mutation: Mutations::Npc::Delete
+
+    field :assign_dropped_item_to_monster, mutation: Mutations::AssignDroppedItemToMonster
     field :assign_sold_item_to_npc, mutation: Mutations::AssignSoldItemToNpc
 
     field :create_zone, mutation: Mutations::Zone::Create
