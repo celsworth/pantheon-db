@@ -13,5 +13,8 @@ module Types
     field :quests_received, [QuestType], null: false
 
     field :sells_items, [ItemType], null: false
+
+    field :created_at, GraphQL::Types::ISO8601DateTime, null: false
+    field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
   end
 end

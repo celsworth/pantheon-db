@@ -21,5 +21,8 @@ module Types
     field :dropped_by, [MonsterType]
     field :starts_quest, QuestType
     field :reward_from_quest, QuestType
+
+    field :created_at, GraphQL::Types::ISO8601DateTime, null: false
+    field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
   end
 end

@@ -7,13 +7,13 @@ module Types
 
     field :quest_objectives, [QuestObjectiveType]
 
-    field :prereq_quest, QuestType
-    field :successive_quests, [QuestType]
+    field :prereq_quest, QuestType, description: 'Quest that must be complete before this one is available'
+    field :successive_quests, [QuestType], description: 'Quests that open after this one is complete'
 
-    field :giver, NpcType
-    field :receiver, NpcType
+    field :giver, NpcType, description: 'Npc that starts this Quest'
+    field :receiver, NpcType, description: 'Npc that completes this Quest'
 
-    field :dropped_as, ItemType
+    field :dropped_as, ItemType, description: 'Item that starts this Quest'
 
     field :name, String, null: false
     field :text, String, null: false
@@ -22,5 +22,8 @@ module Types
     field :reward_xp, Integer, null: false
     field :reward_copper, Integer, null: false
     field :reward_standing, Float, null: false
+
+    field :created_at, GraphQL::Types::ISO8601DateTime, null: false
+    field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
   end
 end
