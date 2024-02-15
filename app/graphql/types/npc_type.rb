@@ -9,7 +9,9 @@ module Types
 
     field :zone, ZoneType, null: false
 
-    field :quests_given, [QuestType]
-    field :quests_received, [QuestType]
+    field :quests_given, [QuestType], null: false
+    field :quests_received, [QuestType], null: false
+
+    field :sells_items, [ItemType], null: false
   end
 end
