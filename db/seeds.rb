@@ -12,9 +12,9 @@ scavenger = Npc.create(zone: tf, name: 'The Scavenger')
 
 # some shaman starter area mobs to play with
 m = Monster.create(zone: tf, name: 'emerald leaf spiderling', level: 1)
-Item.create(dropped_by: [m], name: 'Spider Fangs', weight: 0.1, vendor_copper: 19, category: 'general')
-Item.create(dropped_by: [m], name: 'Spider Egg', weight: 0.2, vendor_copper: 23, category: 'general')
-Item.create(dropped_by: [m], name: 'Spider Legs', weight: 0.3, vendor_copper: 32, category: 'general')
+Item.create(dropped_by: [m], name: 'Spider Fangs', weight: 0.1, sell_price: 19, category: 'general')
+Item.create(dropped_by: [m], name: 'Spider Egg', weight: 0.2, sell_price: 23, category: 'general')
+Item.create(dropped_by: [m], name: 'Spider Legs', weight: 0.3, sell_price: 32, category: 'general')
 
 m = Monster.create(zone: tf, name: 'elder greatpaw', level: 10, named: true)
 i = Item.create(dropped_by: [m], name: 'Bear Paw', weight: 0.1, category: 'general')
@@ -27,7 +27,7 @@ i = Item.create(dropped_by: [m], name: 'Tarnished Band', weight: 0.1, category: 
 m = Monster.create(zone: tf, name: 'Zirus the Bonewalker', elite: true, named: true, level: 13)
 i = Item.create(dropped_by: [m], name: "Gnossa's Walking Stick",
                 stats: { intellect: 1, 'spell-crit-chance': 2, damage: 22, delay: 5.9 },
-                weight: 4.0, vendor_copper: 1750, category: 'stave-weapon', attrs: %w[magic])
+                weight: 4.0, sell_price: 1750, category: 'stave-weapon', attrs: %w[magic])
 # two-handed quarter staff
 #
 i = Item.create(name: 'Tattered Pelt', weight: 0.8, category: 'resource')
