@@ -1,14 +1,18 @@
 version: "3.8"
 
+x-app: &app
+  volumes:
+    - .:/rails:delegated
+    - /rails/app/assets/build
+    - /rails/node_modules
+    - /rails/elm-stuff
+  build:
+    context: .
+
 services:
   watch:
-    volumes:
-      - elm-stuff:/rails/elm-stuff
-    build:
-      context: .
+    <<: *app
     command: npm run build:watch
-    environment:
-      - ELM_HOME=/tmp
 
   postgres:
     image: postgres:15
@@ -20,10 +24,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
   app:
-    volumes:
-      - .:/rails
-    build:
-      context: .
+    <<: *app
     depends_on:
       - postgres
     environment:
@@ -39,4 +40,4 @@ services:
 
 volumes:
   postgres-data:
-  elm-stuff:
+  assets:
