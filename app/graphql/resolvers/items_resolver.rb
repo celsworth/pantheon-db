@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Resolvers
-  class ItemSearchResolver < BaseResolver
+  class ItemsResolver < BaseResolver
     type [Types::ItemType], null: false
 
     argument :name, String, required: false

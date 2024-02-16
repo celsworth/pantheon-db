@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Resolvers
-  class NpcSearchResolver < BaseResolver
+  class NpcsResolver < BaseResolver
     type [Types::NpcType], null: false
 
     argument :name, String, required: false
