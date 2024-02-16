@@ -14,6 +14,10 @@ module Types
 
     field :sells_items, [ItemType], null: false
 
+    field :loc_x, Float
+    field :loc_y, Float
+    field :loc_z, Float
+
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
   end

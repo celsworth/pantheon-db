@@ -45,7 +45,7 @@ module Api
       end
 
       def monster_params
-        params.permit(:zone_id, :name, :level, :elite, :named)
+        params.permit(:zone_id, :name, :level, :elite, :named, :loc_x, :loc_y, :loc_z)
       end
     end
   end

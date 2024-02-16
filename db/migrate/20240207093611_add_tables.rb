@@ -27,6 +27,10 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.boolean :elite, null: false, default: false
       t.boolean :named, null: false, default: false
 
+      t.decimal :loc_x
+      t.decimal :loc_y
+      t.decimal :loc_z
+
       t.datetime :discarded_at, index: true
       t.timestamps
     end
@@ -57,6 +61,10 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.references :zone, null: false, index: true
 
       t.string :name, null: false, index: { unique: true }
+
+      t.decimal :loc_x
+      t.decimal :loc_y
+      t.decimal :loc_z
 
       t.datetime :discarded_at, index: true
       t.timestamps

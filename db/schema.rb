@@ -60,6 +60,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.integer "level", null: false
     t.boolean "elite", default: false, null: false
     t.boolean "named", default: false, null: false
+    t.decimal "loc_x"
+    t.decimal "loc_y"
+    t.decimal "loc_z"
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -73,6 +76,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.bigint "patch_id", null: false
     t.bigint "zone_id", null: false
     t.string "name", null: false
+    t.decimal "loc_x"
+    t.decimal "loc_y"
+    t.decimal "loc_z"
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
