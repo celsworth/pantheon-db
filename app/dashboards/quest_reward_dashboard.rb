@@ -2,7 +2,7 @@
 
 require 'administrate/base_dashboard'
 
-class ItemDashboard < Administrate::BaseDashboard
+class QuestRewardDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
   # a hash that describes the type of each of the model's fields.
   #
@@ -11,19 +11,16 @@ class ItemDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
-    dropped_by: Field::HasMany,
-    sold_by: Field::HasMany,
-    starts_quest: Field::HasOne,
-    name: Field::String,
-    category: Field::Select.with_options(collection: Item::CATEGORIES, include_blank: 'none'),
-    required_level: Field::Number,
-    buy_price: Field::Number,
-    sell_price: Field::Number,
-    weight: Field::Number,
-    slot: Field::Select.with_options(collection: Item::SLOTS, include_blank: 'none'),
-    stats: Field::JSONB,
-    classes: Field::JSONB,
-    attrs: Field::JSONB,
+    skill: Field::String,
+    item: Field::BelongsTo,
+    copper: Field::Boolean,
+    standing: Field::Boolean,
+    xp: Field::Boolean,
+    amount: Field::Number,
+    quest: Field::BelongsTo,
+    text: Field::String,
+    created_at: Field::DateTime,
+    updated_at: Field::DateTime,
     patch: Field::BelongsTo
   }.freeze
 
@@ -33,52 +30,42 @@ class ItemDashboard < Administrate::BaseDashboard
   # By default, it's limited to four items to reduce clutter on index pages.
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
-    name
-    category
-    buy_price
-    sell_price
-    weight
-    slot
-    starts_quest
+    quest
+    skill
+    item
+    copper
+    standing
+    xp
+    amount
     patch
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
-    name
-    category
-    sell_price
-    weight
-    required_level
-    slot
-    dropped_by
-    sold_by
-    starts_quest
-    stats
-    classes
-    attrs
+    quest
+    text
+    skill
+    item
+    copper
+    standing
+    xp
+    amount
     patch
   ].freeze
 
   # FORM_ATTRIBUTES
   # an array of attributes that will be displayed
   # on the model's form (`new` and `edit`) pages.
-
-  # classes doesn't work here, doesn't support the array very well
   FORM_ATTRIBUTES = %i[
-    name
-    category
-    buy_price
-    sell_price
-    weight
-    required_level
-    slot
-    dropped_by
-    sold_by
-    stats
-    classes
-    attrs
+    quest
+    text
+    skill
+    item
+    copper
+    standing
+    xp
+    amount
   ].freeze
 
   # COLLECTION_FILTERS
@@ -93,10 +80,10 @@ class ItemDashboard < Administrate::BaseDashboard
   #   }.freeze
   COLLECTION_FILTERS = {}.freeze
 
-  # Overwrite this method to customize how items are displayed
+  # Overwrite this method to customize how quest objectives are displayed
   # across all pages of the admin dashboard.
   #
-  def display_resource(item)
-    item.name
+  def display_resource(quest_reward)
+    quest_reward.readable
   end
 end

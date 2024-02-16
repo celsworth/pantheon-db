@@ -110,7 +110,8 @@ class ItemSearch
     return unless @params[:reward_from_quest]
 
     # @params[:reward_from_quest] should be a quest id
-    ids = Item.joins(:reward_from_quest).where('reward_from_quest.id': @params[:reward_from_quest])
+    # ids = Item.joins(:reward_from_quest).where('reward_from_quest.id': @params[:reward_from_quest])
+    ids = QuestReward.where(quest_id: @params[:reward_from_quest]).select(:item_id)
     where(id: ids)
   end
 

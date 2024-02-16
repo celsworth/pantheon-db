@@ -71,7 +71,7 @@ class QuestObjectiveDashboard < Administrate::BaseDashboard
   # Overwrite this method to customize how quest objectives are displayed
   # across all pages of the admin dashboard.
   #
-  # def display_resource(quest_objective)
-  #   "QuestObjective ##{quest_objective.id}"
-  # end
+  def display_resource(quest_objective)
+    quest_objective.readable
+  end
 end

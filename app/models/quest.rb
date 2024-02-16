@@ -19,15 +19,11 @@ class Quest < ApplicationRecord
   # TODO: validation of either dropped_as or giver?
 
   has_many :quest_objectives, inverse_of: :quest
-  has_many :reward_items, class_name: 'Item', inverse_of: :reward_from_quest
+  has_many :quest_rewards, inverse_of: :quest
   has_many :successive_quests, class_name: 'Quest',
                                foreign_key: :prereq_quest_id,
                                inverse_of: :prereq_quest
 
   validates :name, presence: true, uniqueness: true
   validates :text, presence: true
-
-  validates :reward_xp, presence: true
-  validates :reward_copper, presence: true
-  validates :reward_standing, presence: true
 end

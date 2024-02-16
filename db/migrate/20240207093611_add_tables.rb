@@ -106,6 +106,24 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
+    create_table :quest_rewards do |t|
+      t.references :patch, null: false, index: true
+
+      t.references :quest, null: false, index: true
+
+      t.string :skill, index: true
+      t.references :item, index: true
+      t.boolean :copper, index: true
+      t.boolean :standing, index: true
+      t.boolean :xp
+      t.decimal :amount
+
+      t.string :text
+
+      t.datetime :discarded_at, index: true
+      t.timestamps
+    end
+
     create_table :quests do |t|
       t.references :patch, null: false, index: true
 
@@ -119,15 +137,9 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.string :name, null: false, index: { unique: true }
       t.string :text, null: false
 
-      t.integer :reward_xp, null: false, default: 0
-      t.integer :reward_copper, null: false, default: 0
-      t.decimal :reward_standing, null: false, default: 0
-
       t.datetime :discarded_at, index: true
       t.timestamps
     end
-
-    add_reference :items, :reward_from_quest, foreign_key: { to_table: :quests }, index: true
 
     create_join_table :items, :monsters do |t|
       t.index %i[item_id monster_id], unique: true

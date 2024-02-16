@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     resources :npcs
     resources :quests
     resources :quest_objectives
+    resources :quest_rewards
 
     root to: 'zones#index'
   end

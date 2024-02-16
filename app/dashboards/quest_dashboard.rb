@@ -18,10 +18,7 @@ class QuestDashboard < Administrate::BaseDashboard
     dropped_as: Field::BelongsTo,
     text: Field::Text,
     quest_objectives: Field::HasMany,
-    reward_xp: Field::Number,
-    reward_copper: Field::Number,
-    reward_standing: Field::Number,
-    reward_items: Field::HasMany,
+    quest_rewards: Field::HasMany,
     patch: Field::BelongsTo
   }.freeze
 
@@ -49,10 +46,7 @@ class QuestDashboard < Administrate::BaseDashboard
     dropped_as
     text
     quest_objectives
-    reward_xp
-    reward_copper
-    reward_standing
-    reward_items
+    quest_rewards
     patch
   ].freeze
 
@@ -67,10 +61,7 @@ class QuestDashboard < Administrate::BaseDashboard
     dropped_as
     text
     quest_objectives
-    reward_xp
-    reward_copper
-    reward_standing
-    reward_items
+    quest_rewards
   ].freeze
 
   # COLLECTION_FILTERS

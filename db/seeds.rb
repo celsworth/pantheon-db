@@ -9,6 +9,35 @@ Zone.create(name: "Avendyr's Pass")
 
 huntress = Npc.create(zone: tf, name: 'The Huntress')
 scavenger = Npc.create(zone: tf, name: 'The Scavenger')
+clothier = Npc.create(zone: tf, name: 'The Clothier')
+
+i = Item.create(name: 'A Mysterious Letter', category: 'clickie', weight: 0, required_level: 1)
+q = Quest.create(
+  name: '(Tradeskills) A mysterious letter',
+  text: "You do not know me, but I have an opportunity for you. Find me near the well in the center of the village of Avalia and I will explain more.
+
+  Until we meet,
+  -The Scavenger",
+  receiver: scavenger,
+  dropped_as: i
+)
+
+i1 = Item.create(name: 'Schematic: Burlap Cloth', category: 'schematic', weight: 0, required_level: 1)
+i2 = Item.create(name: 'Schematic: Burlap Cord', category: 'schematic', weight: 0, required_level: 1)
+i3 = Item.create(name: 'Schematic: Burlap Thread', category: 'schematic', weight: 0, required_level: 1)
+i4 = Item.create(name: 'Schematic: Burlap Padding', category: 'schematic', weight: 0, required_level: 1)
+q = Quest.create(name: '(Outfitter) Learning Outfitting', text: 'some text',
+                 giver: clothier, receiver: clothier)
+QuestReward.create(quest: q, item: i1)
+QuestReward.create(quest: q, item: i2)
+QuestReward.create(quest: q, item: i3)
+QuestReward.create(quest: q, item: i4)
+
+q = Quest.create(prereq_quest: q,
+                 name: '(Outfitter) Loom Practice', text: 'some text',
+                 giver: clothier, receiver: clothier)
+i = Item.create(name: 'Schematic: Tattered Leather', category: 'schematic', weight: 0, required_level: 1)
+QuestReward.create(quest: q, item: i)
 
 # some shaman starter area mobs to play with
 m = Monster.create(zone: tf, name: 'emerald leaf spiderling', level: 1)
