@@ -11,7 +11,7 @@ class QuestRewardDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
-    skill: Field::String,
+    skill: Field::Select.with_options(include_blank: '', collection: QuestReward::SKILLS),
     item: Field::BelongsTo,
     copper: Field::Boolean,
     standing: Field::Boolean,
