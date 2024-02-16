@@ -17,28 +17,28 @@ Rails.application.routes.draw do
     root to: 'zones#index'
   end
 
-  namespace :api do
-    namespace :v1 do
-      resources :zones do
-        member do
-          get :history
-        end
-      end
-      resources :monsters
-      resources :items do
-        collection do
-          post :search
-        end
-        member do
-          post :assign
-          post :unassign
-        end
-      end
-      resources :npcs
-      resources :quests
-      resources :quest_objectives
-    end
-  end
+  #   namespace :api do
+  #     namespace :v1 do
+  #       resources :zones do
+  #         member do
+  #           get :history
+  #         end
+  #       end
+  #       resources :monsters
+  #       resources :items do
+  #         collection do
+  #           post :search
+  #         end
+  #         member do
+  #           post :assign
+  #           post :unassign
+  #         end
+  #       end
+  #       resources :npcs
+  #       resources :quests
+  #       resources :quest_objectives
+  #     end
+  #   end
 
   # get 'up' => 'rails/health#show', as: :rails_health_check
 
