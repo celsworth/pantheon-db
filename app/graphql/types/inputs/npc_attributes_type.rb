@@ -5,8 +5,10 @@ module Types
     class NpcAttributesType < GraphQL::Schema::InputObject
       argument_class Types::BaseArgument
 
-      argument :name, String
       argument :zone_id, ID
+
+      argument :name, String
+      argument :subtitle, String, required: false
 
       argument :loc_x, Float, required: false
       argument :loc_y, Float, required: false

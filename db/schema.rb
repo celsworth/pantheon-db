@@ -76,6 +76,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.bigint "patch_id", null: false
     t.bigint "zone_id", null: false
     t.string "name", null: false
+    t.string "subtitle"
     t.decimal "loc_x"
     t.decimal "loc_y"
     t.decimal "loc_z"
@@ -85,6 +86,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.index ["discarded_at"], name: "index_npcs_on_discarded_at"
     t.index ["name"], name: "index_npcs_on_name", unique: true
     t.index ["patch_id"], name: "index_npcs_on_patch_id"
+    t.index ["subtitle"], name: "index_npcs_on_subtitle"
     t.index ["zone_id"], name: "index_npcs_on_zone_id"
   end
 

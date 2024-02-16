@@ -44,7 +44,7 @@ module Api
       end
 
       def npc_params
-        params.permit(:zone_id, :name, :loc_x, :loc_y, :loc_z)
+        params.permit(:zone_id, :name, :subtitle, :loc_x, :loc_y, :loc_z)
       end
     end
   end

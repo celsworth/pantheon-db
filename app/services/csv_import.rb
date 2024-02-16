@@ -34,8 +34,8 @@ class CsvImport
       loc_y: attrs['Y'],
       loc_z: attrs['Z'],
       name: attrs['Name'],
+      subtitle: attrs['NPC Role'],
       zone:
-
     }
 
     if (npc = Npc.find_by(name: attrs['Name']))

@@ -10,6 +10,8 @@ class NpcBlueprint < Blueprinter::Base
   view :full do
     include_view :name_only
 
+    fields :subtitle
+
     fields :loc_x, :loc_y, :loc_z
 
     fields :created_at, :updated_at

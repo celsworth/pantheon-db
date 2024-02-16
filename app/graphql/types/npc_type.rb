@@ -6,6 +6,7 @@ module Types
     field :patch, PatchType, null: false
 
     field :name, String, null: false
+    field :subtitle, String
 
     field :zone, ZoneType, null: false
 

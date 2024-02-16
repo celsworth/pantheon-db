@@ -17,6 +17,24 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
+    create_table :resources do |t|
+      t.references :patch, null: false, index: true
+
+      t.references :zone, null: false, index: true
+
+      t.string :name, null: false # Large Pine Tree
+      t.string :size, null: false # normal / large / huge
+      t.string :category, null: false # tree / metal / ?
+      t.integer :tier, null: false # 2
+
+      t.decimal :loc_x
+      t.decimal :loc_y
+      t.decimal :loc_z
+
+      t.datetime :discarded_at, index: true
+      t.timestamps
+    end
+
     create_table :monsters do |t|
       t.references :patch, null: false, index: true
 
@@ -61,6 +79,7 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.references :zone, null: false, index: true
 
       t.string :name, null: false, index: { unique: true }
+      t.string :subtitle, index: true
 
       t.decimal :loc_x
       t.decimal :loc_y
