@@ -17,7 +17,10 @@ class MonsterDashboard < Administrate::BaseDashboard
     name: Field::String,
     elite: Field::Boolean,
     named: Field::Boolean,
-    patch: Field::BelongsTo
+    patch: Field::BelongsTo,
+    loc_x: Field::Number,
+    loc_y: Field::Number,
+    loc_z: Field::Number
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -44,6 +47,9 @@ class MonsterDashboard < Administrate::BaseDashboard
     named
     drops
     patch
+    loc_x
+    loc_y
+    loc_z
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -56,6 +62,9 @@ class MonsterDashboard < Administrate::BaseDashboard
     elite
     named
     drops
+    loc_x
+    loc_y
+    loc_z
   ].freeze
 
   # COLLECTION_FILTERS

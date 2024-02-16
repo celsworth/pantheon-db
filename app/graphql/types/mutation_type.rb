@@ -6,6 +6,10 @@ module Types
     field :update_item, mutation: Mutations::Item::Update
     field :delete_item, mutation: Mutations::Item::Delete
 
+    field :create_monster, mutation: Mutations::Monster::Create
+    field :update_monster, mutation: Mutations::Monster::Update
+    field :delete_monster, mutation: Mutations::Monster::Delete
+
     field :create_npc, mutation: Mutations::Npc::Create
     field :update_npc, mutation: Mutations::Npc::Update
     field :delete_npc, mutation: Mutations::Npc::Delete

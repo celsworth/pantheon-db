@@ -16,7 +16,10 @@ class NpcDashboard < Administrate::BaseDashboard
     quests_given: Field::HasMany,
     quests_received: Field::HasMany,
     sells_items: Field::HasMany,
-    patch: Field::BelongsTo
+    patch: Field::BelongsTo,
+    loc_x: Field::Number,
+    loc_y: Field::Number,
+    loc_z: Field::Number,
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -40,6 +43,9 @@ class NpcDashboard < Administrate::BaseDashboard
     quests_given
     quests_received
     sells_items
+    loc_x
+    loc_y
+    loc_z
     patch
   ].freeze
 
@@ -52,6 +58,9 @@ class NpcDashboard < Administrate::BaseDashboard
     quests_given
     quests_received
     sells_items
+    loc_x
+    loc_y
+    loc_z
   ].freeze
 
   # COLLECTION_FILTERS
