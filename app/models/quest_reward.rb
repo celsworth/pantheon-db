@@ -10,7 +10,7 @@ class QuestReward < ApplicationRecord
   before_validation { self.patch = Patch.current }
 
   # this really needs to move somewhere else
-  SKILLS = %w[sprinting].freeze
+  SKILLS = %w[climbing harvesting mining smelting sprinting woodcutting].freeze
 
   validates :skill, inclusion: { in: SKILLS }, allow_blank: true
   validate :only_one_set
