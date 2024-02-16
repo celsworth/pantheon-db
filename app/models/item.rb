@@ -12,6 +12,8 @@ class Item < ApplicationRecord
   has_and_belongs_to_many :dropped_by, class_name: 'Monster', before_add: :check_dropped_by
   has_and_belongs_to_many :sold_by, class_name: 'Npc', before_add: :check_sold_by
   has_one :starts_quest, class_name: 'Quest', inverse_of: :dropped_as
+  has_many :quest_rewards
+  has_many :rewarded_from_quests, through: :quest_rewards, source: :quest
 
   META_CATEGORIES = {
     'armor' => %w[cloth-armor leather-armor chain-armor plate-armor].freeze,

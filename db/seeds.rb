@@ -32,6 +32,8 @@ QuestReward.create(quest: q, item: i1)
 QuestReward.create(quest: q, item: i2)
 QuestReward.create(quest: q, item: i3)
 QuestReward.create(quest: q, item: i4)
+QuestReward.create(quest: q, copper: true, amount: 50)
+QuestReward.create(quest: q, standing: true, amount: 0.08)
 
 q = Quest.create(prereq_quest: q,
                  name: '(Outfitter) Loom Practice', text: 'some text',
