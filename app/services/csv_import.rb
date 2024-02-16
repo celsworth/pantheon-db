@@ -35,6 +35,7 @@ class CsvImport
       loc_z: attrs['Z'],
       name: attrs['Name'],
       subtitle: attrs['NPC Role'],
+      vendor: attrs['Vendor'] == 'Yes',
       zone:
     }
 

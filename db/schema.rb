@@ -77,6 +77,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.bigint "zone_id", null: false
     t.string "name", null: false
     t.string "subtitle"
+    t.boolean "vendor", default: false, null: false
     t.decimal "loc_x"
     t.decimal "loc_y"
     t.decimal "loc_z"

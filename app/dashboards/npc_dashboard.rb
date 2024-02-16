@@ -17,6 +17,7 @@ class NpcDashboard < Administrate::BaseDashboard
     quests_given: Field::HasMany,
     quests_received: Field::HasMany,
     sells_items: Field::HasMany,
+    vendor: Field::Boolean,
     patch: Field::BelongsTo,
     loc_x: Field::Number,
     loc_y: Field::Number,
@@ -46,6 +47,7 @@ class NpcDashboard < Administrate::BaseDashboard
     quests_given
     quests_received
     sells_items
+    vendor
     loc_x
     loc_y
     loc_z
@@ -62,6 +64,7 @@ class NpcDashboard < Administrate::BaseDashboard
     quests_given
     quests_received
     sells_items
+    vendor
     loc_x
     loc_y
     loc_z

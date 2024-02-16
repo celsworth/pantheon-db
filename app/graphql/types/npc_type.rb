@@ -7,6 +7,7 @@ module Types
 
     field :name, String, null: false
     field :subtitle, String
+    field :vendor, Boolean, null: false
 
     field :zone, ZoneType, null: false
 

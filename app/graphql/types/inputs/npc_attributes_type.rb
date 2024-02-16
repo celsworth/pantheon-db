@@ -9,6 +9,7 @@ module Types
 
       argument :name, String
       argument :subtitle, String, required: false
+      argument :vendor, Boolean, required: false
 
       argument :loc_x, Float, required: false
       argument :loc_y, Float, required: false

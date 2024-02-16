@@ -10,7 +10,7 @@ class NpcBlueprint < Blueprinter::Base
   view :full do
     include_view :name_only
 
-    fields :subtitle
+    fields :subtitle, :vendor
 
     fields :loc_x, :loc_y, :loc_z
 

@@ -81,6 +81,8 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.string :name, null: false, index: { unique: true }
       t.string :subtitle, index: true
 
+      t.boolean :vendor, null: false, default: false
+
       t.decimal :loc_x
       t.decimal :loc_y
       t.decimal :loc_z
