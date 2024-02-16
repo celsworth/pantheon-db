@@ -11,6 +11,7 @@ module Types
 
     field :npc, resolver: Resolvers::NpcResolver
     field :npcs, resolver: Resolvers::NpcsResolver
+    field :npc_search, resolver: Resolvers::NpcSearchResolver
 
     field :quest, resolver: Resolvers::QuestResolver
     field :quests, resolver: Resolvers::QuestsResolver
