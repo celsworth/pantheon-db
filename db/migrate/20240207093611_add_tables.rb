@@ -33,8 +33,8 @@ class AddTables < ActiveRecord::Migration[7.1]
 
     create_table :locations do |t|
       t.references :zone, null: false, index: true
-      t.references :settlement, index: true # outpost, town or city, whatever
-      t.references :dungeon, index: true
+      t.references :settlement, index: { unique: true }
+      t.references :dungeon, index: { unique: true }
 
       t.datetime :discarded_at, index: true
       t.timestamps

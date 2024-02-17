@@ -12,4 +12,7 @@ class Location < ApplicationRecord
 
   has_many :monsters
   has_many :npcs
+
+  validates :dungeon_id, allow_blank: true, uniqueness: true
+  validates :settlement_id, allow_blank: true, uniqueness: true
 end
