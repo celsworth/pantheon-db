@@ -24,7 +24,7 @@ class CsvImport
   private
 
   def create_npc(attrs)
-    location = Location.includes(:zone).find_by!(zone: { name: 'Thronefast' })
+    location = Location.includes(:zone).find_by!(settlement_id: nil, dungeon_id: nil, zone: { name: 'Thronefast' })
 
     # X,Z,Y,Category,Name,NPC Role,Vendor,Trainer,Quest
     # NPC Role is like Shaman Scrolls
