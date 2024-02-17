@@ -24,7 +24,7 @@ class CsvImport
   private
 
   def create_npc(attrs)
-    zone = Zone.find_by!(name: 'Thronefast')
+    location = Location.includes(:zone).find_by!(zone: { name: 'Thronefast' })
 
     # X,Z,Y,Category,Name,NPC Role,Vendor,Trainer,Quest
     # NPC Role is like Shaman Scrolls
@@ -36,7 +36,7 @@ class CsvImport
       name: attrs['Name'],
       subtitle: attrs['NPC Role'],
       vendor: attrs['Vendor'] == 'Yes',
-      zone:
+      location:
     }
 
     if (npc = Npc.find_by(name: attrs['Name']))
