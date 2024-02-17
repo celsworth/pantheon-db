@@ -16,7 +16,7 @@ Ultimately I hope this API will be able to answer almost any question about Pant
 
 If you want to ask the API a question it cannot answer, let me know..
 
-Some examples below.
+Some examples below. These are using a pretty limited dataset so excuse some of the repetitiveness.
 
 
 ### Where are the Shaman trainers?
@@ -55,6 +55,35 @@ There's only one for now, but note that `npcs` returns an array so we can add mo
 
 Eventually, a pretty frontend can plot these locs on a world map.
 
+
+### Find me items with at least 1 Spell Crit Chance
+
+```graphql
+{
+  items(stats: [{stat: "spell-crit-chance", operator: GTE, value: 1}]) {
+    name
+    stats
+  }
+}
+```
+
+```json
+{
+  "data": {
+    "items": [
+      {
+        "name": "Gnossa's Walking Stick",
+        "stats": {
+          "delay": 5.9,
+          "damage": 22,
+          "intellect": 1,
+          "spell-crit-chance": 2
+        }
+      }
+    ]
+  }
+}
+```
 
 ### Which quest rewards the Tattered Leather schematic, and where is the NPC that offers it?
 

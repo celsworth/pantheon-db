@@ -24,7 +24,7 @@ class AddTables < ActiveRecord::Migration[7.1]
 
       t.string :name, null: false # Large Pine Tree
       t.string :size, null: false # normal / large / huge
-      t.string :category, null: false # tree / metal / ?
+      t.string :category, null: false # tree / metal / fiber / ?
       t.integer :tier, null: false # 2
 
       t.decimal :loc_x
