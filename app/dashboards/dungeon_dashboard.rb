@@ -2,7 +2,7 @@
 
 require 'administrate/base_dashboard'
 
-class MonsterDashboard < Administrate::BaseDashboard
+class DungeonDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
   # a hash that describes the type of each of the model's fields.
   #
@@ -11,16 +11,9 @@ class MonsterDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
-    location: Field::BelongsTo,
-    drops: Field::HasMany,
-    level: Field::Number,
     name: Field::String,
-    elite: Field::Boolean,
-    named: Field::Boolean,
-    patch: Field::BelongsTo,
-    loc_x: Field::Number,
-    loc_y: Field::Number,
-    loc_z: Field::Number
+    monsters: Field::HasMany,
+    npcs: Field::HasMany
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -30,26 +23,16 @@ class MonsterDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
     name
-    location
-    level
-    elite
-    named
-    patch
+    monsters
+    npcs
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
     name
-    location
-    level
-    elite
-    named
-    drops
-    patch
-    loc_x
-    loc_y
-    loc_z
+    monsters
+    npcs
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -57,14 +40,6 @@ class MonsterDashboard < Administrate::BaseDashboard
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
     name
-    location
-    level
-    elite
-    named
-    drops
-    loc_x
-    loc_y
-    loc_z
   ].freeze
 
   # COLLECTION_FILTERS
@@ -79,10 +54,10 @@ class MonsterDashboard < Administrate::BaseDashboard
   #   }.freeze
   COLLECTION_FILTERS = {}.freeze
 
-  # Overwrite this method to customize how monsters are displayed
+  # Overwrite this method to customize how zones are displayed
   # across all pages of the admin dashboard.
   #
-  def display_resource(monster)
-    monster.name
+  def display_resource(resource)
+    resource.name
   end
 end

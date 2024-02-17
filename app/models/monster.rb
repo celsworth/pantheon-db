@@ -9,12 +9,13 @@ class Monster < ApplicationRecord
   belongs_to :patch
   before_validation { self.patch = Patch.current }
 
-  belongs_to :zone
+  belongs_to :location
+  has_one :zone, through: :location
 
   has_and_belongs_to_many :drops, class_name: 'Item', before_add: :check_drops
 
   validates :name, presence: true, uniqueness: true
-  validates :zone, presence: true
+  validates :location, presence: true
   validates :level, presence: true
 
   private

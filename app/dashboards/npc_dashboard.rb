@@ -13,7 +13,7 @@ class NpcDashboard < Administrate::BaseDashboard
     id: Field::Number,
     name: Field::String,
     subtitle: Field::String,
-    zone: Field::BelongsTo,
+    location: Field::BelongsTo,
     quests_given: Field::HasMany,
     quests_received: Field::HasMany,
     sells_items: Field::HasMany,
@@ -32,7 +32,7 @@ class NpcDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i[
     name
     subtitle
-    zone
+    location
     quests_given
     quests_received
     patch
@@ -43,7 +43,7 @@ class NpcDashboard < Administrate::BaseDashboard
   SHOW_PAGE_ATTRIBUTES = %i[
     name
     subtitle
-    zone
+    location
     quests_given
     quests_received
     sells_items
@@ -60,7 +60,7 @@ class NpcDashboard < Administrate::BaseDashboard
   FORM_ATTRIBUTES = %i[
     name
     subtitle
-    zone
+    location
     quests_given
     quests_received
     sells_items

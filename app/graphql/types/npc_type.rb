@@ -9,7 +9,10 @@ module Types
     field :subtitle, String
     field :vendor, Boolean, null: false
 
-    field :zone, ZoneType, null: false
+    field :zone, ZoneType, null: false, description: <<~DESC
+      Shortcut for location -> zone. May be removed.
+    DESC
+    field :location, LocationType, null: false
 
     field :quests_given, [QuestType], null: false
     field :quests_received, [QuestType], null: false

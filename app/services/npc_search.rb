@@ -6,7 +6,7 @@ class NpcSearch
   InvalidOperator = Class.new(StandardError)
 
   FILTERS = %i[
-    filter_name filter_subtitle filter_vendor filter_zone
+    filter_id filter_name filter_subtitle filter_vendor filter_location filter_zone
     filter_gives_quest filter_receives_quest filter_sells_item
   ].freeze
 
@@ -24,6 +24,10 @@ class NpcSearch
 
   private
 
+  def filter_id
+    where(id: @params[:id]) if @params[:id]
+  end
+
   def filter_name
     where('name ILIKE ?', "%#{sanitize_sql_like(@params[:name])}%") if @params[:name]
   end
@@ -36,8 +40,15 @@ class NpcSearch
     where(vendor: @params[:vendor]) unless @params[:vendor].nil?
   end
 
+  def filter_location
+    where(location_id: @params[:location_id]) unless @params[:location_id].nil?
+  end
+
   def filter_zone
-    where(zone_id: @params[:zone_id]) unless @params[:zone_id].nil?
+    return if @params[:zone_id].nil?
+
+    ids = Npc.joins(:location).where('location.zone_id': @params[:zone_id])
+    where(id: ids)
   end
 
   def filter_gives_quest

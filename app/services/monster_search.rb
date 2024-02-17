@@ -6,7 +6,9 @@ class MonsterSearch
   InvalidOperator = Class.new(StandardError)
 
   FILTERS = %i[
-    filter_name filter_zone filter_elite filter_named filter_drops filter_level
+    filter_id filter_name
+    filter_location filter_zone
+    filter_elite filter_named filter_drops filter_level
   ].freeze
 
   def initialize(**params)
@@ -23,6 +25,10 @@ class MonsterSearch
 
   private
 
+  def filter_id
+    where(id: @params[:id]) if @params[:id]
+  end
+
   def filter_name
     where('name ILIKE ?', "%#{sanitize_sql_like(@params[:name])}%") if @params[:name]
   end
@@ -35,8 +41,15 @@ class MonsterSearch
     where(elite: @params[:named]) unless @params[:named].nil?
   end
 
+  def filter_location
+    where(location_id: @params[:location_id]) unless @params[:location_id].nil?
+  end
+
   def filter_zone
-    where(zone_id: @params[:zone_id]) unless @params[:zone_id].nil?
+    return if @params[:zone_id].nil?
+
+    ids = Monster.joins(:location).where('location.zone_id': @params[:zone_id])
+    where(id: ids)
   end
 
   def filter_drops

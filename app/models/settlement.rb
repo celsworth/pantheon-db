@@ -1,13 +1,10 @@
 # frozen_string_literal: true
 
-class Zone < ApplicationRecord
+class Settlement < ApplicationRecord
   include Discard::Model
   default_scope -> { kept }
 
   has_paper_trail
-
-  belongs_to :patch
-  before_validation { self.patch = Patch.current }
 
   has_many :locations
   has_many :monsters, through: :locations

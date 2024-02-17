@@ -17,10 +17,33 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
+    create_table :dungeons do |t|
+      t.string :name, null: false, index: { unique: true }
+
+      t.datetime :discarded_at, index: true
+      t.timestamps
+    end
+
+    create_table :settlements do |t|
+      t.string :name, null: false, index: { unique: true }
+
+      t.datetime :discarded_at, index: true
+      t.timestamps
+    end
+
+    create_table :locations do |t|
+      t.references :zone, null: false, index: true
+      t.references :settlement, index: true # outpost, town or city, whatever
+      t.references :dungeon, index: true
+
+      t.datetime :discarded_at, index: true
+      t.timestamps
+    end
+
     create_table :resources do |t|
       t.references :patch, null: false, index: true
 
-      t.references :zone, null: false, index: true
+      t.references :location, null: false, index: true
 
       t.string :name, null: false # Large Pine Tree
       t.string :size, null: false # normal / large / huge
@@ -38,7 +61,7 @@ class AddTables < ActiveRecord::Migration[7.1]
     create_table :monsters do |t|
       t.references :patch, null: false, index: true
 
-      t.references :zone, null: false, index: true
+      t.references :location, null: false, index: true
 
       t.string :name, null: false, index: { unique: true }
       t.integer :level, null: false
@@ -76,7 +99,7 @@ class AddTables < ActiveRecord::Migration[7.1]
     create_table :npcs do |t|
       t.references :patch, null: false, index: true
 
-      t.references :zone, null: false, index: true
+      t.references :location, null: false, index: true
 
       t.string :name, null: false, index: { unique: true }
       t.string :subtitle, index: true

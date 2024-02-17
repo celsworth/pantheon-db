@@ -10,7 +10,10 @@ module Types
     field :elite, Boolean, null: false
     field :named, Boolean, null: false
 
-    field :zone, ZoneType
+    field :zone, ZoneType, null: false, description: <<~DESC
+      Shortcut for location -> zone. May be removed.
+    DESC
+    field :location, LocationType, null: false
     field :drops, [ItemType]
 
     field :loc_x, Float

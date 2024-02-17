@@ -4,6 +4,8 @@ module Resolvers
   class ItemsResolver < BaseResolver
     type [Types::ItemType], null: false
 
+    argument :id, ID, required: false
+
     argument :name, String, required: false
     argument :category, String, required: false
     argument :slot, String, required: false

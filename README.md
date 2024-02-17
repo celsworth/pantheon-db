@@ -135,8 +135,6 @@ Output:
 {
   monsters(name: "emerald leaf spiderling") {
     name
-    elite
-    named
     drops {
       name
       category
@@ -153,8 +151,6 @@ Output:
     "monsters": [
       {
         "name": "emerald leaf spiderling",
-        "elite": false,
-        "named": false,
         "drops": [
           {
             "name": "Spider Fangs",
