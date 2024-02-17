@@ -14,8 +14,8 @@ class NpcSearch
     @params = params
   end
 
-  def search
-    @dataset = Npc
+  def search(dataset: nil)
+    @dataset = dataset || Npc
 
     FILTERS.each { send(_1) }
 
@@ -33,15 +33,11 @@ class NpcSearch
   end
 
   def filter_vendor
-    return if @params[:vendor].nil?
-
-    where(vendor: @params[:vendor])
+    where(vendor: @params[:vendor]) unless @params[:vendor].nil?
   end
 
   def filter_zone
-    return if @params[:zone_id].nil?
-
-    where(zone_id: @params[:zone_id])
+    where(zone_id: @params[:zone_id]) unless @params[:zone_id].nil?
   end
 
   def filter_gives_quest

@@ -15,8 +15,8 @@ class ItemSearch
     @params = params
   end
 
-  def search
-    @dataset = Item
+  def search(dataset: nil)
+    @dataset = dataset || Item
 
     FILTERS.each { send(_1) }
 

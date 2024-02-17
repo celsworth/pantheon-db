@@ -131,14 +131,18 @@ Output:
 
 ### What items does an emerald leaf spiderling drop?
 
-For now this is a two parter as there's no monster search yet. First get the ID of emerald leaf spiderlings..
-
-
 ```graphql
 {
-  monsters {
-    id
+  monsters(name: "emerald leaf spiderling") {
     name
+    elite
+    named
+    drops {
+      name
+      category
+      weight
+      sellPrice
+    }
   }
 }
 ```
@@ -148,49 +152,29 @@ For now this is a two parter as there's no monster search yet. First get the ID 
   "data": {
     "monsters": [
       {
-        "id": "1",
-        "name": "emerald leaf spiderling"
-      },
-<snip
-    ]
-  }
-}
-```
-
-And feed it into the items search:
-
-```graphql
-{
-  items(droppedBy: 1) {
-    name
-    category
-    weight
-    sellPrice
-  }
-}
-```
-
-```json
-{
-  "data": {
-    "items": [
-      {
-        "name": "Spider Fangs",
-        "category": "general",
-        "weight": 0.1,
-        "sellPrice": 19
-      },
-      {
-        "name": "Spider Egg",
-        "category": "general",
-        "weight": 0.2,
-        "sellPrice": 23
-      },
-      {
-        "name": "Spider Legs",
-        "category": "general",
-        "weight": 0.3,
-        "sellPrice": 32
+        "name": "emerald leaf spiderling",
+        "elite": false,
+        "named": false,
+        "drops": [
+          {
+            "name": "Spider Fangs",
+            "category": "general",
+            "weight": 0.1,
+            "sellPrice": 19
+          },
+          {
+            "name": "Spider Egg",
+            "category": "general",
+            "weight": 0.2,
+            "sellPrice": 23
+          },
+          {
+            "name": "Spider Legs",
+            "category": "general",
+            "weight": 0.3,
+            "sellPrice": 32
+          }
+        ]
       }
     ]
   }
