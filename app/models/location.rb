@@ -15,4 +15,13 @@ class Location < ApplicationRecord
 
   validates :dungeon_id, allow_blank: true, uniqueness: true
   validates :settlement_id, allow_blank: true, uniqueness: true
+  validate :dungeon_or_settlement
+
+  private
+
+  def dungeon_or_settlement
+    return unless dungeon && settlement
+
+    errors.add(:base, 'Set either dungeon or settlement, not both')
+  end
 end
