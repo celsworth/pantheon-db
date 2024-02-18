@@ -28,6 +28,8 @@ class Item < ApplicationRecord
 
   SLOTS = %w[head shoulders hands back chest waist legs feet ears fingers neck relic].freeze
 
+  ATTRS = %w[no-trade lifebound magic quest-item temporary unique].freeze
+
   CLASSES = %w[cleric direlord druid enchanter monk paladin ranger rogue
                shaman summoner warrior wizard].freeze
 
@@ -43,9 +45,10 @@ class Item < ApplicationRecord
   validates :name, presence: true, uniqueness: true
   validates :weight, presence: true
 
+  validates :attrs, allow_blank: true, inclusion: { in: ATTRS }
   validates :category, presence: true, inclusion: { in: CATEGORIES }
-  validates :slot, allow_blank: true, inclusion: { in: SLOTS }
   validates :classes, allow_blank: true, inclusion: { in: CLASSES }
+  validates :slot, allow_blank: true, inclusion: { in: SLOTS }
 
   validate :stat_hash_valid
 
