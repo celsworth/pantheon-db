@@ -11,12 +11,22 @@ module Types
     field :weight, Float, null: false
     field :required_level, Integer
 
-    field :category, String
-    field :slot, String
+    field :category, String, description: <<~DESC
+      Category will be one of: #{Item::CATEGORIES.join(', ')}
+    DESC
+    field :slot, String, description: <<~DESC
+      Slot will be one of: #{Item::SLOTS.join(', ')}
+    DESC
 
-    field :stats, GraphQL::Types::JSON
-    field :classes, [String], null: false
-    field :attrs, [String], null: false
+    field :stats, GraphQL::Types::JSON, description: <<~DESC
+      A hash of stats on the item. Keys will all be one of: #{Item::STATS.join(', ')}
+    DESC
+    field :classes, [String], null: false, description: <<~DESC
+      An array of classes that can use the item. Entries will all be one of: #{Item::CLASSES.join(', ')}
+    DESC
+    field :attrs, [String], null: false, description: <<~DESC
+      An array of attributes on the item. Entries will all be one of: #{Item::ATTRS.join(', ')}
+    DESC
 
     field :dropped_by, [MonsterType]
     field :starts_quest, QuestType
