@@ -60,9 +60,14 @@ Eventually, a pretty frontend can plot these locs on a world map.
 
 ```graphql
 {
-  items(stats: [{stat: "spell-crit-chance", operator: GTE, value: 1}]) {
+  items(stats: [{stat: spellCritChance, operator: GTE, value: 1}]) {
     name
-    stats
+    stats {
+      delay
+      damage
+      intellect
+      spellCritChance
+    }
   }
 }
 ```
@@ -77,7 +82,7 @@ Eventually, a pretty frontend can plot these locs on a world map.
           "delay": 5.9,
           "damage": 22,
           "intellect": 1,
-          "spell-crit-chance": 2
+          "spellCritChance": 2
         }
       }
     ]

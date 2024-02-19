@@ -5,7 +5,7 @@ module Types
     class StatInputFilterType < GraphQL::Schema::InputObject
       argument_class(Types::BaseArgument)
 
-      argument :stat, String
+      argument :stat, StatEnumType
       argument :operator, OperatorType
       argument :value, Float
     end
