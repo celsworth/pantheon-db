@@ -27,7 +27,8 @@ class Item < ApplicationRecord
                .freeze
   CATEGORIES_CAMEL = CATEGORIES.map { |w| w.camelize(:lower) }
 
-  SLOTS = %w[head shoulders hands back chest waist legs feet ears fingers neck relic].freeze
+  SLOTS = %w[head shoulders hands back chest waist legs feet ears
+             fingers neck relic 1handed 2handed offhand ranged].freeze
   SLOTS_CAMEL = SLOTS.map { |w| w.camelize(:lower) }
 
   ATTRS = %w[no_trade lifebound magic quest_item temporary unique].freeze
