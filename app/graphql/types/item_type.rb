@@ -14,7 +14,7 @@ module Types
     field :category, ItemCategoryType
     field :slot, ItemSlotType
 
-    field :stats, StatsType
+    field :stats, ItemStatsType
     field :classes, [ClassType], null: false, description: <<~DESC
       An array of classes that can use the item.
     DESC

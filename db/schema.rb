@@ -87,6 +87,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["discarded_at"], name: "index_monsters_on_discarded_at"
+    t.index ["loc_x", "loc_y"], name: "index_monsters_on_loc_x_and_loc_y"
     t.index ["location_id"], name: "index_monsters_on_location_id"
     t.index ["name"], name: "index_monsters_on_name", unique: true
     t.index ["patch_id"], name: "index_monsters_on_patch_id"
@@ -105,6 +106,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["discarded_at"], name: "index_npcs_on_discarded_at"
+    t.index ["loc_x", "loc_y"], name: "index_npcs_on_loc_x_and_loc_y"
     t.index ["location_id"], name: "index_npcs_on_location_id"
     t.index ["name"], name: "index_npcs_on_name", unique: true
     t.index ["patch_id"], name: "index_npcs_on_patch_id"
@@ -181,9 +183,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.bigint "patch_id", null: false
     t.bigint "location_id", null: false
     t.string "name", null: false
+    t.string "resource", null: false
     t.string "size", null: false
-    t.string "category", null: false
-    t.integer "tier", null: false
     t.decimal "loc_x"
     t.decimal "loc_y"
     t.decimal "loc_z"
@@ -191,6 +192,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["discarded_at"], name: "index_resources_on_discarded_at"
+    t.index ["loc_x", "loc_y"], name: "index_resources_on_loc_x_and_loc_y"
     t.index ["location_id"], name: "index_resources_on_location_id"
     t.index ["patch_id"], name: "index_resources_on_patch_id"
   end

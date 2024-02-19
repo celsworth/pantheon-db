@@ -16,6 +16,7 @@ Rails.application.routes.draw do
     resources :quests
     resources :quest_objectives
     resources :quest_rewards
+    resources :resources
 
     root to: 'zones#index'
   end
