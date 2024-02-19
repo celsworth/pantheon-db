@@ -94,7 +94,7 @@ Eventually, a pretty frontend can plot these locs on a world map.
 
 ```graphql
 {
-  items(name: "Tattered Leather", category: "schematic") {
+  items(name: "Tattered Leather", category: schematic) {
     name
     rewardedFromQuests {
       name
