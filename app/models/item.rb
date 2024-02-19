@@ -25,11 +25,15 @@ class Item < ApplicationRecord
                   catalyst component material reagent resource]
                .concat(META_CATEGORIES.values.flatten)
                .freeze
+  CATEGORIES_CAMEL = CATEGORIES.map { |w| w.camelize(:lower) }
 
   SLOTS = %w[head shoulders hands back chest waist legs feet ears fingers neck relic].freeze
+  SLOTS_CAMEL = SLOTS.map { |w| w.camelize(:lower) }
 
   ATTRS = %w[no_trade lifebound magic quest_item temporary unique].freeze
+  ATTRS_CAMEL = ATTRS.map { |w| w.camelize(:lower) }
 
+  # no need to camel this yet as no underscores
   CLASSES = %w[cleric direlord druid enchanter monk necromancer paladin ranger rogue
                shaman summoner warrior wizard].freeze
 
@@ -92,6 +96,7 @@ class Item < ApplicationRecord
       if STATS.include?(k)
         errors.add(:stats, "#{k}=#{v} is invalid, use numbers only") unless v.is_a?(Numeric) || v.nil?
       else
+        # now that we have StatsType this shouldn't happen, GraphQL protects us from uknown keys
         errors.add(:stats, "#{k} is not a valid stats key")
       end
     end

@@ -11,19 +11,15 @@ module Types
     field :weight, Float, null: false
     field :required_level, Integer
 
-    field :category, String, description: <<~DESC
-      Category will be one of: #{Item::CATEGORIES.join(', ')}
-    DESC
-    field :slot, String, description: <<~DESC
-      Slot will be one of: #{Item::SLOTS.join(', ')}
-    DESC
+    field :category, ItemCategoryType
+    field :slot, ItemSlotType
 
     field :stats, StatsType
-    field :classes, [String], null: false, description: <<~DESC
-      An array of classes that can use the item. Entries will all be one of: #{Item::CLASSES.join(', ')}
+    field :classes, [ClassType], null: false, description: <<~DESC
+      An array of classes that can use the item.
     DESC
-    field :attrs, [String], null: false, description: <<~DESC
-      An array of attributes on the item. Entries will all be one of: #{Item::ATTRS.join(', ')}
+    field :attrs, [ItemAttrType], null: false, description: <<~DESC
+      An array of attributes on the item.
     DESC
 
     field :dropped_by, [MonsterType]
