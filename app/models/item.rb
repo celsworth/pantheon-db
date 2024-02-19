@@ -21,7 +21,7 @@ class Item < ApplicationRecord
   }.freeze
   CATEGORIES = %w[general schematic container clickie scroll
                   potion ingredient food drink
-                  shield held jewellery
+                  shield held jewellery relic
                   catalyst component material reagent resource]
                .concat(META_CATEGORIES.values.flatten)
                .freeze
@@ -30,15 +30,16 @@ class Item < ApplicationRecord
 
   ATTRS = %w[no-trade lifebound magic quest-item temporary unique].freeze
 
-  CLASSES = %w[cleric direlord druid enchanter monk paladin ranger rogue
+  CLASSES = %w[cleric direlord druid enchanter monk necromancer paladin ranger rogue
                shaman summoner warrior wizard].freeze
 
   STATS = %w[damage attack-power hit-rating
              spell-power spell-crit-chance
              health mana armor
-             block-rating
+             block-rating dodge parry
              delay
              endurance
+             health-recovery-while-resting mana-recovery-while-resting
              fire-resist cold-resist poison-resist chemical-resist nature-resist magic-resist
              strength stamina constitution agility dexterity intellect wisdom charisma].freeze
 

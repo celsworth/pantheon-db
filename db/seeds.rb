@@ -72,3 +72,8 @@ i = Item.create(name: 'Blood-Soaked Shield', weight: 6.5, category: 'shield',
                 stats: { armor: 4, 'block-rating': 155, stamina: 1 },
                 attrs: %w[magic],
                 classes: %w[warrior cleric paladin ranger shaman])
+
+Item.create(name: 'Rune of Living Stone', slot: 'relic', category: 'relic', weight: 0.2,
+            stats: { dodge: 25, 'mana-recovery-while-resting': 2 },
+            classes: %w[cleric wizard druid enchanter shaman summoner necromancer],
+            attrs: ['magic'])
