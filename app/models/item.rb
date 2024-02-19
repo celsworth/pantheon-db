@@ -35,8 +35,8 @@ class Item < ApplicationRecord
   ATTRS_CAMEL = ATTRS.map { |w| w.camelize(:lower) }
 
   # no need to camel this yet as no underscores
-  CLASSES = %w[cleric direlord druid enchanter monk necromancer paladin ranger rogue
-               shaman summoner warrior wizard].freeze
+  CLASSES = %w[bard cleric direlord druid enchanter monk necromancer paladin
+               ranger rogue shaman summoner warrior wizard].freeze
 
   STATS = %w[damage attack_power hit_rating
              spell_power spell_crit_chance
