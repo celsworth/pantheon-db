@@ -8,11 +8,11 @@ class QuestBlueprint < Blueprinter::Base
   end
 
   view :full do
-    fields :text, :reward_xp, :reward_copper, :reward_standing
+    fields :text
 
     fields :created_at, :updated_at
 
-    association :reward_items, blueprint: ItemBlueprint, view: :name_only
+    # association :reward_items, blueprint: ItemBlueprint, view: :name_only
 
     association :prereq_quest, blueprint: QuestBlueprint, view: :name_only
     association :giver, blueprint: NpcBlueprint, view: :name_only

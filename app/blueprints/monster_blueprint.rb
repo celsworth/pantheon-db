@@ -11,6 +11,8 @@ class MonsterBlueprint < Blueprinter::Base
     include_view :name_only
     fields :level, :elite, :named
 
+    fields :loc_x, :loc_y, :loc_z
+
     fields :created_at, :updated_at
 
     association :drops, blueprint: ItemBlueprint, view: :name_only

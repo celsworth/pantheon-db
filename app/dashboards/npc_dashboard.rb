@@ -12,11 +12,16 @@ class NpcDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     name: Field::String,
-    zone: Field::BelongsTo,
+    subtitle: Field::String,
+    location: Field::BelongsTo,
     quests_given: Field::HasMany,
     quests_received: Field::HasMany,
     sells_items: Field::HasMany,
-    patch: Field::BelongsTo
+    vendor: Field::Boolean,
+    patch: Field::BelongsTo,
+    loc_x: Field::Number,
+    loc_y: Field::Number,
+    loc_z: Field::Number,
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -26,7 +31,8 @@ class NpcDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
     name
-    zone
+    subtitle
+    location
     quests_given
     quests_received
     patch
@@ -36,10 +42,15 @@ class NpcDashboard < Administrate::BaseDashboard
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
     name
-    zone
+    subtitle
+    location
     quests_given
     quests_received
     sells_items
+    vendor
+    loc_x
+    loc_y
+    loc_z
     patch
   ].freeze
 
@@ -48,10 +59,15 @@ class NpcDashboard < Administrate::BaseDashboard
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
     name
-    zone
+    subtitle
+    location
     quests_given
     quests_received
     sells_items
+    vendor
+    loc_x
+    loc_y
+    loc_z
   ].freeze
 
   # COLLECTION_FILTERS

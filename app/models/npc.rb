@@ -9,14 +9,15 @@ class Npc < ApplicationRecord
   belongs_to :patch
   before_validation { self.patch = Patch.current }
 
-  belongs_to :zone
+  belongs_to :location
+  has_one :zone, through: :location
 
   has_and_belongs_to_many :sells_items, class_name: 'Item', before_add: :check_sells_items
   has_many :quests_given, class_name: 'Quest', foreign_key: :giver_id
   has_many :quests_received, class_name: 'Quest', foreign_key: :receiver_id
 
   validates :name, presence: true, uniqueness: true
-  validates :zone, presence: true
+  validates :location, presence: true
 
   private
 

@@ -6,7 +6,7 @@ class ItemSearch
   InvalidOperator = Class.new(StandardError)
 
   FILTERS = %i[
-    filter_name filter_weight filter_required_level filter_category
+    filter_id filter_name filter_weight filter_required_level filter_category
     filter_slot filter_stats filter_class filter_attrs
     filter_dropped_by filter_reward_from_quest filter_starts_quest
   ].freeze
@@ -15,8 +15,8 @@ class ItemSearch
     @params = params
   end
 
-  def search
-    @dataset = Item
+  def search(dataset: nil)
+    @dataset = dataset || Item
 
     FILTERS.each { send(_1) }
 
@@ -24,6 +24,10 @@ class ItemSearch
   end
 
   private
+
+  def filter_id
+    where(id: @params[:id]) if @params[:id]
+  end
 
   def filter_name
     where('name ILIKE ?', "%#{sanitize_sql_like(@params[:name])}%") if @params[:name]
@@ -110,7 +114,8 @@ class ItemSearch
     return unless @params[:reward_from_quest]
 
     # @params[:reward_from_quest] should be a quest id
-    ids = Item.joins(:reward_from_quest).where('reward_from_quest.id': @params[:reward_from_quest])
+    # ids = Item.joins(:reward_from_quest).where('reward_from_quest.id': @params[:reward_from_quest])
+    ids = QuestReward.where(quest_id: @params[:reward_from_quest]).select(:item_id)
     where(id: ids)
   end
 

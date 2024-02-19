@@ -11,16 +11,20 @@ module Types
     field :weight, Float, null: false
     field :required_level, Integer
 
-    field :category, String
-    field :slot, String
+    field :category, ItemCategoryType
+    field :slot, ItemSlotType
 
-    field :stats, GraphQL::Types::JSON
-    field :classes, [String], null: false
-    field :attrs, [String], null: false
+    field :stats, StatsType
+    field :classes, [ClassType], null: false, description: <<~DESC
+      An array of classes that can use the item.
+    DESC
+    field :attrs, [ItemAttrType], null: false, description: <<~DESC
+      An array of attributes on the item.
+    DESC
 
     field :dropped_by, [MonsterType]
     field :starts_quest, QuestType
-    field :reward_from_quest, QuestType
+    field :rewarded_from_quests, [QuestType]
 
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false

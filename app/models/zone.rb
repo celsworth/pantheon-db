@@ -9,8 +9,9 @@ class Zone < ApplicationRecord
   belongs_to :patch
   before_validation { self.patch = Patch.current }
 
-  has_many :monsters
-  has_many :npcs
+  has_many :locations
+  has_many :monsters, through: :locations
+  has_many :npcs, through: :locations
 
   validates :name, presence: true, uniqueness: true
 end

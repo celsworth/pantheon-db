@@ -17,10 +17,6 @@ module Types
                description: 'Item ID that starts this quest, if applicable'
       argument :giver_id, ID, required: false, description: 'Npc ID that supplies this quest'
       argument :receiver_id, ID, required: false, description: 'Npc ID that completes this quest'
-
-      argument :reward_xp, Integer, required: false
-      argument :reward_copper, Integer, required: false
-      argument :reward_standing, Float, required: false
     end
   end
 end

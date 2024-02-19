@@ -2,186 +2,218 @@
 
 Base URL for now is http://yrk.cae.me.uk:3000 - this will change eventually.
 
-
 ## Admin Dashboard
 
 See /admin for a quick and dirty display to see what's in db and edit things in a UI.
 
+
 ## GraphQL
 
-Experimental non-exhaustive GraphQL is implemented; have a play with http://yrk.cae.me.uk:3000/graphiql
+This is a GraphQL API; GraphiQL console is available at http://yrk.cae.me.uk:3000/graphiql
 
 
-## REST API
+Ultimately I hope this API will be able to answer almost any question about Pantheon itemisation, NPCs, quest lines, etc.
 
-REST API is at /api/v1/
+If you want to ask the API a question it cannot answer, let me know..
 
-Currently implemented resources are items, monsters, npcs, quest_objectives, quests, zones.
+Some examples below. These are using a pretty limited dataset so excuse some of the repetitiveness.
 
-No auth yet, this will change :)
 
-### Search Items
+### Where are the Shaman trainers?
 
-Given a data.json input like this:
-
-```json
+```graphql
 {
-  "name": "blood",
-  "category": "shield",
-  "class": "shaman",
-  "stats": [
-    {
-      "stat": "armor",
-      "operator": ">",
-      "value": 3
-    }
-  ],
-  "required_level": [
-    {
-      "operator": ">",
-      "value": 5
-    }
-  ],
-  "attrs": [
-    "magic"
-  ]
+  npcs(subtitle: "Shaman Scrolls") {
+    id
+    name
+    locX
+    locY
+    locZ
+  }
 }
 ```
 
-You can POST it with curl like this:
-
-```
-curl -H "Content-Type: application/json" -X POST -d @data.json http://yrk.cae.me.uk:3000/api/v1/items/search
-```
-
-Which will return matching items (a Blood-soaked Shield from the sample data).
-
-You can filter on multiple stats and multiple attrs, items that match them all will be returned. Valid operators are `>`, `<`, `>=`, `<=`, `=`.
-
-Note some are arrays so you can specify multiple filters for a parameter, like > and < for a range.
-
-Other filters are shown in this tenuous example:
+Output:
 
 ```json
 {
-  "dropped_by": 1,
-  "reward_from_quest": 1,
-  "slot": "chest",
-  "weight": [
-    {
-      "operator": ">",
-      "value": 3
-    },
-    {
-      "operator": "<=",
-      "value": 4
-    }
-  ]
+  "data": {
+    "npcs": [
+      {
+        "id": "5",
+        "name": "Akola",
+        "locX": 3026.21,
+        "locY": 3776.17,
+        "locZ": 463.57
+      }
+    ]
+  }
 }
 ```
 
-`dropped_by` should be a monster.id to limit the search to items dropped by that monster. `reward_from_quest` should be a quest.id to show items rewarded by that quest.
+There's only one for now, but note that `npcs` returns an array so we can add more as they arrive.
+
+Eventually, a pretty frontend can plot these locs on a world map.
 
 
+### Find me items with at least 1 Spell Crit Chance
 
-### Get all Zones (or any resource)
-
+```graphql
+{
+  items(stats: [{stat: spellCritChance, operator: GTE, value: 1}]) {
+    name
+    stats {
+      delay
+      damage
+      intellect
+      spellCritChance
+    }
+  }
+}
 ```
-curl http://yrk.cae.me.uk:3000/api/v1/zones
-```
-
-```json
-[{"id":1,"name":"Thronefast"},{"id":2,"name":"Avendyr's Pass"}]
-```
-
-### Get Single Zone
-
-```
-curl http://yrk.cae.me.uk:3000/api/v1/zones/1
-```
-
-```json
-{"id":1,"name":"Thronefast"}
-```
-
-Most associated resources just return the id/name for now to keep it simple, ie on a monster, you get:
 
 ```json
 {
-    "id": 1,
-    "elite": true,
-    "level": 13,
-    "name": "Zirus the Bonewalker",
-    "named": true,
-    "zone": {
-        "id": 1,
-        "name": "Thronefast"
+  "data": {
+    "items": [
+      {
+        "name": "Gnossa's Walking Stick",
+        "stats": {
+          "delay": 5.9,
+          "damage": 22,
+          "intellect": 1,
+          "spellCritChance": 2
+        }
+      }
+    ]
+  }
+}
+```
+
+### Which quest rewards the Tattered Leather schematic, and where is the NPC that offers it?
+
+```graphql
+{
+  items(name: "Tattered Leather", category: schematic) {
+    name
+    rewardedFromQuests {
+      name
+      giver {
+        name
+        locX
+        locY
+        locZ
+      }
     }
+  }
+}
+```
+
+Output:
+
+```json
+{
+  "data": {
+    "items": [
+      {
+        "name": "Schematic: Tattered Leather",
+        "rewardedFromQuests": [
+          {
+            "name": "(Outfitter) Loom Practice",
+            "giver": {
+              "name": "The Clothier",
+              "locX": 3447.21,
+              "locY": 3675.61,
+              "locZ": 483.33
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### What items does an emerald leaf spiderling drop?
+
+```graphql
+{
+  monsters(name: "emerald leaf spiderling") {
+    name
+    drops {
+      name
+      category
+      weight
+      sellPrice
+    }
+  }
+}
+```
+
+```json
+{
+  "data": {
+    "monsters": [
+      {
+        "name": "emerald leaf spiderling",
+        "drops": [
+          {
+            "name": "Spider Fangs",
+            "category": "general",
+            "weight": 0.1,
+            "sellPrice": 19
+          },
+          {
+            "name": "Spider Egg",
+            "category": "general",
+            "weight": 0.2,
+            "sellPrice": 23
+          },
+          {
+            "name": "Spider Legs",
+            "category": "general",
+            "weight": 0.3,
+            "sellPrice": 32
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
 
-### Create
+### Who drops Gnossa's Walking Stick?
 
-```
-curl -d '{"name": "Silent Plains"}' -H "Content-Type: application/json" -X POST http://yrk.cae.me.uk:3000/api/v1/zones
+```graphql
+{
+  items(name: "Walking Stick") {
+    droppedBy {
+      name
+    }
+  }
+}
 ```
 
 ```json
-{"id":4,"name":"Silent Plains"}
+{
+  "data": {
+    "items": [
+      {
+        "droppedBy": [
+          {
+            "name": "Zirus the Bonewalker"
+          }
+        ]
+      }
+    ]
+  }
+}
 ```
 
-### Update
 
-```
-curl -d '{"zone_id": 2, "name":"Zirus the Bonewalker"}' -H "Content-Type: application/json" -X PUT http://yrk.cae.me.uk:3000/api/v1/monsters/1
-```
+### Do any quests require me to kill emerald leaf spiderlings?
 
-Success returns the updated object as JSON:
-
-```json
-{"id":1,"elite":true,"level":13,"name":"Zirus the Bonewalker","named":true,"zone":{"id":1,"name":"Thronefast"}}
-```
-
-### Many-to-many Assignments
-
-Some relations are many-to-many, for example items to monsters (an item can be dropped by several different monsters; and monsters can drop several different items).
-
-So these have a special assign/unassign in order to manage that relationship.
-
-Assignment:
-
-```
-curl -d '{"monster_id":1}' -H "Content-Type: application/json" -X POST http://yrk.cae.me.uk:3000/api/v1/items/2/assign
-```
-
-So after this, monster_id=1 is linked to item_id 2 (ie, it can drop it)
-
-Unassignment:
-```
-curl -d '{"monster_id":1}' -H "Content-Type: application/json" -X POST http://yrk.cae.me.uk:3000/api/v1/items/2/unassign
-```
-
-After this, the link is broken again and monster_id=1 is no longer dropping item_id=2.
-
-These return HTTP 201 on success.
-
-
-### Delete
-
-```
-curl -X DELETE http://yrk.cae.me.uk:3000/api/v1/zones/2
-```
-
-HTTP 204 (no content in response).
-
-
-### Errors
-
-Errors for create/update give you an errors hash formatted like this:
-
-```json
-{"errors":{"name":["has already been taken"]}}
-```
+TBD! :)
 
 

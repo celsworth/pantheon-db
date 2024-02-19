@@ -6,6 +6,7 @@ module Types
     field :patch, PatchType, null: false
 
     field :quest_objectives, [QuestObjectiveType]
+    field :quest_rewards, [QuestRewardType]
 
     field :prereq_quest, QuestType, description: 'Quest that must be complete before this one is available'
     field :successive_quests, [QuestType], description: 'Quests that open after this one is complete'
@@ -17,11 +18,6 @@ module Types
 
     field :name, String, null: false
     field :text, String, null: false
-
-    field :reward_items, [ItemType]
-    field :reward_xp, Integer, null: false
-    field :reward_copper, Integer, null: false
-    field :reward_standing, Float, null: false
 
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false

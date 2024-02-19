@@ -11,13 +11,16 @@ class MonsterDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
-    zone: Field::BelongsTo,
+    location: Field::BelongsTo,
     drops: Field::HasMany,
     level: Field::Number,
     name: Field::String,
     elite: Field::Boolean,
     named: Field::Boolean,
-    patch: Field::BelongsTo
+    patch: Field::BelongsTo,
+    loc_x: Field::Number,
+    loc_y: Field::Number,
+    loc_z: Field::Number
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -27,7 +30,7 @@ class MonsterDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
     name
-    zone
+    location
     level
     elite
     named
@@ -38,12 +41,15 @@ class MonsterDashboard < Administrate::BaseDashboard
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
     name
-    zone
+    location
     level
     elite
     named
     drops
     patch
+    loc_x
+    loc_y
+    loc_z
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -51,11 +57,14 @@ class MonsterDashboard < Administrate::BaseDashboard
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
     name
-    zone
+    location
     level
     elite
     named
     drops
+    loc_x
+    loc_y
+    loc_z
   ].freeze
 
   # COLLECTION_FILTERS

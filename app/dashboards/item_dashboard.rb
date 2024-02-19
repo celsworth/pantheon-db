@@ -14,7 +14,7 @@ class ItemDashboard < Administrate::BaseDashboard
     dropped_by: Field::HasMany,
     sold_by: Field::HasMany,
     starts_quest: Field::HasOne,
-    reward_from_quest: Field::BelongsTo,
+    rewarded_from_quests: Field::HasMany,
     name: Field::String,
     category: Field::Select.with_options(collection: Item::CATEGORIES, include_blank: 'none'),
     required_level: Field::Number,
@@ -56,7 +56,7 @@ class ItemDashboard < Administrate::BaseDashboard
     dropped_by
     sold_by
     starts_quest
-    reward_from_quest
+    rewarded_from_quests
     stats
     classes
     attrs
@@ -77,8 +77,8 @@ class ItemDashboard < Administrate::BaseDashboard
     required_level
     slot
     dropped_by
+    rewarded_from_quests
     sold_by
-    reward_from_quest
     stats
     classes
     attrs

@@ -6,6 +6,10 @@ module Types
     field :update_item, mutation: Mutations::Item::Update
     field :delete_item, mutation: Mutations::Item::Delete
 
+    field :create_monster, mutation: Mutations::Monster::Create
+    field :update_monster, mutation: Mutations::Monster::Update
+    field :delete_monster, mutation: Mutations::Monster::Delete
+
     field :create_npc, mutation: Mutations::Npc::Create
     field :update_npc, mutation: Mutations::Npc::Update
     field :delete_npc, mutation: Mutations::Npc::Delete
@@ -20,6 +24,9 @@ module Types
 
     field :create_quest_objective, mutation: Mutations::QuestObjective::Create
     field :update_quest_objective, mutation: Mutations::QuestObjective::Update
+
+    field :create_quest_reward, mutation: Mutations::QuestReward::Create
+    field :update_quest_reward, mutation: Mutations::QuestReward::Update
 
     field :create_zone, mutation: Mutations::Zone::Create
     field :update_zone, mutation: Mutations::Zone::Update

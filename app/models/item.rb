@@ -12,41 +12,60 @@ class Item < ApplicationRecord
   has_and_belongs_to_many :dropped_by, class_name: 'Monster', before_add: :check_dropped_by
   has_and_belongs_to_many :sold_by, class_name: 'Npc', before_add: :check_sold_by
   has_one :starts_quest, class_name: 'Quest', inverse_of: :dropped_as
-  belongs_to :reward_from_quest, class_name: 'Quest', optional: true, inverse_of: :reward_items
+  has_many :quest_rewards
+  has_many :rewarded_from_quests, through: :quest_rewards, source: :quest
 
   META_CATEGORIES = {
-    'armor' => %w[cloth-armor leather-armor chain-armor plate-armor].freeze,
-    'weapon' => %w[blade-weapon dagger-weapon stave-weapon spear-weapon].freeze
+    'armor' => %w[cloth_armor leather_armor chain_armor plate_armor].freeze,
+    'weapon' => %w[blade_weapon dagger_weapon stave_weapon spear_weapon].freeze
   }.freeze
   CATEGORIES = %w[general schematic container clickie scroll
                   potion ingredient food drink
-                  shield held jewellery
+                  shield held jewellery relic
                   catalyst component material reagent resource]
                .concat(META_CATEGORIES.values.flatten)
                .freeze
+  CATEGORIES_CAMEL = CATEGORIES.map { |w| w.camelize(:lower) }
 
-  SLOTS = %w[head shoulders hands back chest waist legs feet ears fingers neck relic].freeze
+  SLOTS = %w[head shoulders hands back chest waist legs feet ears
+             fingers neck relic 1handed 2handed offhand ranged].freeze
+  SLOTS_CAMEL = SLOTS.map { |w| w.camelize(:lower) }
 
-  CLASSES = %w[cleric direlord druid enchanter monk paladin ranger rogue
-               shaman summoner warrior wizard].freeze
+  ATTRS = %w[no_trade lifebound magic quest_item temporary unique].freeze
+  ATTRS_CAMEL = ATTRS.map { |w| w.camelize(:lower) }
 
-  STATS = %w[damage attack-power hit-rating
-             spell-power spell-crit-chance
+  # no need to camel this yet as no underscores
+  CLASSES = %w[bard cleric direlord druid enchanter monk necromancer paladin
+               ranger rogue shaman summoner warrior wizard].freeze
+
+  STATS = %w[damage attack_power hit_rating
+             spell_power spell_crit_chance
              health mana armor
-             block-rating
+             block_rating dodge parry
              delay
              endurance
-             fire-resist cold-resist poison-resist chemical-resist nature-resist magic-resist
+             health_recovery_while_resting mana_recovery_while_resting
+             fire_resist cold_resist poison_resist chemical_resist nature_resist magic_resist
              strength stamina constitution agility dexterity intellect wisdom charisma].freeze
+  STATS_CAMEL = STATS.map { |w| w.camelize(:lower) }
 
   validates :name, presence: true, uniqueness: true
   validates :weight, presence: true
 
+  validates :attrs, allow_blank: true, inclusion: { in: ATTRS }
   validates :category, presence: true, inclusion: { in: CATEGORIES }
-  validates :slot, allow_blank: true, inclusion: { in: SLOTS }
   validates :classes, allow_blank: true, inclusion: { in: CLASSES }
+  validates :slot, allow_blank: true, inclusion: { in: SLOTS }
 
   validate :stat_hash_valid
+
+  # Should move to a global module
+  def self.stats_type(stat)
+    case stat.to_s
+    when 'delay' then ::Float
+    else ::Integer
+    end
+  end
 
   # Support for Administrate gem saving JSONB as a string
   def classes=(value)
@@ -76,8 +95,9 @@ class Item < ApplicationRecord
 
     stats.each do |k, v|
       if STATS.include?(k)
-        errors.add(:stats, "#{k}=#{v} is invalid, use numbers only") unless v.is_a?(Numeric)
+        errors.add(:stats, "#{k}=#{v} is invalid, use numbers only") unless v.is_a?(Numeric) || v.nil?
       else
+        # now that we have StatsType this shouldn't happen, GraphQL protects us from uknown keys
         errors.add(:stats, "#{k} is not a valid stats key")
       end
     end

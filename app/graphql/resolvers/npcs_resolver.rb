@@ -4,8 +4,20 @@ module Resolvers
   class NpcsResolver < BaseResolver
     type [Types::NpcType], null: false
 
-    def resolve
-      Npc.all
+    argument :id, ID, required: false
+
+    argument :name, String, required: false
+    argument :subtitle, String, required: false
+    argument :vendor, Boolean, required: false
+    argument :location_id, ID, required: false, description: 'Location ID the Npc must be in'
+    argument :zone_id, ID, required: false
+
+    argument :gives_quest, ID, required: false
+    argument :receives_quest, ID, required: false
+    argument :sells_item, ID, required: false
+
+    def resolve(**params)
+      NpcSearch.new(**params).search.all
     end
   end
 end

@@ -12,15 +12,14 @@ module Types
       argument :weight, Float
       argument :required_level, Integer, required: false
 
-      argument :category, String, required: false
-      argument :slot, String, required: false
+      argument :category, ItemCategoryType, required: false
+      argument :slot, ItemSlotType, required: false
 
-      argument :stats, GraphQL::Types::JSON, required: false
-      argument :classes, [String], required: false
-      argument :attrs, [String], required: false
+      argument :stats, StatsInputType, required: false
+      argument :classes, [ClassType], required: false
+      argument :attrs, [ItemAttrType], required: false
 
       argument :starts_quest, ID, required: false
-      argument :reward_from_quest, ID, required: false
     end
   end
 end

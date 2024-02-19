@@ -11,6 +11,11 @@ module Types
     field :monster, MonsterType
     field :amount, Integer
 
+    field :readable, String, description: <<~DESC
+      A dynamically generated field that attempts to summarise the objective based on all the other fields, so for example if item is set, and amount is 10, this may return "10 Wolf Pelt"
+
+      This is mostly for convenience and is very rudimentary!
+    DESC
     field :text, String, null: false
 
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
