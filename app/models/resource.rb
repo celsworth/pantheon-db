@@ -11,22 +11,6 @@ class Resource < ApplicationRecord
 
   belongs_to :location
 
-  TIERS = {
-    'tree' => {
-      'Apple' => 1,
-      'Pine' => 2
-
-    }
-
-  }.freeze
-
-  # kingsbloom -> fire lily
-  # hemp -> jute
-
-  # lily share spawns
-
-  # patch = large
-  # natural garden = huge veg
   SIZES = %w[normal large huge].freeze
 
   RESOURCES = %w[apple pine ash oak maple walnut

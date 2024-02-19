@@ -11,6 +11,7 @@ module Types
     field :quests, resolver: Resolvers::QuestsResolver
     field :quest_objectives, resolver: Resolvers::QuestObjectivesResolver
     field :quest_rewards, resolver: Resolvers::QuestRewardsResolver
+    field :resources, resolver: Resolvers::ResourcesResolver
     field :zones, resolver: Resolvers::ZonesResolver
   end
 end

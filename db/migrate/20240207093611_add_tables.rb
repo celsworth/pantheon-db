@@ -45,9 +45,9 @@ class AddTables < ActiveRecord::Migration[7.1]
 
       t.references :location, null: false, index: true
 
-      t.string :name, null: false # "Large Pine Tree" / "Natural Garden" etc
-      t.string :resource, null: false # apple / pine / ash / vegetable / asherite
-      t.string :size, null: false # normal / large / huge
+      t.string :name, null: false, index: true # "Large Pine Tree" / "Natural Garden" etc
+      t.string :resource, null: false, index: true # apple / pine / ash / vegetable / asherite
+      t.string :size, null: false, index: true # normal / large / huge
 
       t.decimal :loc_x
       t.decimal :loc_y
