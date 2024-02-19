@@ -61,19 +61,19 @@ i = Item.create(dropped_by: [m], name: 'Tarnished Band', weight: 0.1, category: 
 
 m = Monster.create(location: tf, name: 'Zirus the Bonewalker', elite: true, named: true, level: 13)
 i = Item.create(dropped_by: [m], name: "Gnossa's Walking Stick",
-                stats: { intellect: 1, 'spell-crit-chance': 2, damage: 22, delay: 5.9 },
-                weight: 4.0, sell_price: 1750, category: 'stave-weapon', attrs: %w[magic])
+                stats: { intellect: 1, 'spell_crit_chance': 2, damage: 22, delay: 5.9 },
+                weight: 4.0, sell_price: 1750, category: 'stave_weapon', attrs: %w[magic])
 # two-handed quarter staff
 #
 i = Item.create(name: 'Tattered Pelt', weight: 0.8, category: 'resource')
 
 i = Item.create(name: 'Blood-Soaked Shield', weight: 6.5, category: 'shield',
                 required_level: 6,
-                stats: { armor: 4, 'block-rating': 155, stamina: 1 },
+                stats: { armor: 4, 'block_rating': 155, stamina: 1 },
                 attrs: %w[magic],
                 classes: %w[warrior cleric paladin ranger shaman])
 
 Item.create(name: 'Rune of Living Stone', slot: 'relic', category: 'relic', weight: 0.2,
-            stats: { dodge: 25, 'mana-recovery-while-resting': 2 },
+            stats: { dodge: 25, 'mana_recovery_while_resting': 2 },
             classes: %w[cleric wizard druid enchanter shaman summoner necromancer],
             attrs: ['magic'])

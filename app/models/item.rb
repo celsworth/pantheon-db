@@ -16,8 +16,8 @@ class Item < ApplicationRecord
   has_many :rewarded_from_quests, through: :quest_rewards, source: :quest
 
   META_CATEGORIES = {
-    'armor' => %w[cloth-armor leather-armor chain-armor plate-armor].freeze,
-    'weapon' => %w[blade-weapon dagger-weapon stave-weapon spear-weapon].freeze
+    'armor' => %w[cloth_armor leather_armor chain_armor plate_armor].freeze,
+    'weapon' => %w[blade_weapon dagger_weapon stave_weapon spear_weapon].freeze
   }.freeze
   CATEGORIES = %w[general schematic container clickie scroll
                   potion ingredient food drink
@@ -28,19 +28,19 @@ class Item < ApplicationRecord
 
   SLOTS = %w[head shoulders hands back chest waist legs feet ears fingers neck relic].freeze
 
-  ATTRS = %w[no-trade lifebound magic quest-item temporary unique].freeze
+  ATTRS = %w[no_trade lifebound magic quest_item temporary unique].freeze
 
   CLASSES = %w[cleric direlord druid enchanter monk necromancer paladin ranger rogue
                shaman summoner warrior wizard].freeze
 
-  STATS = %w[damage attack-power hit-rating
-             spell-power spell-crit-chance
+  STATS = %w[damage attack_power hit_rating
+             spell_power spell_crit_chance
              health mana armor
-             block-rating dodge parry
+             block_rating dodge parry
              delay
              endurance
-             health-recovery-while-resting mana-recovery-while-resting
-             fire-resist cold-resist poison-resist chemical-resist nature-resist magic-resist
+             health_recovery_while_resting mana_recovery_while_resting
+             fire_resist cold_resist poison_resist chemical_resist nature_resist magic_resist
              strength stamina constitution agility dexterity intellect wisdom charisma].freeze
 
   validates :name, presence: true, uniqueness: true

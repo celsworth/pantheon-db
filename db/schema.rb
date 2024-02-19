@@ -16,13 +16,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
 
   create_table "dungeons", force: :cascade do |t|
     t.string "name", null: false
-    t.bigint "zone_id", null: false
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["discarded_at"], name: "index_dungeons_on_discarded_at"
     t.index ["name"], name: "index_dungeons_on_name", unique: true
-    t.index ["zone_id"], name: "index_dungeons_on_zone_id"
   end
 
   create_table "items", force: :cascade do |t|
@@ -70,8 +68,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["discarded_at"], name: "index_locations_on_discarded_at"
-    t.index ["dungeon_id"], name: "index_locations_on_dungeon_id"
-    t.index ["settlement_id"], name: "index_locations_on_settlement_id"
+    t.index ["dungeon_id"], name: "index_locations_on_dungeon_id", unique: true
+    t.index ["settlement_id"], name: "index_locations_on_settlement_id", unique: true
     t.index ["zone_id"], name: "index_locations_on_zone_id"
   end
 
@@ -199,13 +197,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
 
   create_table "settlements", force: :cascade do |t|
     t.string "name", null: false
-    t.bigint "zone_id", null: false
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["discarded_at"], name: "index_settlements_on_discarded_at"
     t.index ["name"], name: "index_settlements_on_name", unique: true
-    t.index ["zone_id"], name: "index_settlements_on_zone_id"
   end
 
   create_table "versions", force: :cascade do |t|

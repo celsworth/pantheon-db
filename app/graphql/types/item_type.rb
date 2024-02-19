@@ -18,9 +18,7 @@ module Types
       Slot will be one of: #{Item::SLOTS.join(', ')}
     DESC
 
-    field :stats, GraphQL::Types::JSON, description: <<~DESC
-      A hash of stats on the item. Keys will all be one of: #{Item::STATS.join(', ')}
-    DESC
+    field :stats, StatsType
     field :classes, [String], null: false, description: <<~DESC
       An array of classes that can use the item. Entries will all be one of: #{Item::CLASSES.join(', ')}
     DESC
