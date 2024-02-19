@@ -42,6 +42,7 @@ class Item < ApplicationRecord
              health_recovery_while_resting mana_recovery_while_resting
              fire_resist cold_resist poison_resist chemical_resist nature_resist magic_resist
              strength stamina constitution agility dexterity intellect wisdom charisma].freeze
+  STATS_CAMEL = STATS.map { |w| w.camelize(:lower) }
 
   validates :name, presence: true, uniqueness: true
   validates :weight, presence: true
@@ -52,6 +53,14 @@ class Item < ApplicationRecord
   validates :slot, allow_blank: true, inclusion: { in: SLOTS }
 
   validate :stat_hash_valid
+
+  # Should move to a global module
+  def self.stats_type(stat)
+    case stat.to_s
+    when 'delay' then ::Float
+    else ::Integer
+    end
+  end
 
   # Support for Administrate gem saving JSONB as a string
   def classes=(value)
@@ -81,7 +90,7 @@ class Item < ApplicationRecord
 
     stats.each do |k, v|
       if STATS.include?(k)
-        errors.add(:stats, "#{k}=#{v} is invalid, use numbers only") unless v.is_a?(Numeric)
+        errors.add(:stats, "#{k}=#{v} is invalid, use numbers only") unless v.is_a?(Numeric) || v.nil?
       else
         errors.add(:stats, "#{k} is not a valid stats key")
       end

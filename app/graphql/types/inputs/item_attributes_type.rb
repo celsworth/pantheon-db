@@ -15,8 +15,7 @@ module Types
       argument :category, String, required: false, description: "Must be one of: #{Item::CATEGORIES.join(', ')}"
       argument :slot, String, required: false, description: "Must be one of: #{Item::SLOTS.join(', ')}"
 
-      # TODO: StatsInputType ?
-      # argument :stats, GraphQL::Types::JSON, required: false
+      argument :stats, StatsInputType, required: false
       argument :classes, [String], required: false, description: "Must be one of: #{Item::CLASSES.join(', ')}"
       argument :attrs, [String], required: false
 
