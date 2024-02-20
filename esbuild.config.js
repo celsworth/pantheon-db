@@ -10,7 +10,7 @@ require("esbuild").context({
   outdir: path.join(process.cwd(), "app/assets/builds"),
   absWorkingDir: path.join(process.cwd(), "app/javascript"),
   plugins: [
-    ElmPlugin({ debug: true, verbose: true })
+    ElmPlugin({ debug: true })
   ],
   minify: process.argv.includes("--minify")
 }).then(context => {

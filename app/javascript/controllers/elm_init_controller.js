@@ -4,12 +4,13 @@ import {Controller} from "@hotwired/stimulus"
 // Connects to data-controller="elm-init"
 export default class extends Controller {
     connect() {
-        console.log(new Date(), "Connecting Elm node");
+        //console.log(new Date(), "Connecting Elm node");
         if (this.init === undefined) {
-            console.log(new Date(), "Initializing Elm node");
-            this.init = Elm.Main.init({node: this.element});
+            //console.log(new Date(), "Initializing Elm node");
+            let flags = JSON.parse(this.data.get("flags"));
+            this.init = Elm.Main.init({node: this.element, flags: flags});
         } else {
-            console.log(new Date(), "Reusing Elm node");
+            //console.log(new Date(), "Reusing Elm node");
         }
     }
 
