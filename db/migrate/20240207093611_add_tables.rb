@@ -50,9 +50,9 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.string :subresource, index: true # hardened / glittering
       t.string :size, null: false, index: true # normal / large / huge
 
-      t.decimal :loc_x
-      t.decimal :loc_y
-      t.decimal :loc_z
+      t.decimal :loc_x, null: false
+      t.decimal :loc_y, null: false
+      t.decimal :loc_z, null: false
 
       t.datetime :discarded_at, index: true
       t.timestamps

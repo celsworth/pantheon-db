@@ -9,9 +9,9 @@ module Types
     field :resource, ResourceResourceType, null: false
     field :size, ResourceSizeType, null: false
 
-    field :loc_x, Float
-    field :loc_y, Float
-    field :loc_z, Float
+    field :loc_x, Float, null: false
+    field :loc_y, Float, null: false
+    field :loc_z, Float, null: false
 
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false

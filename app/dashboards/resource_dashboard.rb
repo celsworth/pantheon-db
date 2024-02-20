@@ -12,13 +12,13 @@ class ResourceDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     name: Field::String,
-    resource: Field::String,
-    size: Field::String,
+    resource: Field::Select.with_options(collection: Resource::RESOURCES),
+    size: Field::Select.with_options(collection: Resource::SIZES),
     location: Field::BelongsTo,
     patch: Field::BelongsTo,
     loc_x: Field::Number,
     loc_y: Field::Number,
-    loc_z: Field::Number,
+    loc_z: Field::Number
   }.freeze
 
   # COLLECTION_ATTRIBUTES

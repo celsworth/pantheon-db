@@ -25,6 +25,9 @@ class Resource < ApplicationRecord
   validates :name, presence: true
   validates :size, presence: true, inclusion: { in: SIZES }
   validates :resource, presence: true, inclusion: { in: RESOURCES }
+  validates :loc_x, presence: true
+  validates :loc_y, presence: true
+  validates :loc_z, presence: true
   validate :not_near_another_node
 
   class << self
