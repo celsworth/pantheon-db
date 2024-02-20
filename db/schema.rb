@@ -184,6 +184,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.bigint "location_id", null: false
     t.string "name", null: false
     t.string "resource", null: false
+    t.string "subresource"
     t.string "size", null: false
     t.decimal "loc_x"
     t.decimal "loc_y"
@@ -194,7 +195,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.index ["discarded_at"], name: "index_resources_on_discarded_at"
     t.index ["loc_x", "loc_y"], name: "index_resources_on_loc_x_and_loc_y"
     t.index ["location_id"], name: "index_resources_on_location_id"
+    t.index ["name"], name: "index_resources_on_name"
     t.index ["patch_id"], name: "index_resources_on_patch_id"
+    t.index ["resource"], name: "index_resources_on_resource"
+    t.index ["size"], name: "index_resources_on_size"
+    t.index ["subresource"], name: "index_resources_on_subresource"
   end
 
   create_table "settlements", force: :cascade do |t|

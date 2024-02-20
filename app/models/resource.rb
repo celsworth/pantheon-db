@@ -16,7 +16,7 @@ class Resource < ApplicationRecord
   RESOURCES = %w[apple pine ash oak maple walnut
                  asherite caspilrite padrium tascium slytheril
                  herb vegetable lily
-                 water_reeds
+                 water_reed
                  jute cotton
                  flax
                  blackberry gloomberry].freeze
@@ -33,6 +33,13 @@ class Resource < ApplicationRecord
     end
   end
 
+  def autofill_from_name!
+    data = ResourceNameDetection.new.call(name)
+    assign_attributes(data)
+  rescue StandardError
+    nil
+  end
+
   private
 
   def not_near_another_node
@@ -40,7 +47,4 @@ class Resource < ApplicationRecord
 
     errors.add(:base, 'too close to another resource, possible duplicate')
   end
-
-  # attempt to auto-set some columns
-  def autoset_columns; end
 end

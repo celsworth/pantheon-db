@@ -47,6 +47,7 @@ class AddTables < ActiveRecord::Migration[7.1]
 
       t.string :name, null: false, index: true # "Large Pine Tree" / "Natural Garden" etc
       t.string :resource, null: false, index: true # apple / pine / ash / vegetable / asherite
+      t.string :subresource, index: true # hardened / glittering
       t.string :size, null: false, index: true # normal / large / huge
 
       t.decimal :loc_x
