@@ -19,10 +19,10 @@ namespace :db do
       data = JSON.parse(json)
       data.each do |row|
         model.create!(row)
+      rescue StandardError => e
+        puts "#{model} ignoring #{e} for #{row}"
+        nil
       end
-    rescue StandardError => e
-      puts "#{model} ignoring #{e}"
-      nil
     end
   end
 end
