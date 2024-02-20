@@ -4,6 +4,7 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (class, style)
 import Resource exposing (Resource)
+import ResourceRequest
 import Select
 import Simple.Fuzzy
 
@@ -61,7 +62,7 @@ init flags =
       , selectState = Select.init "resource"
       , selectConfig = selectConfigResource
       }
-    , Cmd.none
+    , Cmd.map GotResponse ResourceRequest.makeRequest
     )
 
 
@@ -71,6 +72,7 @@ init flags =
 
 type Msg
     = NoOp
+    | GotResponse ResourceRequest.Msg
     | OnSelect (Maybe Resource)
     | OnRemoveItem Resource
     | SelectMsg (Select.Msg Resource)
@@ -79,6 +81,13 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        GotResponse a ->
+            let
+                _ =
+                    Debug.log "GotResponse" a
+            in
+            ( model, Cmd.none )
+
         OnSelect maybeColor ->
             let
                 selected =

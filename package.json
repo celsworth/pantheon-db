@@ -4,7 +4,7 @@
   "scripts": {
     "build": "node ./esbuild.config.js",
     "build:watch": "node ./esbuild.config.js -- --watch",
-    "api": "elm-graphql http://localhost:3000/graphql --base Api --output app/javascript"
+    "api": "elm-graphql http://localhost:3000/graphql --base PantheonApi --output app/javascript"
   },
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
