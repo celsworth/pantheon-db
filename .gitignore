@@ -35,3 +35,6 @@
 /config/master.key
 
 dumps/
+
+elm-stuff/
+node_modules/
