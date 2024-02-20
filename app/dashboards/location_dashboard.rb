@@ -15,7 +15,7 @@ class LocationDashboard < Administrate::BaseDashboard
     settlement: Field::BelongsTo,
     dungeon: Field::BelongsTo,
     monsters: Field::HasMany,
-    npcs: Field::HasMany,
+    npcs: Field::HasMany
   }.freeze
 
   # COLLECTION_ATTRIBUTES

@@ -21,7 +21,7 @@ class NpcDashboard < Administrate::BaseDashboard
     patch: Field::BelongsTo,
     loc_x: Field::Number,
     loc_y: Field::Number,
-    loc_z: Field::Number,
+    loc_z: Field::Number
   }.freeze
 
   # COLLECTION_ATTRIBUTES
