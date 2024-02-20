@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Types
-  class StatsType < Types::BaseObject
+  class ItemStatsType < Types::BaseObject
     description <<~DESC
       Details of stats on an Item
     DESC

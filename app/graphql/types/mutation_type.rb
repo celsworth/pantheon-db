@@ -28,6 +28,9 @@ module Types
     field :create_quest_reward, mutation: Mutations::QuestReward::Create
     field :update_quest_reward, mutation: Mutations::QuestReward::Update
 
+    field :create_resource, mutation: Mutations::Resource::Create
+    field :update_resource, mutation: Mutations::Resource::Update
+
     field :create_zone, mutation: Mutations::Zone::Create
     field :update_zone, mutation: Mutations::Zone::Update
   end

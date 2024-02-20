@@ -45,17 +45,19 @@ class AddTables < ActiveRecord::Migration[7.1]
 
       t.references :location, null: false, index: true
 
-      t.string :name, null: false # Large Pine Tree
-      t.string :size, null: false # normal / large / huge
-      t.string :category, null: false # tree / metal / fiber / ?
-      t.integer :tier, null: false # 2
+      t.string :name, null: false, index: true # "Large Pine Tree" / "Natural Garden" etc
+      t.string :resource, null: false, index: true # apple / pine / ash / vegetable / asherite
+      t.string :subresource, index: true # hardened / glittering
+      t.string :size, null: false, index: true # normal / large / huge
 
-      t.decimal :loc_x
-      t.decimal :loc_y
-      t.decimal :loc_z
+      t.decimal :loc_x, null: false
+      t.decimal :loc_y, null: false
+      t.decimal :loc_z, null: false
 
       t.datetime :discarded_at, index: true
       t.timestamps
+
+      t.index %i[loc_x loc_y]
     end
 
     create_table :monsters do |t|
@@ -74,6 +76,8 @@ class AddTables < ActiveRecord::Migration[7.1]
 
       t.datetime :discarded_at, index: true
       t.timestamps
+
+      t.index %i[loc_x loc_y]
     end
 
     create_table :items do |t|
@@ -112,6 +116,8 @@ class AddTables < ActiveRecord::Migration[7.1]
 
       t.datetime :discarded_at, index: true
       t.timestamps
+
+      t.index %i[loc_x loc_y]
     end
 
     create_table :quest_objectives do |t|

@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 def models
-  [Patch, Zone, Settlement, Dungeon, Location, Monster, Npc, Item, Quest, QuestObjective, QuestReward]
+  [Patch, Zone, Settlement, Dungeon, Location, Monster, Npc, Item,
+   Quest, QuestObjective, QuestReward, Resource]
 end
 
 namespace :db do
@@ -18,6 +19,9 @@ namespace :db do
       data = JSON.parse(json)
       data.each do |row|
         model.create!(row)
+      rescue StandardError => e
+        puts "#{model} ignoring #{e} for #{row}"
+        nil
       end
     end
   end
