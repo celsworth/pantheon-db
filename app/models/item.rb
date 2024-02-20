@@ -17,7 +17,7 @@ class Item < ApplicationRecord
 
   META_CATEGORIES = {
     'armor' => %w[cloth_armor leather_armor chain_armor plate_armor].freeze,
-    'weapon' => %w[blade_weapon dagger_weapon stave_weapon spear_weapon].freeze
+    'weapon' => %w[blade_weapon crushing_weapon dagger_weapon h2h_weapon stave_weapon spear_weapon].freeze
   }.freeze
   CATEGORIES = %w[general schematic container clickie scroll
                   potion ingredient food drink
