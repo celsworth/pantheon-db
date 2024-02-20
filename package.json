@@ -2,16 +2,20 @@
   "name": "app",
   "private": true,
   "scripts": {
+    "api": "elm-graphql http://localhost:3000/graphql --base PantheonApi --output app/javascript",
     "build": "node ./esbuild.config.js",
     "build:watch": "node ./esbuild.config.js -- --watch",
-    "api": "elm-graphql http://localhost:3000/graphql --base PantheonApi --output app/javascript"
+    "build:css": "sass ./app/assets/stylesheets:./app/assets/builds --no-source-map --load-path=node_modules",
+    "build:css:watch": "sass -w ./app/assets/stylesheets:./app/assets/builds --no-source-map --load-path=node_modules"
   },
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.2",
     "@lydell/elm": "^0.19.1-14",
+    "bulma": "^0.9.4",
     "esbuild": "^0.20.0",
-    "esbuild-plugin-elm": "^0.0.12"
+    "esbuild-plugin-elm": "^0.0.12",
+    "sass": "^1.71.0"
   },
   "devDependencies": {
     "@dillonkearns/elm-graphql": "^4.3.1"

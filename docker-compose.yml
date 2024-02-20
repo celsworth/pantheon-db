@@ -10,9 +10,12 @@ x-app: &app
     context: .
 
 services:
-  watch:
+  watch-js:
     <<: *app
     command: npm run build:watch
+  watch-css:
+    <<: *app
+    command: npm run build:css:watch
 
   postgres:
     image: postgres:15
