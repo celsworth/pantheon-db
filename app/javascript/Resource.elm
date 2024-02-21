@@ -1,26 +1,32 @@
-module Resource exposing (Resource, Msg, resources, makeRequest)
+module Resource exposing (Msg, makeRequest, resources)
 
+import Api.Object.Resource as Resource
+import Api.Query as Query
+import Api.ScalarCodecs
 import Graphql.Http
 import Graphql.Operation exposing (RootQuery)
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
-import PantheonApi.Object.Resource as Resource
-import PantheonApi.Query as Query
-import PantheonApi.ScalarCodecs
 import RemoteData exposing (RemoteData)
 
 
 resources : List String
 resources =
-    [ "Apple Tree"
-    , "Large Apple Tree"
-    , "Huge Apple Tree"
-    , "Pine Tree"
-    , "Large Pine Tree"
-    , "Huge Pine Tree"
-    , "Oak Tree"
-    , "Large Oak Tree"
-    , "Huge Oak Tree"
-    ]
+    resourceToLargeAndHuge "Apple Tree"
+        ++ resourceToLargeAndHuge "Pine Tree"
+        ++ resourceToLargeAndHuge "Oak Tree"
+        ++ resourceToLargeAndHuge "Ash Tree"
+        ++ resourceToLargeAndHuge "Maple Tree"
+        ++ resourceToLargeAndHuge "Asherite Ore Deposit"
+        ++ resourceToLargeAndHuge "Caspilrite Ore Deposit"
+        ++ resourceToLargeAndHuge "Padrium Ore Deposit"
+        ++ resourceToLargeAndHuge "Blackberry Bush"
+        ++ [ "Natural Garden"
+           ]
+
+
+resourceToLargeAndHuge : String -> List String
+resourceToLargeAndHuge resource =
+    [ resource, "Large " ++ resource, "Huge " ++ resource ]
 
 
 
@@ -38,7 +44,7 @@ type Msg
 
 
 type alias Resource =
-    { id : PantheonApi.ScalarCodecs.Id
+    { id : Api.ScalarCodecs.Id
     , name : String
     }
 

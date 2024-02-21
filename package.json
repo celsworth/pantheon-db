@@ -2,7 +2,7 @@
   "name": "app",
   "private": true,
   "scripts": {
-    "api": "elm-graphql http://localhost:3000/graphql --base PantheonApi --output app/javascript",
+    "api": "elm-graphql http://localhost:3000/graphql --base Api --output app/javascript",
     "build": "node ./esbuild.config.js",
     "build:watch": "node ./esbuild.config.js -- --watch",
     "build:css": "sass ./app/assets/stylesheets:./app/assets/builds --no-source-map --load-path=node_modules",

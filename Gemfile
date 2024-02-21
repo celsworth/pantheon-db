@@ -6,6 +6,11 @@ gem 'administrate'
 gem 'administrate-field-jsonb'
 gem 'ar_lazy_preload'
 gem 'blueprinter'
+gem 'bootsnap', require: false
+gem 'cssbundling-rails'
+gem 'discard'
+gem 'graphiql-rails'
+gem 'graphql'
 gem 'jsbundling-rails'
 gem 'paper_trail'
 gem 'pg'
@@ -14,13 +19,4 @@ gem 'rack-cors'
 gem 'rails'
 gem 'rubocop'
 gem 'sprockets-rails'
-
-# Reduces boot times through caching; required in config/boot.rb
-gem 'bootsnap', require: false
-
-gem 'graphiql-rails'
-gem 'graphql', '~> 2.2'
-
-gem 'discard', '~> 1.3'
-
-gem "cssbundling-rails", "~> 1.4"
+gem 'stimulus-rails'
