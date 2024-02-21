@@ -6,6 +6,7 @@ gem 'administrate'
 gem 'administrate-field-jsonb'
 gem 'ar_lazy_preload'
 gem 'blueprinter'
+gem 'jsbundling-rails'
 gem 'paper_trail'
 gem 'pg'
 gem 'puma'
@@ -20,4 +21,6 @@ gem 'bootsnap', require: false
 gem 'graphiql-rails'
 gem 'graphql', '~> 2.2'
 
-gem "discard", "~> 1.3"
+gem 'discard', '~> 1.3'
+
+gem "cssbundling-rails", "~> 1.4"

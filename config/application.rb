@@ -29,6 +29,10 @@ module PantheonDb
     config.hosts << 'yrk.cae.me.uk:3000'
     config.hosts << 'localhost:3000'
 
+    # https://stackoverflow.com/questions/70401077/rails-7-asset-pipeline-sasscsyntaxerror-with-tailwind
+    # sassc-rails incompatibility or something.
+    config.assets.css_compressor = nil
+
     # fix Tried to load unspecified class: ActiveSupport::TimeWithZone (Psych::DisallowedClass)
     config.active_record.yaml_column_permitted_classes =
       [Symbol, Date, Time, ActiveSupport::TimeWithZone, ActiveSupport::TimeZone]
