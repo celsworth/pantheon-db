@@ -2,9 +2,8 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (..)
-import Html.Attributes exposing (class, style)
-import Resource exposing (Resource)
-import ResourceRequest
+import Html.Attributes exposing (..)
+import Resource
 import Select
 import Simple.Fuzzy
 
@@ -33,36 +32,35 @@ main =
 
 type alias Model =
     { flags : Flags
-    , available : List Resource
-    , itemToLabel : Resource -> String
-    , selected : List Resource
+    , available : List String
+    , selected : Maybe String
     , selectState : Select.State
-    , selectConfig : Select.Config Msg Resource
+    , selectConfig : Select.Config Msg String
     }
 
 
-selectConfigResource : Select.Config Msg Resource
+selectConfigResource : Select.Config Msg String
 selectConfigResource =
     Select.newConfig
         { onSelect = OnSelect
-        , toLabel = Resource.toLabel
-        , filter = filter 2 Resource.toLabel
+        , toLabel = identity
+        , filter = filter 1 identity
         , toMsg = SelectMsg
         }
-        |> Select.withMenuAttrs [ style "max-height" "10rem" ]
-        |> Select.withClearSvgClass "foo"
+        |> Select.withEmptySearch True
+        |> Select.withClear False
+        |> Select.withInputAttrs [ class "input" ]
 
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( { flags = flags
       , available = Resource.resources
-      , itemToLabel = Resource.toLabel
-      , selected = []
+      , selected = Nothing
       , selectState = Select.init "resource"
       , selectConfig = selectConfigResource
       }
-    , Cmd.map GotResponse ResourceRequest.makeRequest
+    , Cmd.map GotResponse Resource.makeRequest
     )
 
 
@@ -72,10 +70,9 @@ init flags =
 
 type Msg
     = NoOp
-    | GotResponse ResourceRequest.Msg
-    | OnSelect (Maybe Resource)
-    | OnRemoveItem Resource
-    | SelectMsg (Select.Msg Resource)
+    | GotResponse Resource.Msg
+    | OnSelect (Maybe String)
+    | SelectMsg (Select.Msg String)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -88,30 +85,13 @@ update msg model =
             in
             ( model, Cmd.none )
 
-        OnSelect maybeColor ->
-            let
-                selected =
-                    maybeColor
-                        |> Maybe.map (List.singleton >> List.append model.selected)
-                        |> Maybe.withDefault []
-            in
-            ( { model | selected = selected }, Cmd.none )
-
-        OnRemoveItem colorToRemove ->
-            let
-                selected =
-                    List.filter (\curColor -> curColor /= colorToRemove)
-                        model.selected
-            in
-            ( { model | selected = selected }, Cmd.none )
+        OnSelect maybeResource ->
+            ( { model | selected = maybeResource }, Cmd.none )
 
         SelectMsg subMsg ->
             let
                 ( updated, cmd ) =
-                    Select.update
-                        model.selectConfig
-                        subMsg
-                        model.selectState
+                    Select.update model.selectConfig subMsg model.selectState
             in
             ( { model | selectState = updated }, cmd )
 
@@ -126,39 +106,37 @@ update msg model =
 view : Model -> Html Msg
 view model =
     let
-        title =
-            "title"
-
-        prompt =
-            "prompt"
-
         currentSelection =
-            p
-                []
-                [ text (String.join ", " <| List.map model.itemToLabel model.selected) ]
+            p [] [ text <| Maybe.withDefault "Nothing" model.selected ]
 
         select =
-            Select.view
-                model.selectConfig
+            Select.view model.selectConfig
                 model.selectState
                 model.available
-                model.selected
+                (model.selected |> Maybe.map (\m -> [ m ]) |> Maybe.withDefault [])
     in
-    div [ class "demo-box" ]
-        [ h3 [] [ text title ]
-        , p
-            []
-            [ label [] [ text prompt ]
-            ]
-        , p
-            []
-            [ select
+    div [ class "container" ]
+        [ div [ class "box" ]
+            [ div [ class "field" ]
+                [ label [ class "label" ] [ text "Choose Resource" ]
+                , select
+                ]
+            , div [ class "field" ]
+                [ label [ class "label" ] [ text "Paste /loc" ]
+                , input
+                    [ type_ "text"
+                    , class "input"
+                    , placeholder "/jumploc 3453.94 476.00 3770.94 58"
+                    ]
+                    []
+                ]
             ]
         , currentSelection
         ]
 
 
 
+-- /jumploc 3453.94 476.00 3770.94 58
 -- SUBSCRIPTIONS
 
 
