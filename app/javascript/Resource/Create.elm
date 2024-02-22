@@ -4,7 +4,10 @@ import Browser
 import Helpers.FuzzyFilter exposing (filter)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onInput)
+import Parsers.JumpLoc
 import Select
+import Types exposing (Loc)
 import Ui.ZoneSelect
 
 
@@ -37,6 +40,7 @@ type alias Model =
     , resourceSelectState : Select.State
     , resourceSelectConfig : Select.Config Msg String
     , zoneSelectModel : Ui.ZoneSelect.Model Msg
+    , parsedLoc : Maybe Loc
     }
 
 
@@ -65,6 +69,7 @@ init flags =
       , resourceSelectState = Select.init "resource"
       , resourceSelectConfig = resourceSelectConfig
       , zoneSelectModel = zoneSelectModel
+      , parsedLoc = Nothing,
       }
     , Cmd.batch [ zoneCmd, Cmd.none ]
     )
@@ -78,6 +83,7 @@ type Msg
     = ZoneSelectMsg Ui.ZoneSelect.Msg
     | OnSelect (Maybe String)
     | SelectMsg (Select.Msg String)
+    | OnLocChange String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -100,6 +106,12 @@ update msg model =
             in
             ( { model | resourceSelectState = updated }, cmd )
 
+        OnLocChange loc ->
+            let
+                newLoc =
+                    Parsers.JumpLoc.parse loc
+            in
+            ( { model | parsedLoc = newLoc }, Cmd.none )
 
 
 
@@ -109,8 +121,13 @@ update msg model =
 view : Model -> Html Msg
 view model =
     let
-        currentSelection =
-            p [] [ text <| Maybe.withDefault "Nothing" model.selected ]
+        locClass =
+            case model.parsedLoc /= Nothing of
+                True ->
+                    "is-success"
+
+                False ->
+                    "is-danger"
 
         select =
             Select.view model.resourceSelectConfig
@@ -127,7 +144,9 @@ view model =
                 [ label [ class "label" ] [ text "Location" ]
                 , input
                     [ type_ "text"
-                    , class "input is-danger" -- is-danger
+                    , class "input"
+                    , class locClass
+                    , onInput OnLocChange
                     , placeholder "/jumploc 3453.94 476.00 3770.94 58"
                     ]
                     []
