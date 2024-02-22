@@ -5,16 +5,12 @@ import Html exposing (..)
 import Html.Attributes exposing (class)
 import Query.Zones
 import Select
-import Types.Zone exposing (Zone)
-
-
-toLabel : Zone -> String
-toLabel =
-    .name
+import Types exposing (Zone)
 
 
 type alias Model =
-    { zones : List Zone
+    { args : InitArgs
+    , zones : List Zone
     , selected : Maybe Zone
     , selectState : Select.State
     , selectConfig : Select.Config Msg Zone
@@ -24,15 +20,20 @@ type alias Model =
 type Msg
     = OnSelect (Maybe Zone)
     | SelectMsg (Select.Msg Zone)
-    | GotZonesResponse Query.Zones.Msg
+    | GotZonesList Query.Zones.Msg
+
+
+type alias InitArgs =
+    { url : String
+    }
 
 
 selectConfig : Select.Config Msg Zone
 selectConfig =
     Select.newConfig
         { onSelect = OnSelect
-        , toLabel = toLabel
-        , filter = filter 1 toLabel
+        , toLabel = .name
+        , filter = filter 1 .name
         , toMsg = SelectMsg
         }
         |> Select.withEmptySearch True
@@ -40,14 +41,15 @@ selectConfig =
         |> Select.withInputAttrs [ class "input" ]
 
 
-init : ( Model, Cmd Msg )
-init =
-    ( { zones = []
+init : InitArgs -> ( Model, Cmd Msg )
+init args =
+    ( { args = args
+      , zones = []
       , selected = Nothing
       , selectState = Select.init "zone"
       , selectConfig = selectConfig
       }
-    , Cmd.map GotZonesResponse Query.Zones.makeRequest
+    , Cmd.map GotZonesList (Query.Zones.makeRequest args.url)
     )
 
 
@@ -64,7 +66,7 @@ update msg model =
             in
             ( { model | selectState = updated }, cmd )
 
-        GotZonesResponse response ->
+        GotZonesList response ->
             let
                 newZones =
                     Query.Zones.parseResponse response

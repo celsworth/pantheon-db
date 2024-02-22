@@ -1,25 +1,25 @@
-module Query.Zones exposing (Msg, makeRequest, parseResponse)
+module Query.Resources exposing (Msg, makeRequest, parseResponse)
 
-import Api.Object.Zone as Zone
+import Api.Object.Resource as Resource
 import Api.Query
 import Graphql.Http
 import Graphql.Http.GraphqlError
 import Graphql.Operation exposing (RootQuery)
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import RemoteData exposing (RemoteData)
-import Types exposing (Zone)
+import Types exposing (Resource)
 
 
 type Msg
-    = GotResponse (RemoteData (Graphql.Http.Error (List Zone)) (List Zone))
+    = GotResponse (RemoteData (Graphql.Http.Error (List Resource)) (List Resource))
 
 
-query : SelectionSet (List Zone) RootQuery
+query : SelectionSet (List Resource) RootQuery
 query =
     Api.Query.zones identity
-        (SelectionSet.succeed Zone
-            |> with Zone.id
-            |> with Zone.name
+        (SelectionSet.succeed Resource
+            |> with Resource.id
+            |> with Resource.name
         )
 
 
@@ -31,7 +31,7 @@ makeRequest url =
         |> Graphql.Http.send (RemoteData.fromResult >> GotResponse)
 
 
-parseResponse : Msg -> List Zone
+parseResponse : Msg -> List Resource
 parseResponse (GotResponse res) =
     case res of
         RemoteData.NotAsked ->
