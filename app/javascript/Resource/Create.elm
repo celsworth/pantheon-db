@@ -69,7 +69,7 @@ init flags =
       , resourceSelectState = Select.init "resource"
       , resourceSelectConfig = resourceSelectConfig
       , zoneSelectModel = zoneSelectModel
-      , parsedLoc = Nothing,
+      , parsedLoc = Nothing
       }
     , Cmd.batch [ zoneCmd, Cmd.none ]
     )
