@@ -9,6 +9,7 @@ gem 'blueprinter'
 gem 'bootsnap', require: false
 gem 'cssbundling-rails'
 gem 'discard'
+gem 'dotenv'
 gem 'graphiql-rails'
 gem 'graphql'
 gem 'jsbundling-rails'
