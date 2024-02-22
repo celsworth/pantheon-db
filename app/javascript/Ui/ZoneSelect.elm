@@ -8,8 +8,8 @@ import Select
 import Types exposing (Zone)
 
 
-type alias Model =
-    { args : InitArgs
+type alias Model msg =
+    { args : InitArgs msg
     , zones : List Zone
     , selected : Maybe Zone
     , selectState : Select.State
@@ -23,8 +23,9 @@ type Msg
     | GotZonesList Query.Zones.Msg
 
 
-type alias InitArgs =
+type alias InitArgs msg =
     { url : String
+    , toMsg : Msg -> msg
     }
 
 
@@ -41,7 +42,7 @@ selectConfig =
         |> Select.withInputAttrs [ class "input" ]
 
 
-init : InitArgs -> ( Model, Cmd Msg )
+init : InitArgs msg -> ( Model msg, Cmd msg )
 init args =
     ( { args = args
       , zones = []
@@ -49,43 +50,48 @@ init args =
       , selectState = Select.init "zone"
       , selectConfig = selectConfig
       }
-    , Cmd.map GotZonesList (Query.Zones.makeRequest args.url)
+    , Cmd.map args.toMsg <|
+        Query.Zones.makeRequest { url = args.url, toMsg = GotZonesList }
     )
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model msg -> ( Model msg, Cmd msg )
 update msg model =
+    let
+        cmdMap =
+            Cmd.map model.args.toMsg
+    in
     case msg of
         OnSelect maybeZone ->
-            ( { model | selected = maybeZone }, Cmd.none )
+            ( { model | selected = maybeZone }, cmdMap Cmd.none )
 
         SelectMsg subMsg ->
             let
                 ( updated, cmd ) =
                     Select.update model.selectConfig subMsg model.selectState
             in
-            ( { model | selectState = updated }, cmd )
+            ( { model | selectState = updated }, cmdMap cmd )
 
         GotZonesList response ->
             let
                 newZones =
                     Query.Zones.parseResponse response
             in
-            ( { model | zones = newZones }, Cmd.none )
+            ( { model | zones = newZones }, cmdMap Cmd.none )
 
 
-getSelected : Model -> Maybe Zone
-getSelected model =
-    model.selected
+getSelected : Model msg -> Maybe Zone
+getSelected =
+    .selected
 
 
-view : Model -> Html Msg
+view : Model msg -> Html msg
 view model =
-    let
-        select =
-            Select.view model.selectConfig
+    Html.map model.args.toMsg <|
+        div [ class "field" ]
+            [ label [ class "label" ] [ text "Zone" ]
+            , Select.view model.selectConfig
                 model.selectState
                 model.zones
                 (model.selected |> Maybe.map (\m -> [ m ]) |> Maybe.withDefault [])
-    in
-    div [ class "field" ] [ label [ class "label" ] [ text "Zone" ], select ]
+            ]

@@ -36,7 +36,7 @@ type alias Model =
     , selected : Maybe String
     , resourceSelectState : Select.State
     , resourceSelectConfig : Select.Config Msg String
-    , zoneModel : Ui.ZoneSelect.Model
+    , zoneSelectModel : Ui.ZoneSelect.Model Msg
     }
 
 
@@ -56,17 +56,17 @@ resourceSelectConfig =
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
-        ( zoneModel, zoneCmd ) =
-            Ui.ZoneSelect.init { url = flags.graphqlBaseUrl }
+        ( zoneSelectModel, zoneCmd ) =
+            Ui.ZoneSelect.init { url = flags.graphqlBaseUrl, toMsg = ZoneSelectMsg }
     in
     ( { flags = flags
       , resources = resources
       , selected = Nothing
       , resourceSelectState = Select.init "resource"
       , resourceSelectConfig = resourceSelectConfig
-      , zoneModel = zoneModel
+      , zoneSelectModel = zoneSelectModel
       }
-    , Cmd.batch [ Cmd.map ZoneCmd zoneCmd, Cmd.none ]
+    , Cmd.batch [ zoneCmd, Cmd.none ]
     )
 
 
@@ -75,8 +75,7 @@ init flags =
 
 
 type Msg
-    = NoOp
-    | ZoneCmd Ui.ZoneSelect.Msg
+    = ZoneSelectMsg Ui.ZoneSelect.Msg
     | OnSelect (Maybe String)
     | SelectMsg (Select.Msg String)
 
@@ -84,12 +83,12 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ZoneCmd zoneMsg ->
+        ZoneSelectMsg zoneMsg ->
             let
-                ( zoneModel, zoneCmd ) =
-                    Ui.ZoneSelect.update zoneMsg model.zoneModel
+                ( updated, cmd ) =
+                    Ui.ZoneSelect.update zoneMsg model.zoneSelectModel
             in
-            ( { model | zoneModel = zoneModel }, Cmd.map ZoneCmd zoneCmd )
+            ( { model | zoneSelectModel = updated }, cmd )
 
         OnSelect maybeResource ->
             ( { model | selected = maybeResource }, Cmd.none )
@@ -101,8 +100,6 @@ update msg model =
             in
             ( { model | resourceSelectState = updated }, cmd )
 
-        NoOp ->
-            ( model, Cmd.none )
 
 
 
@@ -125,7 +122,7 @@ view model =
         [ p [ class "title" ] [ text "Create a Resource" ]
         , div [ class "box" ]
             [ div [ class "field" ] [ label [ class "label" ] [ text "Resource" ], select ]
-            , Ui.ZoneSelect.view model.zoneModel |> Html.map ZoneCmd
+            , Ui.ZoneSelect.view model.zoneSelectModel
             , div [ class "field" ]
                 [ label [ class "label" ] [ text "Location" ]
                 , input
