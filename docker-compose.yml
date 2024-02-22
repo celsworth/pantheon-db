@@ -11,10 +11,10 @@ x-app: &app
 services:
   watch-js:
     <<: *app
-    command: npm run build:watch
+    command: yarn run build:watch
   watch-css:
     <<: *app
-    command: npm run build:css:watch
+    command: yarn run build:css:watch
 
   postgres:
     image: postgres:15

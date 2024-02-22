@@ -1,4 +1,4 @@
-module Resource exposing (Msg, makeRequest, resources)
+module Resource exposing (Msg, makeRequest )
 
 import Api.Object.Resource as Resource
 import Api.Query as Query
@@ -8,25 +8,8 @@ import Graphql.Operation exposing (RootQuery)
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import RemoteData exposing (RemoteData)
 
-
-resources : List String
-resources =
-    resourceToLargeAndHuge "Apple Tree"
-        ++ resourceToLargeAndHuge "Pine Tree"
-        ++ resourceToLargeAndHuge "Oak Tree"
-        ++ resourceToLargeAndHuge "Ash Tree"
-        ++ resourceToLargeAndHuge "Maple Tree"
-        ++ resourceToLargeAndHuge "Asherite Ore Deposit"
-        ++ resourceToLargeAndHuge "Caspilrite Ore Deposit"
-        ++ resourceToLargeAndHuge "Padrium Ore Deposit"
-        ++ resourceToLargeAndHuge "Blackberry Bush"
-        ++ [ "Natural Garden"
-           ]
-
-
-resourceToLargeAndHuge : String -> List String
-resourceToLargeAndHuge resource =
-    [ resource, "Large " ++ resource, "Huge " ++ resource ]
+-- Cmd.map GotResourceResponse Resource.makeRequest
+-- type Msg = GotResourceResponse Resource.Msg
 
 
 

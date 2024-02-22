@@ -1,11 +1,11 @@
 module Resource.Create exposing (main)
 
 import Browser
+import Helpers.FuzzyFilter exposing (filter)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Resource
 import Select
-import Simple.Fuzzy
+import Ui.ZoneSelect
 
 
 
@@ -36,11 +36,12 @@ type alias Model =
     , selected : Maybe String
     , resourceSelectState : Select.State
     , resourceSelectConfig : Select.Config Msg String
+    , zoneModel : Ui.ZoneSelect.Model
     }
 
 
-resourceSelectConfigResource : Select.Config Msg String
-resourceSelectConfigResource =
+resourceSelectConfig : Select.Config Msg String
+resourceSelectConfig =
     Select.newConfig
         { onSelect = OnSelect
         , toLabel = identity
@@ -54,13 +55,18 @@ resourceSelectConfigResource =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
+    let
+        ( zoneModel, zoneCmd ) =
+            Ui.ZoneSelect.init
+    in
     ( { flags = flags
-      , resources = Resource.resources
+      , resources = resources
       , selected = Nothing
       , resourceSelectState = Select.init "resource"
-      , resourceSelectConfig = resourceSelectConfigResource
+      , resourceSelectConfig = resourceSelectConfig
+      , zoneModel = zoneModel
       }
-    , Cmd.map GotResourceResponse Resource.makeRequest
+    , Cmd.batch [ Cmd.map ZoneCmd zoneCmd, Cmd.none ]
     )
 
 
@@ -70,7 +76,7 @@ init flags =
 
 type Msg
     = NoOp
-    | GotResourceResponse Resource.Msg
+    | ZoneCmd Ui.ZoneSelect.Msg
     | OnSelect (Maybe String)
     | SelectMsg (Select.Msg String)
 
@@ -78,8 +84,12 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        GotResourceResponse _ ->
-            ( model, Cmd.none )
+        ZoneCmd zoneMsg ->
+            let
+                ( zoneModel, zoneCmd ) =
+                    Ui.ZoneSelect.update zoneMsg model.zoneModel
+            in
+            ( { model | zoneModel = zoneModel }, Cmd.map ZoneCmd zoneCmd )
 
         OnSelect maybeResource ->
             ( { model | selected = maybeResource }, Cmd.none )
@@ -111,12 +121,11 @@ view model =
                 model.resources
                 (model.selected |> Maybe.map (\m -> [ m ]) |> Maybe.withDefault [])
     in
-    div [ class "container" ]
-        [ div [ class "box" ]
-            [ div [ class "field" ]
-                [ label [ class "label" ] [ text "Resource" ]
-                , select
-                ]
+    div []
+        [ p [ class "title" ] [ text "Create a Resource" ]
+        , div [ class "box" ]
+            [ div [ class "field" ] [ label [ class "label" ] [ text "Resource" ], select ]
+            , Ui.ZoneSelect.view model.zoneModel |> Html.map ZoneCmd
             , div [ class "field" ]
                 [ label [ class "label" ] [ text "Location" ]
                 , input
@@ -126,13 +135,16 @@ view model =
                     ]
                     []
                 ]
+            , div [ class "field" ]
+                [ div [ class "control" ]
+                    [ button [ class "button is-link" ] [ text "Create" ]
+                    ]
+                ]
             ]
-        , currentSelection
         ]
 
 
 
--- /jumploc 3453.94 476.00 3770.94 58
 -- SUBSCRIPTIONS
 
 
@@ -142,15 +154,24 @@ subscriptions _ =
 
 
 
--- MISC
+-- Resource List
 
 
-filter : Int -> (a -> String) -> String -> List a -> Maybe (List a)
-filter minChars toLabel query items =
-    if String.length query < minChars then
-        Nothing
+resources : List String
+resources =
+    resourceToLargeAndHuge "Apple Tree"
+        ++ resourceToLargeAndHuge "Pine Tree"
+        ++ resourceToLargeAndHuge "Oak Tree"
+        ++ resourceToLargeAndHuge "Ash Tree"
+        ++ resourceToLargeAndHuge "Maple Tree"
+        ++ resourceToLargeAndHuge "Asherite Ore Deposit"
+        ++ resourceToLargeAndHuge "Caspilrite Ore Deposit"
+        ++ resourceToLargeAndHuge "Padrium Ore Deposit"
+        ++ resourceToLargeAndHuge "Blackberry Bush"
+        ++ [ "Natural Garden"
+           ]
 
-    else
-        items
-            |> Simple.Fuzzy.filter toLabel query
-            |> Just
+
+resourceToLargeAndHuge : String -> List String
+resourceToLargeAndHuge resource =
+    [ resource, "Large " ++ resource, "Huge " ++ resource ]
