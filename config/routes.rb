@@ -46,6 +46,8 @@ Rails.application.routes.draw do
 
   get '/test', to: 'test#index'
 
+  resources :items, only: %i[new]
+
   # get 'up' => 'rails/health#show', as: :rails_health_check
 
   root to: proc { [404, {}, ['Not found.']] }

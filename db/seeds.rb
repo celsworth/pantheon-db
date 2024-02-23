@@ -4,6 +4,7 @@ return if Zone.any?
 
 Patch.create(version: '0.13.85')
 Patch.create(version: '0.13.207')
+Patch.create(version: '0.13.271')
 
 avp = Zone.create(name: "Avendyr's Pass")
 z = Zone.create(name: 'Thronefast')

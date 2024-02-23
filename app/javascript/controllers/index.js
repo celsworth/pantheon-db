@@ -4,5 +4,8 @@
 
 import { application } from "./application"
 
+import ElmItemCreateController from "./elm_item_create_controller"
+application.register("elm-item-create", ElmItemCreateController)
+
 import ElmResourceCreateController from "./elm_resource_create_controller"
 application.register("elm-resource-create", ElmResourceCreateController)
