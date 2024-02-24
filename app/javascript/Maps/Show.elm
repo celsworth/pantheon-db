@@ -28,17 +28,26 @@ type alias Offset =
     }
 
 
-type alias MousePos =
-    ( Float, Float )
+mapXSize : number
+mapXSize =
+    1152
+
+
+mapYSize : number
+mapYSize =
+    864
+
+
+type DragData
+    = NotDragging
+    | Dragging { startingMapOffset : Offset, startingMousePos : Offset }
 
 
 type alias Model =
     { flags : Flags
     , zoom : Float
-    , offset : Offset
-    , mouseIsDown : Bool
-    , mouseDownStartPos : MousePos
-    , mapOffsetAtDragStart : Offset
+    , mapOffset : Offset
+    , dragData : DragData
     }
 
 
@@ -52,10 +61,8 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( { flags = flags
       , zoom = 2
-      , offset = { x = 0, y = 0 }
-      , mouseIsDown = False
-      , mouseDownStartPos = ( 0, 0 )
-      , mapOffsetAtDragStart = { x = 0, y = 0 }
+      , mapOffset = { x = 0, y = 0 }
+      , dragData = NotDragging
       }
     , Cmd.none
     )
@@ -65,76 +72,107 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         MouseMove event ->
-            let
-                ( offX, offY ) =
-                    event.offsetPos
-
-                ( startX, startY ) =
-                    model.mouseDownStartPos
-
-                ( movedX, movedY ) =
-                    ( startX - offX, startY - offY )
-
-                newMapOffset =
-                    { x = model.mapOffsetAtDragStart.x + movedX
-                    , y = model.mapOffsetAtDragStart.y + movedY
-                    }
-            in
-            ( { model | offset = newMapOffset }, Cmd.none )
+            ( calculateNewMapOffset model event, Cmd.none )
 
         MouseDown event ->
             let
-                newMouseDown =
-                    if event.button == Mouse.MainButton then
-                        True
-
-                    else
-                        model.mouseIsDown
+                ( offsetPosX, offsetPosY ) =
+                    event.offsetPos
             in
             ( { model
-                | mapOffsetAtDragStart = model.offset
-                , mouseDownStartPos = event.offsetPos
-                , mouseIsDown = newMouseDown
+                | dragData =
+                    Dragging
+                        { startingMapOffset = model.mapOffset
+                        , startingMousePos = { x = offsetPosX, y = offsetPosY }
+                        }
               }
             , Cmd.none
             )
 
         MouseUp _ ->
-            ( { model | mouseIsDown = False }, Cmd.none )
+            ( { model | dragData = NotDragging }, Cmd.none )
+
+
+calculateNewMapOffset : Model -> Mouse.Event -> Model
+calculateNewMapOffset model event =
+    case model.dragData of
+        NotDragging ->
+            -- shouldn't happen
+            model
+
+        Dragging dragData ->
+            let
+                ( offsetPosX, offsetPosY ) =
+                    event.offsetPos
+
+                ( movedX, movedY ) =
+                    ( dragData.startingMousePos.x - offsetPosX
+                    , dragData.startingMousePos.y - offsetPosY
+                    )
+
+                maxX =
+                    mapXSize / model.zoom
+
+                maxY =
+                    mapYSize / model.zoom
+
+                newMapOffset =
+                    { x = boundAtMax maxX <| boundAtZero <| dragData.startingMapOffset.x + movedX
+                    , y = boundAtMax maxY <| boundAtZero <| dragData.startingMapOffset.y + movedY
+                    }
+            in
+            { model | mapOffset = newMapOffset }
+
+
+boundAtMax : Float -> Float -> Float
+boundAtMax max n =
+    if n > max then
+        max
+
+    else
+        n
+
+
+boundAtZero : Float -> Float
+boundAtZero n =
+    if n < 0 then
+        0
+
+    else
+        n
 
 
 view : Model -> Html Msg
 view model =
     let
         mouseEvents =
-            if model.mouseIsDown then
-                [ Mouse.onUp MouseUp, Mouse.onMove MouseMove, Mouse.onLeave MouseUp ]
+            case model.dragData of
+                Dragging _ ->
+                    [ Mouse.onUp MouseUp, Mouse.onMove MouseMove, Mouse.onLeave MouseUp ]
 
-            else
-                [ Mouse.onDown MouseDown ]
+                NotDragging ->
+                    [ Mouse.onDown MouseDown ]
     in
     div
-        ([ class "map-container" ] ++ mouseEvents)
-        [ --img [ src "https://cdn.discordapp.com/attachments/1175493372430000218/1210710301767507998/Thronefast_2024-02-14.png?ex=65eb8cd5&is=65d917d5&hm=b5991cb0c52746a90fe644314bd2fdc7d1c4eb85edd96e9339b1c5c31385e9d5&" ] []
-          svgTest model
-        ]
+        (class "map-container" :: mouseEvents)
+        [ svgTest model ]
 
 
 svgTest : Model -> Html Msg
 svgTest model =
     let
-        -- entire viewport is 1152 864, so use zoom to reduce those
-        -- ie zoom of 2 would be showing 576 x 432 px
+        -- entire viewport is eg 1152x864, so use zoom to reduce those
+        -- ie zoom of 2 would be showing eg 576x432
         zoomedX =
-            1152 / model.zoom
+            mapXSize / model.zoom
 
         zoomedY =
-            864 / model.zoom
+            mapYSize / model.zoom
 
         viewBox =
-            String.fromFloat model.offset.x
+            String.fromFloat model.mapOffset.x
                 ++ " "
-                ++ String.fromFloat model.offset.y
+                ++ String.fromFloat model.mapOffset.y
                 ++ " "
                 ++ String.fromFloat zoomedX
                 ++ " "
@@ -142,14 +180,14 @@ svgTest model =
     in
     svg
         [ Svg.Attributes.class "svg"
-        , Svg.Attributes.width "1152px"
-        , Svg.Attributes.height "864px"
+        , Svg.Attributes.width <| String.fromInt mapXSize
+        , Svg.Attributes.height <| String.fromInt mapYSize
         , Svg.Attributes.viewBox viewBox
         ]
         [ Svg.image
             [ Svg.Attributes.xlinkHref "https://cdn.discordapp.com/attachments/1175493372430000218/1210710301767507998/Thronefast_2024-02-14.png?ex=65eb8cd5&is=65d917d5&hm=b5991cb0c52746a90fe644314bd2fdc7d1c4eb85edd96e9339b1c5c31385e9d5&"
-            , Svg.Attributes.width "1152"
-            , Svg.Attributes.height "864"
+            , Svg.Attributes.width <| String.fromInt mapXSize
+            , Svg.Attributes.height <| String.fromInt mapYSize
             ]
             []
         , Svg.circle
