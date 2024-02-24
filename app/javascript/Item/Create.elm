@@ -1,6 +1,7 @@
 module Item.Create exposing (main)
 
 import Browser
+import Helpers
 import Helpers.FuzzyFilter exposing (filter)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -9,8 +10,8 @@ import Parsers.JumpLoc
 import Query.ItemsByName
 import Select
 import Types exposing (Loc)
+import Ui.TextInputValidated
 import Ui.ZoneSelect
-import Helpers
 
 
 
@@ -35,13 +36,6 @@ main =
 -- MODEL
 
 
-type RemoteValidated t
-    = Valid t
-    | Invalid t
-    | Debouncing t
-    | Checking t
-
-
 type alias Model =
     { flags : Flags
     , resources : List String
@@ -49,7 +43,7 @@ type alias Model =
     , resourceSelectState : Select.State
     , resourceSelectConfig : Select.Config Msg String
     , zoneSelectModel : Ui.ZoneSelect.Model Msg
-    , name : RemoteValidated String
+    , nameState : Ui.TextInputValidated.Model String Msg
     , parsedLoc : Maybe Loc
     }
 
@@ -79,7 +73,7 @@ init flags =
       , resourceSelectState = Select.init "resource"
       , resourceSelectConfig = resourceSelectConfig
       , zoneSelectModel = zoneSelectModel
-      , name = Invalid ""
+      , nameState = Ui.TextInputValidated.init { initialValue = "", label = "Name", onChangeMsg = ItemNameChanged }
       , parsedLoc = Nothing
       }
     , Cmd.batch [ zoneCmd, Cmd.none ]
@@ -121,24 +115,22 @@ update msg model =
             ( { model | resourceSelectState = updated }, cmd )
 
         OnLocChange loc ->
-            let
-                newLoc =
-                    Parsers.JumpLoc.parse loc
-            in
-            ( { model | parsedLoc = newLoc }, Cmd.none )
+            ( { model | parsedLoc = Parsers.JumpLoc.parse loc }, Cmd.none )
 
         ItemNameChanged name ->
-            ( { model | name = Debouncing name }, Helpers.delayMsg 300 (ItemNameChangedAfterDelay name) )
+            ( { model | nameState = model.nameState |> Ui.TextInputValidated.isChecking }
+            , Helpers.delayMsg 400 (ItemNameChangedAfterDelay name)
+            )
 
         ItemNameChangedAfterDelay name ->
-            if Debouncing name == model.name then
-                ( { model | name = Checking name }
+            if Ui.TextInputValidated.isEqualValue name model.nameState then
+                ( model, Cmd.none )
+
+            else
+                ( model
                 , Query.ItemsByName.makeRequest { name = Just name }
                     { url = model.flags.graphqlBaseUrl, toMsg = GotItemsByName name }
                 )
-
-            else
-                ( model, Cmd.none )
 
         GotItemsByName forName graphQlResponse ->
             let
@@ -148,14 +140,14 @@ update msg model =
                         |> Query.ItemsByName.parseResponse
                         |> List.any (\i -> String.toLower i.name == String.toLower forName)
 
-                newName =
+                newState =
                     if exactMatchFound then
-                        Invalid forName
+                        model.nameState |> Ui.TextInputValidated.isInvalid
 
                     else
-                        Valid forName
+                        model.nameState |> Ui.TextInputValidated.isValid
             in
-            ( { model | name = newName }, Cmd.none )
+            ( { model | nameState = newState }, Cmd.none )
 
 
 
@@ -178,32 +170,11 @@ view model =
                 model.resourceSelectState
                 model.resources
                 (model.selected |> Maybe.map (\m -> [ m ]) |> Maybe.withDefault [])
-
-        ( inputClass, controlClass ) =
-            case model.name of
-                Valid _ ->
-                    ( "is-success", "" )
-
-                Invalid _ ->
-                    ( "is-danger", "" )
-
-                Debouncing _ ->
-                    ( "is-warning", "is-loading" )
-
-                Checking _ ->
-                    ( "is-warning", "is-loading" )
     in
     div []
         [ p [ class "title" ] [ text "Create an Item" ]
         , div [ class "box" ]
-            [ div [ class "field" ]
-                [ label [ class "label" ] [ text "Item Name" ]
-                , div [ class "control", class controlClass ]
-                    [ input
-                        [ type_ "text", class "input", class inputClass, onInput ItemNameChanged ]
-                        []
-                    ]
-                ]
+            [ div [ class "field" ] [ Ui.TextInputValidated.view model.nameState ]
             , Ui.ZoneSelect.view model.zoneSelectModel
             , div [ class "field" ]
                 [ label [ class "label" ] [ text "Location" ]
@@ -232,6 +203,3 @@ view model =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.none
-
-
-

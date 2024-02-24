@@ -47,6 +47,7 @@ Rails.application.routes.draw do
   get '/test', to: 'test#index'
 
   resources :items, only: %i[new]
+  resources :maps, only: %i[show]
 
   # get 'up' => 'rails/health#show', as: :rails_health_check
 

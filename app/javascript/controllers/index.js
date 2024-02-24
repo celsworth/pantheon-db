@@ -7,5 +7,8 @@ import { application } from "./application"
 import ElmItemCreateController from "./elm_item_create_controller"
 application.register("elm-item-create", ElmItemCreateController)
 
+import ElmMapsShowController from "./elm_maps_show_controller"
+application.register("elm-maps-show", ElmMapsShowController)
+
 import ElmResourceCreateController from "./elm_resource_create_controller"
 application.register("elm-resource-create", ElmResourceCreateController)
