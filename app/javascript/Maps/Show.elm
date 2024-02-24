@@ -111,10 +111,10 @@ calculateNewMapOffset model event =
                     )
 
                 maxX =
-                    mapXSize / model.zoom
+                    mapXSize - (mapXSize / model.zoom)
 
                 maxY =
-                    mapYSize / model.zoom
+                    mapYSize - (mapYSize / model.zoom)
 
                 newMapOffset =
                     { x = boundAtMax maxX <| boundAtZero <| dragData.startingMapOffset.x + movedX
