@@ -104,38 +104,43 @@ update msg model =
 
         ZoomChanged value ->
             let
+                currentViewportWidthX =
+                    mapXSize / model.zoom
+
+                currentViewportWidthY =
+                    mapYSize / model.zoom
+
+                centreOfViewX =
+                    model.mapOffset.x + (currentViewportWidthX / 2)
+
+                centreOfViewY =
+                    model.mapOffset.y + (currentViewportWidthY / 2)
+
+                desiredBoxSizeX =
+                    mapXSize / newZoom
+
+                desiredBoxSizeY =
+                    mapYSize / newZoom
+
+                offsetToLeft =
+                    desiredBoxSizeX / 2
+
+                offsetToTop =
+                    desiredBoxSizeY / 2
+
+                leftEdge =
+                    centreOfViewX - offsetToLeft
+
+                topEdge =
+                    centreOfViewY - offsetToTop
+
                 newZoom =
                     String.toFloat value |> Maybe.withDefault 1
 
-                zoomFactor =
-                    model.zoom * newZoom
-
-                -- when zooming, try to keep centre in place
-                -- if we zoomed in from 1x to 2x. zoomFactor is 0.5
-                -- we've lost half our viewport, so mapXSize / 2 ?
-                -- take that and divide by 2 (for each edge) - add it onto offset.x
-                zoomChangeX =
-                    mapXSize / zoomFactor
-
-                zoomChangeY =
-                    mapYSize / zoomFactor
-
-                xDiff =
-                    zoomChangeX / 2
-
-                yDiff =
-                    zoomChangeY / 2
-
                 newMapOffset1 =
-                    if newZoom > model.zoom then
-                        { x = model.mapOffset.x + xDiff
-                        , y = model.mapOffset.y + yDiff
-                        }
-
-                    else
-                        { x = model.mapOffset.x - xDiff
-                        , y = model.mapOffset.y - yDiff
-                        }
+                    { x = leftEdge
+                    , y = topEdge
+                    }
 
                 newMapOffset2 =
                     boundMapOffset newZoom newMapOffset1
