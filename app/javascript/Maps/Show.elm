@@ -3,9 +3,18 @@ module Maps.Show exposing (main)
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onInput)
 import Html.Events.Extra.Mouse as Mouse
 import Svg exposing (..)
 import Svg.Attributes
+import Types exposing (Loc)
+
+
+locs : List ( String, Loc )
+locs =
+    [ ( "Rabbit", { x = 3762, z = 555, y = 3070 } )
+    , ( "Scavenger", { x = 3455, z = 476, y = 3771 } )
+    ]
 
 
 type alias Flags =
@@ -55,12 +64,13 @@ type Msg
     = MouseMove Mouse.Event
     | MouseDown Mouse.Event
     | MouseUp Mouse.Event
+    | ZoomChanged String
 
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( { flags = flags
-      , zoom = 2
+      , zoom = 1
       , mapOffset = { x = 0, y = 0 }
       , dragData = NotDragging
       }
@@ -92,6 +102,40 @@ update msg model =
         MouseUp _ ->
             ( { model | dragData = NotDragging }, Cmd.none )
 
+        ZoomChanged value ->
+            let
+                newZoom =
+                    String.toFloat value |> Maybe.withDefault 1
+
+                zoomFactor =
+                    model.zoom / newZoom
+
+                -- when zooming, try to keep centre in place
+                -- imagine we zoomed in from 1x to 2x. zoomFactor is 0.5
+                -- we've lost half our viewport, so mapXSize / 2 ?
+                -- take that and divide by 2 (for each edge) - add it onto offset.x
+                xOffsetDiff =
+                    (mapXSize / zoomFactor) / 2
+
+                yOffsetDiff =
+                    (mapYSize / zoomFactor) / 2
+
+                newMapOffset1 =
+                    if newZoom > model.zoom then
+                        { x = model.mapOffset.x + xOffsetDiff
+                        , y = model.mapOffset.y + yOffsetDiff
+                        }
+
+                    else
+                        { x = model.mapOffset.x - xOffsetDiff
+                        , y = model.mapOffset.y - yOffsetDiff
+                        }
+
+                newMapOffset2 =
+                    boundMapOffset newZoom newMapOffset1
+            in
+            ( { model | zoom = newZoom, mapOffset = newMapOffset2 }, Cmd.none )
+
 
 calculateNewMapOffset : Model -> Mouse.Event -> Model
 calculateNewMapOffset model event =
@@ -110,36 +154,43 @@ calculateNewMapOffset model event =
                     , dragData.startingMousePos.y - offsetPosY
                     )
 
-                maxX =
-                    mapXSize - (mapXSize / model.zoom)
-
-                maxY =
-                    mapYSize - (mapYSize / model.zoom)
-
                 newMapOffset =
-                    { x = boundAtMax maxX <| boundAtZero <| dragData.startingMapOffset.x + movedX
-                    , y = boundAtMax maxY <| boundAtZero <| dragData.startingMapOffset.y + movedY
-                    }
+                    boundMapOffset model.zoom <|
+                        { x = dragData.startingMapOffset.x + movedX
+                        , y = dragData.startingMapOffset.y + movedY
+                        }
             in
             { model | mapOffset = newMapOffset }
 
 
-boundAtMax : Float -> Float -> Float
-boundAtMax max n =
-    if n > max then
-        max
+boundMapOffset : Float -> Offset -> Offset
+boundMapOffset zoom mapOffset =
+    let
+        maxX =
+            mapXSize - (mapXSize / zoom)
 
-    else
-        n
+        maxY =
+            mapYSize - (mapYSize / zoom)
 
+        boundAtMax : Float -> Float -> Float
+        boundAtMax max n =
+            if n > max then
+                max
 
-boundAtZero : Float -> Float
-boundAtZero n =
-    if n < 0 then
-        0
+            else
+                n
 
-    else
-        n
+        boundAtZero : Float -> Float
+        boundAtZero n =
+            if n < 0 then
+                0
+
+            else
+                n
+    in
+    { x = boundAtMax maxX <| boundAtZero <| mapOffset.x
+    , y = boundAtMax maxY <| boundAtZero <| mapOffset.y
+    }
 
 
 view : Model -> Html Msg
@@ -153,9 +204,20 @@ view model =
                 NotDragging ->
                     [ Mouse.onDown MouseDown ]
     in
-    div
-        (class "map-container" :: mouseEvents)
-        [ svgTest model ]
+    div []
+        [ input
+            [ type_ "range"
+            , Html.Attributes.min "1"
+            , Html.Attributes.max "5"
+            , Html.Attributes.step "1"
+            , onInput ZoomChanged
+            , value <| String.fromFloat model.zoom
+            ]
+            []
+        , div
+            (class "section map-container" :: mouseEvents)
+            [ svgTest model ]
+        ]
 
 
 svgTest : Model -> Html Msg
