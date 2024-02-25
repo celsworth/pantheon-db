@@ -104,6 +104,9 @@ update msg model =
 
         ZoomChanged value ->
             let
+                newZoom =
+                    value |> String.toFloat |> Maybe.withDefault 1
+
                 currentViewportWidthX =
                     mapXSize / model.zoom
 
@@ -116,30 +119,21 @@ update msg model =
                 centreOfViewY =
                     model.mapOffset.y + (currentViewportWidthY / 2)
 
-                desiredBoxSizeX =
+                desiredViewportSizeX =
                     mapXSize / newZoom
 
-                desiredBoxSizeY =
+                desiredViewportSizeY =
                     mapYSize / newZoom
 
                 offsetToLeft =
-                    desiredBoxSizeX / 2
+                    desiredViewportSizeX / 2
 
                 offsetToTop =
-                    desiredBoxSizeY / 2
-
-                leftEdge =
-                    centreOfViewX - offsetToLeft
-
-                topEdge =
-                    centreOfViewY - offsetToTop
-
-                newZoom =
-                    String.toFloat value |> Maybe.withDefault 1
+                    desiredViewportSizeY / 2
 
                 newMapOffset1 =
-                    { x = leftEdge
-                    , y = topEdge
+                    { x = centreOfViewX - offsetToLeft
+                    , y = centreOfViewY - offsetToTop
                     }
 
                 newMapOffset2 =
@@ -225,8 +219,8 @@ view model =
         [ input
             [ type_ "range"
             , Html.Attributes.min "1"
-            , Html.Attributes.max "5"
-            , Html.Attributes.step "1"
+            , Html.Attributes.max "10"
+            , Html.Attributes.step "0.05"
             , onInput ZoomChanged
             , value <| String.fromFloat model.zoom
             ]
