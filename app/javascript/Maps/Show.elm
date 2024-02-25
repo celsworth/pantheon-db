@@ -108,27 +108,33 @@ update msg model =
                     String.toFloat value |> Maybe.withDefault 1
 
                 zoomFactor =
-                    model.zoom / newZoom
+                    model.zoom * newZoom
 
                 -- when zooming, try to keep centre in place
-                -- imagine we zoomed in from 1x to 2x. zoomFactor is 0.5
+                -- if we zoomed in from 1x to 2x. zoomFactor is 0.5
                 -- we've lost half our viewport, so mapXSize / 2 ?
                 -- take that and divide by 2 (for each edge) - add it onto offset.x
-                xOffsetDiff =
-                    (mapXSize / zoomFactor) / 2
+                zoomChangeX =
+                    mapXSize / zoomFactor
 
-                yOffsetDiff =
-                    (mapYSize / zoomFactor) / 2
+                zoomChangeY =
+                    mapYSize / zoomFactor
+
+                xDiff =
+                    zoomChangeX / 2
+
+                yDiff =
+                    zoomChangeY / 2
 
                 newMapOffset1 =
                     if newZoom > model.zoom then
-                        { x = model.mapOffset.x + xOffsetDiff
-                        , y = model.mapOffset.y + yOffsetDiff
+                        { x = model.mapOffset.x + xDiff
+                        , y = model.mapOffset.y + yDiff
                         }
 
                     else
-                        { x = model.mapOffset.x - xOffsetDiff
-                        , y = model.mapOffset.y - yOffsetDiff
+                        { x = model.mapOffset.x - xDiff
+                        , y = model.mapOffset.y - yDiff
                         }
 
                 newMapOffset2 =
@@ -153,6 +159,12 @@ calculateNewMapOffset model event =
                     ( dragData.startingMousePos.x - offsetPosX
                     , dragData.startingMousePos.y - offsetPosY
                     )
+
+                maxX =
+                    mapXSize - (mapXSize / model.zoom)
+
+                maxY =
+                    mapYSize - (mapYSize / model.zoom)
 
                 newMapOffset =
                     boundMapOffset model.zoom <|
