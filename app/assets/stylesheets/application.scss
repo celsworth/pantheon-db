@@ -54,3 +54,8 @@ $body-background-color: #f9fff9;
   left: 0;
   z-index: 1;
 }
+
+svg text {
+  // avoid breaking dragging when going over a text element
+  pointer-events: none;
+}
