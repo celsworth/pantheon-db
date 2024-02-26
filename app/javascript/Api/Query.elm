@@ -19,34 +19,6 @@ import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode exposing (Decoder)
 
 
-type alias DungeonsOptionalArguments =
-    { id : OptionalArgument Api.ScalarCodecs.Id
-    , name : OptionalArgument String
-    }
-
-
-{-|
-
-  - id - Filter to the given Dungeon ID
-  - name - Filter to matching Dungeon names
-
--}
-dungeons :
-    (DungeonsOptionalArguments -> DungeonsOptionalArguments)
-    -> SelectionSet decodesTo Api.Object.Dungeon
-    -> SelectionSet (List decodesTo) RootQuery
-dungeons fillInOptionals____ object____ =
-    let
-        filledInOptionals____ =
-            fillInOptionals____ { id = Absent, name = Absent }
-
-        optionalArgs____ =
-            [ Argument.optional "id" filledInOptionals____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "name" filledInOptionals____.name Encode.string ]
-                |> List.filterMap Basics.identity
-    in
-    Object.selectionForCompositeField "dungeons" optionalArgs____ object____ (Basics.identity >> Decode.list)
-
-
 type alias ItemsOptionalArguments =
     { id : OptionalArgument Api.ScalarCodecs.Id
     , name : OptionalArgument String
@@ -240,33 +212,6 @@ resources fillInOptionals____ object____ =
                 |> List.filterMap Basics.identity
     in
     Object.selectionForCompositeField "resources" optionalArgs____ object____ (Basics.identity >> Decode.list)
-
-
-type alias SettlementsOptionalArguments =
-    { id : OptionalArgument Api.ScalarCodecs.Id
-    , name : OptionalArgument String
-    }
-
-
-{-|
-
-  - name - Filter to matching Settlement names
-
--}
-settlements :
-    (SettlementsOptionalArguments -> SettlementsOptionalArguments)
-    -> SelectionSet decodesTo Api.Object.Settlement
-    -> SelectionSet (List decodesTo) RootQuery
-settlements fillInOptionals____ object____ =
-    let
-        filledInOptionals____ =
-            fillInOptionals____ { id = Absent, name = Absent }
-
-        optionalArgs____ =
-            [ Argument.optional "id" filledInOptionals____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "name" filledInOptionals____.name Encode.string ]
-                |> List.filterMap Basics.identity
-    in
-    Object.selectionForCompositeField "settlements" optionalArgs____ object____ (Basics.identity >> Decode.list)
 
 
 type alias ZonesOptionalArguments =

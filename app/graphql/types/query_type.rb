@@ -2,9 +2,7 @@
 
 module Types
   class QueryType < Types::BaseObject
-    field :dungeons, resolver: Resolvers::DungeonsResolver
     field :locations, resolver: Resolvers::LocationsResolver
-    field :settlements, resolver: Resolvers::SettlementsResolver
     field :items, resolver: Resolvers::ItemsResolver
     field :monsters, resolver: Resolvers::MonstersResolver
     field :npcs, resolver: Resolvers::NpcsResolver

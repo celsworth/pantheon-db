@@ -17,27 +17,20 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
-    create_table :dungeons do |t|
-      t.string :name, null: false, index: { unique: true }
-
-      t.datetime :discarded_at, index: true
-      t.timestamps
-    end
-
-    create_table :settlements do |t|
-      t.string :name, null: false, index: { unique: true }
-
-      t.datetime :discarded_at, index: true
-      t.timestamps
-    end
-
     create_table :locations do |t|
       t.references :zone, null: false, index: true
-      t.references :settlement, index: { unique: true }
-      t.references :dungeon, index: { unique: true }
+
+      t.string :name, null: false, index: { unique: true }
+      t.string :category, null: false
+
+      t.decimal :loc_x
+      t.decimal :loc_y
+      t.decimal :loc_z
 
       t.datetime :discarded_at, index: true
       t.timestamps
+
+      t.index %i[loc_x loc_y]
     end
 
     create_table :resources do |t|

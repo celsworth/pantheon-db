@@ -14,15 +14,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "dungeons", force: :cascade do |t|
-    t.string "name", null: false
-    t.datetime "discarded_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["discarded_at"], name: "index_dungeons_on_discarded_at"
-    t.index ["name"], name: "index_dungeons_on_name", unique: true
-  end
-
   create_table "items", force: :cascade do |t|
     t.bigint "patch_id", null: false
     t.string "name", null: false
@@ -62,14 +53,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
 
   create_table "locations", force: :cascade do |t|
     t.bigint "zone_id", null: false
-    t.bigint "settlement_id"
-    t.bigint "dungeon_id"
+    t.string "name", null: false
+    t.string "category", null: false
+    t.decimal "loc_x"
+    t.decimal "loc_y"
+    t.decimal "loc_z"
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["discarded_at"], name: "index_locations_on_discarded_at"
-    t.index ["dungeon_id"], name: "index_locations_on_dungeon_id", unique: true
-    t.index ["settlement_id"], name: "index_locations_on_settlement_id", unique: true
+    t.index ["loc_x", "loc_y"], name: "index_locations_on_loc_x_and_loc_y"
+    t.index ["name"], name: "index_locations_on_name", unique: true
     t.index ["zone_id"], name: "index_locations_on_zone_id"
   end
 
@@ -200,15 +194,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.index ["resource"], name: "index_resources_on_resource"
     t.index ["size"], name: "index_resources_on_size"
     t.index ["subresource"], name: "index_resources_on_subresource"
-  end
-
-  create_table "settlements", force: :cascade do |t|
-    t.string "name", null: false
-    t.datetime "discarded_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["discarded_at"], name: "index_settlements_on_discarded_at"
-    t.index ["name"], name: "index_settlements_on_name", unique: true
   end
 
   create_table "versions", force: :cascade do |t|

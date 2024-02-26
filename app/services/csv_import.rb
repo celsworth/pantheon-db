@@ -27,7 +27,7 @@ class CsvImport
   private
 
   def thronefast
-    @thronefast ||= Location.includes(:zone).find_by!(settlement_id: nil, dungeon_id: nil, zone: { name: 'Thronefast' })
+    @thronefast ||= Location.includes(:zone).find_by!(category: 'zone', zone: { name: 'Thronefast' })
   end
 
   def create_resource(attrs)

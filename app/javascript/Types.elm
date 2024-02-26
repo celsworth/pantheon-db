@@ -1,4 +1,4 @@
-module Types exposing (Item, Loc, Resource, Zone)
+module Types exposing (Item, Loc, Npc, Resource, Zone)
 
 import Api.ScalarCodecs
 
@@ -17,6 +17,15 @@ type alias Loc =
 type alias Item =
     { id : Api.ScalarCodecs.Id
     , name : String
+    }
+
+
+type alias Npc =
+    { id : Api.ScalarCodecs.Id
+    , name : String
+    , subtitle: Maybe String
+    , loc_x : Maybe Float
+    , loc_y : Maybe Float
     }
 
 

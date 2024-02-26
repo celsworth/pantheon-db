@@ -7,8 +7,6 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :zones
-    resources :settlements
-    resources :dungeons
     resources :locations
     resources :monsters
     resources :items

@@ -19,21 +19,34 @@ import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
 
 
+category : SelectionSet String Api.Object.Location
+category =
+    Object.selectionForField "String" "category" [] Decode.string
+
+
 createdAt : SelectionSet Api.ScalarCodecs.ISO8601DateTime Api.Object.Location
 createdAt =
     Object.selectionForField "ScalarCodecs.ISO8601DateTime" "createdAt" [] (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapCodecs |> .codecISO8601DateTime |> .decoder)
 
 
-dungeon :
-    SelectionSet decodesTo Api.Object.Dungeon
-    -> SelectionSet (Maybe decodesTo) Api.Object.Location
-dungeon object____ =
-    Object.selectionForCompositeField "dungeon" [] object____ (Basics.identity >> Decode.nullable)
-
-
 id : SelectionSet Api.ScalarCodecs.Id Api.Object.Location
 id =
     Object.selectionForField "ScalarCodecs.Id" "id" [] (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapCodecs |> .codecId |> .decoder)
+
+
+locX : SelectionSet (Maybe Float) Api.Object.Location
+locX =
+    Object.selectionForField "(Maybe Float)" "locX" [] (Decode.float |> Decode.nullable)
+
+
+locY : SelectionSet (Maybe Float) Api.Object.Location
+locY =
+    Object.selectionForField "(Maybe Float)" "locY" [] (Decode.float |> Decode.nullable)
+
+
+locZ : SelectionSet (Maybe Float) Api.Object.Location
+locZ =
+    Object.selectionForField "(Maybe Float)" "locZ" [] (Decode.float |> Decode.nullable)
 
 
 monsters :
@@ -53,13 +66,6 @@ npcs :
     -> SelectionSet (Maybe (List decodesTo)) Api.Object.Location
 npcs object____ =
     Object.selectionForCompositeField "npcs" [] object____ (Basics.identity >> Decode.list >> Decode.nullable)
-
-
-settlement :
-    SelectionSet decodesTo Api.Object.Settlement
-    -> SelectionSet (Maybe decodesTo) Api.Object.Location
-settlement object____ =
-    Object.selectionForCompositeField "settlement" [] object____ (Basics.identity >> Decode.nullable)
 
 
 updatedAt : SelectionSet Api.ScalarCodecs.ISO8601DateTime Api.Object.Location

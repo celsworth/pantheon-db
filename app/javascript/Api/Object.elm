@@ -5,10 +5,6 @@
 module Api.Object exposing (..)
 
 
-type Dungeon
-    = Dungeon
-
-
 type Item
     = Item
 
@@ -75,10 +71,6 @@ type Resource
 
 type ResourceResult
     = ResourceResult
-
-
-type Settlement
-    = Settlement
 
 
 type SuccessResult

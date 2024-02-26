@@ -8,10 +8,11 @@ Patch.create(version: '0.13.271')
 
 avp = Zone.create(name: "Avendyr's Pass")
 z = Zone.create(name: 'Thronefast')
-availia = Location.create(zone: z, settlement: Settlement.create(name: 'Availia'))
-Location.create(zone: avp, settlement: Settlement.create(name: 'Demith'))
+availia = Location.create(zone: z, name: 'Availia', category: 'settlement')
+Location.create(zone: avp, name: 'Demith', category: 'settlement')
 tf = Location.create(zone: z)
 
+return
 huntress = Npc.create(location: availia, name: 'The Huntress')
 scavenger = Npc.create(location: availia, name: 'The Scavenger')
 clothier = Npc.create(location: availia, name: 'The Clothier')
