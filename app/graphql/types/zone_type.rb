@@ -5,7 +5,7 @@ module Types
     description <<~DESC
       Represents a zone of Terminus, ie Thronefast, or Avendyr's Pass.
 
-      These are then used in Dungeon / Settlement / Location objects.
+      These are then used in Location objects.
     DESC
 
     field :id, ID, null: false
