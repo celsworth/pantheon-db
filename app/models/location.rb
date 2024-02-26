@@ -12,8 +12,9 @@ class Location < ApplicationRecord
   has_many :npcs
 
   CATEGORIES = %w[dungeon settlement landmark zone].freeze
+  CATEGORIES_CAMEL = CATEGORIES.map { |w| w.camelize(:lower) }
 
   validates :name, presence: true, uniqueness: true
-  validates :category, inclusion: { in: CATEGORIES}
+  validates :category, inclusion: { in: CATEGORIES }
   validates :zone, presence: true
 end

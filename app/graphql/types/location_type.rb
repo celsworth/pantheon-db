@@ -5,9 +5,9 @@ module Types
     description <<~DESC
       A Location informally represents a loose "area" of Terminus.
 
-      Locations always have an associated zone.
+      Locations always have an associated zone. The category describes what sort of location it is.
 
-      So a Location might represent Availia by having zone=Thronefast and type=settlement
+      So a Location might represent Availia by having zone="Thronefast" and category="settlement"
 
       Locations are used in Monster and Npc objects to identify where the Monster or Npc resides.
     DESC
@@ -16,7 +16,7 @@ module Types
 
     field :name, String, null: false
     field :zone, ZoneType, null: false
-    field :category, String, null: false
+    field :category, LocationCategoryType, null: false
 
     field :loc_x, Float
     field :loc_y, Float
