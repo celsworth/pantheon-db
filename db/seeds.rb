@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+return
 return if Zone.any?
 
 Patch.create(version: '0.13.85')
@@ -12,7 +13,6 @@ availia = Location.create(zone: z, name: 'Availia', category: 'settlement')
 Location.create(zone: avp, name: 'Demith', category: 'settlement')
 tf = Location.create(zone: z)
 
-return
 huntress = Npc.create(location: availia, name: 'The Huntress')
 scavenger = Npc.create(location: availia, name: 'The Scavenger')
 clothier = Npc.create(location: availia, name: 'The Clothier')

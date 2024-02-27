@@ -66,6 +66,7 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.decimal :loc_x
       t.decimal :loc_y
       t.decimal :loc_z
+      t.boolean :roamer, null: false, default: false
 
       t.datetime :discarded_at, index: true
       t.timestamps
@@ -106,6 +107,7 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.decimal :loc_x
       t.decimal :loc_y
       t.decimal :loc_z
+      t.boolean :roamer, null: false, default: false
 
       t.datetime :discarded_at, index: true
       t.timestamps

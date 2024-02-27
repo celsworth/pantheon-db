@@ -15,6 +15,7 @@ module Types
       argument :loc_x, Float, required: false
       argument :loc_y, Float, required: false
       argument :loc_z, Float, required: false
+      argument :roamer, Boolean, required: false
     end
   end
 end

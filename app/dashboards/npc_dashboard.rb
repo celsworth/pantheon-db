@@ -21,7 +21,8 @@ class NpcDashboard < Administrate::BaseDashboard
     patch: Field::BelongsTo,
     loc_x: Field::Number,
     loc_y: Field::Number,
-    loc_z: Field::Number
+    loc_z: Field::Number,
+    roamer: Field::Boolean,
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -51,6 +52,7 @@ class NpcDashboard < Administrate::BaseDashboard
     loc_x
     loc_y
     loc_z
+    roamer
     patch
   ].freeze
 
@@ -68,6 +70,7 @@ class NpcDashboard < Administrate::BaseDashboard
     loc_x
     loc_y
     loc_z
+    roamer
   ].freeze
 
   # COLLECTION_FILTERS

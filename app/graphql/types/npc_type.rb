@@ -22,6 +22,7 @@ module Types
     field :loc_x, Float
     field :loc_y, Float
     field :loc_z, Float
+    field :roamer, Boolean, null: false
 
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false

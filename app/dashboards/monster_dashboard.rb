@@ -20,7 +20,8 @@ class MonsterDashboard < Administrate::BaseDashboard
     patch: Field::BelongsTo,
     loc_x: Field::Number,
     loc_y: Field::Number,
-    loc_z: Field::Number
+    loc_z: Field::Number,
+    roamer: Field::Boolean
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -50,6 +51,7 @@ class MonsterDashboard < Administrate::BaseDashboard
     loc_x
     loc_y
     loc_z
+    roamer
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -65,6 +67,7 @@ class MonsterDashboard < Administrate::BaseDashboard
     loc_x
     loc_y
     loc_z
+    roamer
   ].freeze
 
   # COLLECTION_FILTERS
