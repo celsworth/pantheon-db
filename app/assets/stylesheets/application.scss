@@ -42,9 +42,31 @@ $body-background-color: #f9fff9;
   cursor: pointer;
 }
 
-svg text {
-  // avoid breaking dragging when going over a text element
-  pointer-events: none;
+svg {
+  text {
+    // avoid breaking dragging when going over a text element
+    pointer-events: none;
+
+    stroke: white;
+    stroke-width: 0.6em;
+    fill: black;
+    paint-order: stroke;
+    stroke-linejoin: round;
+  }
+
+  circle {
+    stroke: #000;
+
+    &.npc {
+      fill: #BBBB00;
+
+      &:hover {
+        fill: #FFFF00;
+
+      }
+    }
+  }
+
 }
 
 .npc-list {

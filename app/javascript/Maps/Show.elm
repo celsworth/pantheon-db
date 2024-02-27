@@ -4,23 +4,14 @@ import Browser
 import Browser.Dom
 import Html exposing (..)
 import Html.Attributes exposing (class, id, step, type_, value)
-import Html.Events exposing (onInput)
+import Html.Events exposing (onClick, onInput)
 import Html.Events.Extra.Mouse as Mouse
 import Html.Events.Extra.Wheel as Wheel
 import Query.Npcs
 import Svg exposing (Svg, svg)
 import Svg.Attributes
 import Task
-import Types exposing (Loc, Npc)
-
-
-
--- dire lord: map x = 480, map y = 297
--- well: map x = 968, map y = 752
--- map X size = 2800
--- map Y size = 2080
--- thronefast top left point = 2500, 4500 (or 4520?)
--- so bottom left is 2500, 2440
+import Types exposing (Npc)
 
 
 type alias Flags =
@@ -43,14 +34,6 @@ type alias Offset =
     }
 
 
-divXSize =
-    1152
-
-
-divYSize =
-    864
-
-
 mapXSize : number
 mapXSize =
     2800
@@ -58,7 +41,7 @@ mapXSize =
 
 mapYSize : number
 mapYSize =
-    2080
+    2086
 
 
 type DragData
@@ -69,6 +52,7 @@ type DragData
 type alias Model =
     { flags : Flags
     , zoom : Float
+    , mapCalibration : MapCalibration
     , mapPageSize : Offset
     , mapOffset : Offset
     , dragData : DragData
@@ -83,13 +67,19 @@ type Msg
     | MouseWheel Wheel.Event
     | ZoomChanged String
     | GotNpcs Query.Npcs.Msg
-    | GotElement (Result Browser.Dom.Error Browser.Dom.Element)
+    | GotSvgElement (Result Browser.Dom.Error Browser.Dom.Element)
+    | ClickedThing Npc
 
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
+    let
+        _ =
+            Debug.log "calcCalibration" <| calcMapCalibration calibrationInput1 calibrationInput2
+    in
     ( { flags = flags
       , zoom = 1
+      , mapCalibration = calcMapCalibration calibrationInput1 calibrationInput2
       , mapPageSize = { x = 0, y = 0 }
       , mapOffset = { x = 0, y = 0 }
       , dragData = NotDragging
@@ -97,9 +87,85 @@ init flags =
       }
     , Cmd.batch
         [ Query.Npcs.makeRequest { url = flags.graphqlBaseUrl, toMsg = GotNpcs }
-        , Browser.Dom.getElement "svg-container" |> Task.attempt GotElement
+        , Browser.Dom.getElement "svg-container" |> Task.attempt GotSvgElement
         ]
     )
+
+
+
+-- dire lord: map x = 480, map y = 297
+-- well: map x = 968, map y = 752
+-- map X size = 2800
+-- map Y size = 2080
+-- thronefast top left point = 2500, 4500 (or 4520?)
+-- so bottom left is 2500, 2440
+
+
+type alias MapCalcInput =
+    { loc : Offset
+    , map : Offset
+    }
+
+
+type alias MapCalibration =
+    { xTopLeft : Float
+    , yTopLeft : Float
+    , xScale : Float
+    , yScale : Float
+    }
+
+
+calibrationInput1 =
+    -- tavern keeper
+    { loc = { x = 3454.23, y = 3729 }
+    , map = { x = 953.1, y = 804.3 }
+    }
+
+
+calibrationInput2 =
+    -- akola
+    { loc = { x = 3026.21, y = 3776.17 }
+    , map = { x = 531.65, y = 761.7 }
+    }
+
+
+calcMapBounds : MapCalcInput -> MapCalcInput -> Bool
+calcMapBounds input1 input2 =
+    let
+        locDiffX =
+            abs <| input2.loc.x - input1.loc.x
+
+        locDiffY =
+            abs <| input2.loc.y - input1.loc.y
+
+        mapDiffX =
+            abs <| input2.map.x - input1.map.x
+
+        mapDiffY =
+            abs <| input2.map.y - input1.map.y
+
+        mapXPropUsed =
+            mapDiffX / mapXSize
+    in
+    True
+
+
+calcMapCalibration : MapCalcInput -> MapCalcInput -> MapCalibration
+calcMapCalibration input1 input2 =
+    let
+        mapXscale =
+            (input1.map.x - input2.map.x) / (input1.loc.x - input2.loc.x)
+
+        mapYscale =
+            (input1.map.y - input2.map.y) / (input1.loc.y - input2.loc.y)
+
+        xTopLeft =
+            input1.loc.x - (input1.map.x * mapXscale)
+
+        yTopLeft =
+            abs (input1.loc.y - (mapYSize - input1.map.y))
+    in
+    { xTopLeft = xTopLeft, yTopLeft = yTopLeft, xScale = abs mapXscale, yScale = abs mapYscale }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -126,12 +192,10 @@ update msg model =
                 ( xProp, yProp, newZoom ) =
                     if event.deltaY > 0 then
                         -- zooming out keeps centre of map as-is
-                        ( 0.5
-                        , 0.5
-                        , model.zoom - 0.2 |> boundZoom
-                        )
+                        ( 0.5, 0.5, model.zoom - 0.2 |> boundZoom )
 
                     else
+                        -- zooming in tries to aim at where the mouse is
                         ( newCentrepointX / model.mapPageSize.x
                         , newCentrepointY / model.mapPageSize.y
                         , model.zoom + 0.2 |> boundZoom
@@ -145,10 +209,20 @@ update msg model =
             )
 
         MouseMove event ->
+            let
+                _ =
+                    Debug.log "MouseMove" event
+            in
             ( model |> calculateNewMapOffset event, Cmd.none )
 
         MouseDown event ->
             let
+                _ =
+                    Debug.log "MouseDown" event
+
+                _ =
+                    Debug.log "clickPositionToSvgCoordinates" <| clickPositionToSvgCoordinates event.offsetPos model
+
                 ( offsetPosX, offsetPosY ) =
                     event.offsetPos
             in
@@ -165,19 +239,45 @@ update msg model =
         MouseUp _ ->
             ( { model | dragData = NotDragging }, Cmd.none )
 
-        GotElement (Ok element) ->
+        GotSvgElement (Ok element) ->
             let
-                _ =
-                    -- TODO window resize should update this
-                    Debug.log "GotElement" element
-
                 newMapPageSize =
                     { x = element.element.width, y = element.element.height }
             in
             ( { model | mapPageSize = newMapPageSize }, Cmd.none )
 
-        GotElement (Err _) ->
+        GotSvgElement (Err _) ->
             ( model, Cmd.none )
+
+        ClickedThing npc ->
+            let
+                _ =
+                    Debug.log "ClickedThing" npc
+            in
+            ( model, Cmd.none )
+
+
+clickPositionToSvgCoordinates : ( Float, Float ) -> Model -> Offset
+clickPositionToSvgCoordinates ( x, y ) model =
+    let
+        -- this is 0 - model.mapPageSize.x (position in viewbox, not adjusted for offset or zoom)
+        -- adjust that for zoom
+        ( x2, y2 ) =
+            ( x / model.zoom, y / model.zoom )
+
+        -- scale that to a proportion of mapPageSize
+        ( x3, y3 ) =
+            ( x2 / model.mapPageSize.x, y2 / model.mapPageSize.y )
+
+        -- multiply that out to actual mapSize (2800 x 2080)
+        ( x4, y4 ) =
+            ( x3 * mapXSize, y3 * mapYSize )
+
+        -- add on mapOffset if any
+        ( x5, y5 ) =
+            ( x4 + model.mapOffset.x, y4 + model.mapOffset.y )
+    in
+    { x = x5, y = y5 }
 
 
 changeZoom : { xProp : Float, yProp : Float } -> Float -> Model -> Model
@@ -207,15 +307,13 @@ changeZoom proportions newZoom model =
         offsetToTop =
             desiredViewportSizeY / 2
 
-        newMapOffset1 =
-            { x = centreOfViewX - offsetToLeft
-            , y = centreOfViewY - offsetToTop
-            }
-
-        newMapOffset2 =
-            boundMapOffset newZoom newMapOffset1
+        newMapOffset =
+            boundMapOffset newZoom <|
+                { x = centreOfViewX - offsetToLeft
+                , y = centreOfViewY - offsetToTop
+                }
     in
-    { model | zoom = newZoom, mapOffset = newMapOffset2 }
+    { model | zoom = newZoom, mapOffset = newMapOffset }
 
 
 calculateNewMapOffset : Mouse.Event -> Model -> Model
@@ -242,6 +340,10 @@ calculateNewMapOffset event model =
                         }
             in
             { model | mapOffset = newMapOffset }
+
+
+
+--- BOUNDING FUNCTIONS {{{
 
 
 boundZoom : Float -> Float
@@ -284,6 +386,10 @@ boundMapOffset zoom mapOffset =
     { x = boundAtMax maxX <| boundAtZero <| mapOffset.x
     , y = boundAtMax maxY <| boundAtZero <| mapOffset.y
     }
+
+
+
+--- }}}
 
 
 view : Model -> Html Msg
@@ -343,8 +449,6 @@ npcsForPanel model =
 svgView : Model -> Html Msg
 svgView model =
     let
-        -- entire viewport is eg 1152x864, so use zoom to reduce those
-        -- ie zoom of 2 would be showing eg 576x432
         zoomedX =
             mapXSize / model.zoom
 
@@ -361,12 +465,7 @@ svgView model =
                 ++ String.fromFloat zoomedY
     in
     svg
-        [ id "svg-container"
-        , Svg.Attributes.viewBox viewBox
-
-        -- , Svg.Attributes.width "1152"
-        -- , Svg.Attributes.height "864"
-        ]
+        [ id "svg-container", Svg.Attributes.viewBox viewBox ]
         (Svg.image
             [ Svg.Attributes.xlinkHref "https://cdn.discordapp.com/attachments/1175493372430000218/1210710301767507998/Thronefast_2024-02-14.png?ex=65eb8cd5&is=65d917d5&hm=b5991cb0c52746a90fe644314bd2fdc7d1c4eb85edd96e9339b1c5c31385e9d5&"
             , Svg.Attributes.width <| String.fromInt mapXSize
@@ -380,27 +479,33 @@ svgView model =
 pois : Model -> List (Svg Msg)
 pois model =
     model.npcs
-        |> List.map (\npc -> [ poiCircle npc, poiText npc ])
+        |> List.map
+            (\npc ->
+                [ npcPoiCircle npc model
+
+                --    , npcPoiText npc model
+                ]
+            )
         |> List.concat
 
 
-poiCircle : Npc -> Svg Msg
-poiCircle npc =
+npcPoiCircle : Npc -> Model -> Svg Msg
+npcPoiCircle npc model =
     case ( npc.loc_x, npc.loc_y ) of
         ( Just x, Just y ) ->
             let
                 offsetLocX =
-                    x - 2500
+                    (x - model.mapCalibration.xTopLeft) / model.mapCalibration.xScale
 
                 offsetLocY =
-                    4520 - y
+                    (model.mapCalibration.yTopLeft + mapYSize) - y
             in
             Svg.circle
-                [ Svg.Attributes.cx <| String.fromFloat offsetLocX
+                [ Svg.Attributes.class "npc"
+                , Svg.Attributes.cx <| String.fromFloat offsetLocX
                 , Svg.Attributes.cy <| String.fromFloat offsetLocY
                 , Svg.Attributes.r "3"
-                , Svg.Attributes.stroke "#000"
-                , Svg.Attributes.fill "#CCCC00"
+                , onClick <| ClickedThing npc
                 ]
                 []
 
@@ -408,8 +513,8 @@ poiCircle npc =
             text ""
 
 
-poiText : Npc -> Svg Msg
-poiText npc =
+npcPoiText : Npc -> Model -> Svg Msg
+npcPoiText npc model =
     case ( npc.loc_x, npc.loc_y ) of
         ( Just x, Just y ) ->
             let
@@ -417,12 +522,11 @@ poiText npc =
                     10 + x - 2500
 
                 offsetLocY =
-                    5 + 4520 - y
+                    5 + 4450 - y
             in
             Svg.text_
                 [ Svg.Attributes.x <| String.fromFloat offsetLocX
                 , Svg.Attributes.y <| String.fromFloat offsetLocY
-                , Svg.Attributes.style "stroke:white; stroke-width:0.6em; fill:black; paint-order:stroke; stroke-linejoin:round"
                 ]
                 [ text npc.name ]
 
