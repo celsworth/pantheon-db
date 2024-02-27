@@ -6,7 +6,7 @@ module Types
       argument_class Types::BaseArgument
 
       argument :name, String
-      argument :zone_id, ID
+      argument :location_id, ID
 
       argument :level, Integer
       argument :elite, Boolean, required: false
