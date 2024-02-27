@@ -1,13 +1,17 @@
 module Maps.Show exposing (main)
 
 import Browser
+import Browser.Dom
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class, id, step, type_, value)
 import Html.Events exposing (onInput)
 import Html.Events.Extra.Mouse as Mouse
-import Svg exposing (..)
+import Html.Events.Extra.Wheel as Wheel
+import Query.Npcs
+import Svg exposing (Svg, svg)
 import Svg.Attributes
-import Types exposing (Loc)
+import Task
+import Types exposing (Loc, Npc)
 
 
 
@@ -17,19 +21,6 @@ import Types exposing (Loc)
 -- map Y size = 2080
 -- thronefast top left point = 2500, 4500 (or 4520?)
 -- so bottom left is 2500, 2440
-
-
-locs : List ( String, Loc )
-locs =
-    [ ( "Huntress", { x = 3366, z = 555, y = 3634 } )
-    , ( "Dire Lord Scrolls", { x = 2962, z = 476, y = 4222 } )
-    , ( "Scavenger", { x = 3455, z = 476, y = 3771 } )
-    , ( "Artificer", { x = 3384, z = 476, y = 3739 } )
-    , ( "Shaman Scrolls", { x = 3026, z = 476, y = 3776 } )
-    , ( "Tailor", { x = 3457, z = 476, y = 3677 } )
-    , ( "Weapon Master", { x = 3419, z = 476, y = 3726 } )
-    , ( "Borra", { x = 2996, z = 476, y = 3823 } )
-    ]
 
 
 type alias Flags =
@@ -52,6 +43,14 @@ type alias Offset =
     }
 
 
+divXSize =
+    1152
+
+
+divYSize =
+    864
+
+
 mapXSize : number
 mapXSize =
     2800
@@ -70,8 +69,10 @@ type DragData
 type alias Model =
     { flags : Flags
     , zoom : Float
+    , mapPageSize : Offset
     , mapOffset : Offset
     , dragData : DragData
+    , npcs : List Npc
     }
 
 
@@ -79,25 +80,72 @@ type Msg
     = MouseMove Mouse.Event
     | MouseDown Mouse.Event
     | MouseUp Mouse.Event
+    | MouseWheel Wheel.Event
     | ZoomChanged String
+    | GotNpcs Query.Npcs.Msg
+    | GotElement (Result Browser.Dom.Error Browser.Dom.Element)
 
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( { flags = flags
       , zoom = 1
+      , mapPageSize = { x = 0, y = 0 }
       , mapOffset = { x = 0, y = 0 }
       , dragData = NotDragging
+      , npcs = []
       }
-    , Cmd.none
+    , Cmd.batch
+        [ Query.Npcs.makeRequest { url = flags.graphqlBaseUrl, toMsg = GotNpcs }
+        , Browser.Dom.getElement "svg-container" |> Task.attempt GotElement
+        ]
     )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        GotNpcs graphQlResponse ->
+            let
+                npcs =
+                    graphQlResponse |> Query.Npcs.parseResponse
+            in
+            ( { model | npcs = npcs }, Cmd.none )
+
+        MouseWheel event ->
+            let
+                ( offsetPosX, offsetPosY ) =
+                    event.mouseEvent.offsetPos
+
+                newCentrepointX =
+                    (model.mapPageSize.x / 2) - (((model.mapPageSize.x / 2) - offsetPosX) / 10)
+
+                newCentrepointY =
+                    (model.mapPageSize.y / 2) - (((model.mapPageSize.y / 2) - offsetPosY) / 10)
+
+                ( xProp, yProp, newZoom ) =
+                    if event.deltaY > 0 then
+                        -- zooming out keeps centre of map as-is
+                        ( 0.5
+                        , 0.5
+                        , model.zoom - 0.2 |> boundZoom
+                        )
+
+                    else
+                        ( newCentrepointX / model.mapPageSize.x
+                        , newCentrepointY / model.mapPageSize.y
+                        , model.zoom + 0.2 |> boundZoom
+                        )
+            in
+            ( model |> changeZoom { xProp = xProp, yProp = yProp } newZoom, Cmd.none )
+
+        ZoomChanged value ->
+            ( model |> changeZoom { xProp = 0.5, yProp = 0.5 } (value |> String.toFloat |> Maybe.withDefault 1)
+            , Cmd.none
+            )
+
         MouseMove event ->
-            ( calculateNewMapOffset model event, Cmd.none )
+            ( model |> calculateNewMapOffset event, Cmd.none )
 
         MouseDown event ->
             let
@@ -117,48 +165,61 @@ update msg model =
         MouseUp _ ->
             ( { model | dragData = NotDragging }, Cmd.none )
 
-        ZoomChanged value ->
+        GotElement (Ok element) ->
             let
-                newZoom =
-                    value |> String.toFloat |> Maybe.withDefault 1
+                _ =
+                    -- TODO window resize should update this
+                    Debug.log "GotElement" element
 
-                currentViewportWidthX =
-                    mapXSize / model.zoom
-
-                currentViewportWidthY =
-                    mapYSize / model.zoom
-
-                centreOfViewX =
-                    model.mapOffset.x + (currentViewportWidthX / 2)
-
-                centreOfViewY =
-                    model.mapOffset.y + (currentViewportWidthY / 2)
-
-                desiredViewportSizeX =
-                    mapXSize / newZoom
-
-                desiredViewportSizeY =
-                    mapYSize / newZoom
-
-                offsetToLeft =
-                    desiredViewportSizeX / 2
-
-                offsetToTop =
-                    desiredViewportSizeY / 2
-
-                newMapOffset1 =
-                    { x = centreOfViewX - offsetToLeft
-                    , y = centreOfViewY - offsetToTop
-                    }
-
-                newMapOffset2 =
-                    boundMapOffset newZoom newMapOffset1
+                newMapPageSize =
+                    { x = element.element.width, y = element.element.height }
             in
-            ( { model | zoom = newZoom, mapOffset = newMapOffset2 }, Cmd.none )
+            ( { model | mapPageSize = newMapPageSize }, Cmd.none )
+
+        GotElement (Err _) ->
+            ( model, Cmd.none )
 
 
-calculateNewMapOffset : Model -> Mouse.Event -> Model
-calculateNewMapOffset model event =
+changeZoom : { xProp : Float, yProp : Float } -> Float -> Model -> Model
+changeZoom proportions newZoom model =
+    let
+        currentViewportWidthX =
+            mapXSize / model.zoom
+
+        currentViewportWidthY =
+            mapYSize / model.zoom
+
+        centreOfViewX =
+            model.mapOffset.x + (currentViewportWidthX * proportions.xProp)
+
+        centreOfViewY =
+            model.mapOffset.y + (currentViewportWidthY * proportions.yProp)
+
+        desiredViewportSizeX =
+            mapXSize / newZoom
+
+        desiredViewportSizeY =
+            mapYSize / newZoom
+
+        offsetToLeft =
+            desiredViewportSizeX / 2
+
+        offsetToTop =
+            desiredViewportSizeY / 2
+
+        newMapOffset1 =
+            { x = centreOfViewX - offsetToLeft
+            , y = centreOfViewY - offsetToTop
+            }
+
+        newMapOffset2 =
+            boundMapOffset newZoom newMapOffset1
+    in
+    { model | zoom = newZoom, mapOffset = newMapOffset2 }
+
+
+calculateNewMapOffset : Mouse.Event -> Model -> Model
+calculateNewMapOffset event model =
     case model.dragData of
         NotDragging ->
             -- shouldn't happen
@@ -174,12 +235,6 @@ calculateNewMapOffset model event =
                     , dragData.startingMousePos.y - offsetPosY
                     )
 
-                maxX =
-                    mapXSize - (mapXSize / model.zoom)
-
-                maxY =
-                    mapYSize - (mapYSize / model.zoom)
-
                 newMapOffset =
                     boundMapOffset model.zoom <|
                         { x = dragData.startingMapOffset.x + movedX
@@ -187,6 +242,18 @@ calculateNewMapOffset model event =
                         }
             in
             { model | mapOffset = newMapOffset }
+
+
+boundZoom : Float -> Float
+boundZoom zoom =
+    if zoom < 1 then
+        1
+
+    else if zoom > 10 then
+        10
+
+    else
+        zoom
 
 
 boundMapOffset : Float -> Offset -> Offset
@@ -228,22 +295,49 @@ view model =
                     [ Mouse.onUp MouseUp, Mouse.onMove MouseMove, Mouse.onLeave MouseUp ]
 
                 NotDragging ->
-                    [ Mouse.onDown MouseDown ]
+                    [ Wheel.onWheel MouseWheel, Mouse.onDown MouseDown ]
     in
     div []
         [ input
             [ type_ "range"
             , Html.Attributes.min "1"
             , Html.Attributes.max "10"
-            , Html.Attributes.step "0.05"
+            , step "0.2"
             , onInput ZoomChanged
             , value <| String.fromFloat model.zoom
             ]
             []
-        , div
-            (class "section map-container" :: mouseEvents)
-            [ svgView model ]
+        , div [ class "columns" ]
+            [ div [ class "column" ] [ div mouseEvents [ svgView model ] ]
+            , div [ class "column is-one-fifth" ]
+                [ nav [ class "npc-list panel is-primary" ]
+                    [ p [ class "panel-heading" ] [ text "Things" ]
+
+                    -- , npcsForPanel model
+                    ]
+                ]
+            ]
         ]
+
+
+npcsForPanel : Model -> Html Msg
+npcsForPanel model =
+    let
+        npcString npc =
+            case npc.subtitle of
+                Just subtitle ->
+                    npc.name ++ " (" ++ subtitle ++ ")"
+
+                Nothing ->
+                    npc.name
+
+        npcPanelBlock : Npc -> Html Msg
+        npcPanelBlock npc =
+            a [ class "panel-block" ]
+                [ text <| npcString npc
+                ]
+    in
+    div [] <| List.map npcPanelBlock model.npcs
 
 
 svgView : Model -> Html Msg
@@ -267,10 +361,11 @@ svgView model =
                 ++ String.fromFloat zoomedY
     in
     svg
-        [ Svg.Attributes.class "svg"
-        , Svg.Attributes.width "1152"
-        , Svg.Attributes.height "864"
+        [ id "svg-container"
         , Svg.Attributes.viewBox viewBox
+
+        -- , Svg.Attributes.width "1152"
+        -- , Svg.Attributes.height "864"
         ]
         (Svg.image
             [ Svg.Attributes.xlinkHref "https://cdn.discordapp.com/attachments/1175493372430000218/1210710301767507998/Thronefast_2024-02-14.png?ex=65eb8cd5&is=65d917d5&hm=b5991cb0c52746a90fe644314bd2fdc7d1c4eb85edd96e9339b1c5c31385e9d5&"
@@ -278,44 +373,61 @@ svgView model =
             , Svg.Attributes.height <| String.fromInt mapYSize
             ]
             []
-            :: pois
+            :: pois model
         )
 
 
-pois : List (Svg Msg)
-pois =
-    locs
-        |> List.map (\( name, loc ) -> [ poiCircle loc, poiText name loc ])
+pois : Model -> List (Svg Msg)
+pois model =
+    model.npcs
+        |> List.map (\npc -> [ poiCircle npc, poiText npc ])
         |> List.concat
 
 
-poiCircle : Loc -> Svg Msg
-poiCircle loc =
-    Svg.circle
-        [ Svg.Attributes.cx <| String.fromFloat loc.x
-        , Svg.Attributes.cy <| String.fromFloat loc.y
-        , Svg.Attributes.r "3"
-        , Svg.Attributes.stroke "#000"
-        , Svg.Attributes.fill "#CCCC00"
-        ]
-        []
+poiCircle : Npc -> Svg Msg
+poiCircle npc =
+    case ( npc.loc_x, npc.loc_y ) of
+        ( Just x, Just y ) ->
+            let
+                offsetLocX =
+                    x - 2500
+
+                offsetLocY =
+                    4520 - y
+            in
+            Svg.circle
+                [ Svg.Attributes.cx <| String.fromFloat offsetLocX
+                , Svg.Attributes.cy <| String.fromFloat offsetLocY
+                , Svg.Attributes.r "3"
+                , Svg.Attributes.stroke "#000"
+                , Svg.Attributes.fill "#CCCC00"
+                ]
+                []
+
+        _ ->
+            text ""
 
 
-poiText : String -> Loc -> Svg Msg
-poiText name loc =
-    let
-        offsetLocX =
-            loc.x - 2500
+poiText : Npc -> Svg Msg
+poiText npc =
+    case ( npc.loc_x, npc.loc_y ) of
+        ( Just x, Just y ) ->
+            let
+                offsetLocX =
+                    10 + x - 2500
 
-        offsetLocY =
-            4520 - loc.y
-    in
-    Svg.text_
-        [ Svg.Attributes.x <| String.fromFloat offsetLocX
-        , Svg.Attributes.y <| String.fromFloat offsetLocY
-        , Svg.Attributes.style "stroke:white; stroke-width:0.6em; fill:black; paint-order:stroke; stroke-linejoin:round"
-        ]
-        [ Html.text name ]
+                offsetLocY =
+                    5 + 4520 - y
+            in
+            Svg.text_
+                [ Svg.Attributes.x <| String.fromFloat offsetLocX
+                , Svg.Attributes.y <| String.fromFloat offsetLocY
+                , Svg.Attributes.style "stroke:white; stroke-width:0.6em; fill:black; paint-order:stroke; stroke-linejoin:round"
+                ]
+                [ text npc.name ]
+
+        _ ->
+            text ""
 
 
 subscriptions : Model -> Sub Msg

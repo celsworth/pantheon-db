@@ -42,20 +42,12 @@ $body-background-color: #f9fff9;
   cursor: pointer;
 }
 
-.map-container {
-  width: 100%;
-  height: auto;
-  position: relative;
-}
-
-.svg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-}
-
 svg text {
   // avoid breaking dragging when going over a text element
   pointer-events: none;
+}
+
+.npc-list {
+  max-height: 500px;
+  overflow-y: scroll;
 }
