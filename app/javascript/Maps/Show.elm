@@ -36,12 +36,26 @@ type alias Offset =
 
 mapXSize : number
 mapXSize =
-    2800
+    3840
 
 
 mapYSize : number
 mapYSize =
-    2086
+    2880
+
+
+calibrationInput1 =
+    -- tavern keeper
+    { loc = { x = 3454.23, y = 3729 }
+    , map = { x = 1308.2, y = 1112.1 }
+    }
+
+
+calibrationInput2 =
+    -- handsome jyss
+    { loc = { x = 3822.91, y = 3449.9 }
+    , map = { x = 1827.6, y = 1487.3 }
+    }
 
 
 type DragData
@@ -92,15 +106,6 @@ init flags =
     )
 
 
-
--- dire lord: map x = 480, map y = 297
--- well: map x = 968, map y = 752
--- map X size = 2800
--- map Y size = 2080
--- thronefast top left point = 2500, 4500 (or 4520?)
--- so bottom left is 2500, 2440
-
-
 type alias MapCalcInput =
     { loc : Offset
     , map : Offset
@@ -108,64 +113,29 @@ type alias MapCalcInput =
 
 
 type alias MapCalibration =
-    { xTopLeft : Float
-    , yTopLeft : Float
+    { xLeft : Float
+    , yBottom : Float
     , xScale : Float
     , yScale : Float
     }
 
 
-calibrationInput1 =
-    -- tavern keeper
-    { loc = { x = 3454.23, y = 3729 }
-    , map = { x = 953.1, y = 804.3 }
-    }
-
-
-calibrationInput2 =
-    -- akola
-    { loc = { x = 3026.21, y = 3776.17 }
-    , map = { x = 531.65, y = 761.7 }
-    }
-
-
-calcMapBounds : MapCalcInput -> MapCalcInput -> Bool
-calcMapBounds input1 input2 =
-    let
-        locDiffX =
-            abs <| input2.loc.x - input1.loc.x
-
-        locDiffY =
-            abs <| input2.loc.y - input1.loc.y
-
-        mapDiffX =
-            abs <| input2.map.x - input1.map.x
-
-        mapDiffY =
-            abs <| input2.map.y - input1.map.y
-
-        mapXPropUsed =
-            mapDiffX / mapXSize
-    in
-    True
-
-
 calcMapCalibration : MapCalcInput -> MapCalcInput -> MapCalibration
 calcMapCalibration input1 input2 =
     let
-        mapXscale =
+        xScale =
             (input1.map.x - input2.map.x) / (input1.loc.x - input2.loc.x)
 
-        mapYscale =
+        yScale =
             (input1.map.y - input2.map.y) / (input1.loc.y - input2.loc.y)
 
-        xTopLeft =
-            input1.loc.x - (input1.map.x * mapXscale)
+        xLeft =
+            input1.loc.x - (input1.map.x / xScale)
 
-        yTopLeft =
-            abs (input1.loc.y - (mapYSize - input1.map.y))
+        yBottom =
+            input1.loc.y - (input1.map.y / yScale)
     in
-    { xTopLeft = xTopLeft, yTopLeft = yTopLeft, xScale = abs mapXscale, yScale = abs mapYscale }
+    { xLeft = xLeft, yBottom = yBottom, xScale = abs xScale, yScale = abs yScale }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -495,10 +465,10 @@ npcPoiCircle npc model =
         ( Just x, Just y ) ->
             let
                 offsetLocX =
-                    (x - model.mapCalibration.xTopLeft) / model.mapCalibration.xScale
+                    (x - model.mapCalibration.xLeft) * model.mapCalibration.xScale
 
                 offsetLocY =
-                    (model.mapCalibration.yTopLeft + mapYSize) - y
+                    (model.mapCalibration.yBottom - y) * model.mapCalibration.yScale
             in
             Svg.circle
                 [ Svg.Attributes.class "npc"
