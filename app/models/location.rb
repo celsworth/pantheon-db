@@ -11,7 +11,7 @@ class Location < ApplicationRecord
   has_many :monsters
   has_many :npcs
 
-  CATEGORIES = %w[dungeon settlement landmark zone].freeze
+  CATEGORIES = %w[bindstone dungeon portal settlement landmark zone].freeze
   CATEGORIES_CAMEL = CATEGORIES.map { |w| w.camelize(:lower) }
 
   validates :name, presence: true, uniqueness: true
