@@ -11,9 +11,9 @@ module Resolvers
     argument :slot, String, required: false
     argument :class, String, required: false
 
-    argument :dropped_by, ID, required: false
-    argument :starts_quest, ID, required: false
-    argument :reward_from_quest, ID, required: false
+    argument :dropped_by_id, ID, required: false
+    argument :starts_quest_id, ID, required: false
+    argument :reward_from_quest_id, ID, required: false
 
     argument :stats, [Types::Inputs::StatInputFilterType], required: false
     argument :required_level, [Types::Inputs::FloatOperatorInputFilterType], required: false

@@ -8,7 +8,7 @@ class ItemSearch
   FILTERS = %i[
     filter_id filter_name filter_weight filter_required_level filter_category
     filter_slot filter_stats filter_class filter_attrs
-    filter_dropped_by filter_reward_from_quest filter_starts_quest
+    filter_dropped_by_id filter_reward_from_quest_id filter_starts_quest_id
   ].freeze
 
   def initialize(**params)
@@ -102,27 +102,27 @@ class ItemSearch
     end
   end
 
-  def filter_dropped_by
-    return unless @params[:dropped_by]
+  def filter_dropped_by_id
+    return unless @params[:dropped_by_id]
 
     # @params[:dropped_by] should be a monster id
-    ids = Item.joins(:dropped_by).where('dropped_by.id': @params[:dropped_by])
+    ids = Item.joins(:dropped_by).where('dropped_by.id': @params[:dropped_by_id])
     where(id: ids)
   end
 
-  def filter_reward_from_quest
-    return unless @params[:reward_from_quest]
+  def filter_reward_from_quest_id
+    return unless @params[:reward_from_quest_id]
 
     # @params[:reward_from_quest] should be a quest id
     # ids = Item.joins(:reward_from_quest).where('reward_from_quest.id': @params[:reward_from_quest])
-    ids = QuestReward.where(quest_id: @params[:reward_from_quest]).select(:item_id)
+    ids = QuestReward.where(quest_id: @params[:reward_from_quest_id]).select(:item_id)
     where(id: ids)
   end
 
-  def filter_starts_quest
-    return unless @params[:starts_quest]
+  def filter_starts_quest_id
+    return unless @params[:starts_quest_id]
 
-    ids = Item.joins(:starts_quest).where('starts_quest.id': @params[:starts_quest])
+    ids = Item.joins(:starts_quest).where('starts_quest.id': @params[:starts_quest_id])
     where(id: ids)
   end
 

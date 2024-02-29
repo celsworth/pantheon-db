@@ -8,7 +8,7 @@ class MonsterSearch
   FILTERS = %i[
     filter_id filter_name
     filter_location filter_zone
-    filter_elite filter_named filter_drops filter_level
+    filter_elite filter_named filter_drops_id filter_level
   ].freeze
 
   def initialize(**params)
@@ -52,10 +52,10 @@ class MonsterSearch
     where(id: ids)
   end
 
-  def filter_drops
-    return unless @params[:drops]
+  def filter_drops_id
+    return unless @params[:drops_id]
 
-    ids = Monster.joins(:drops).where('drops.id': @params[:drops])
+    ids = Monster.joins(:drops).where('drops.id': @params[:drops_id])
     where(id: ids)
   end
 
