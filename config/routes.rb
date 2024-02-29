@@ -19,35 +19,23 @@ Rails.application.routes.draw do
     root to: 'zones#index'
   end
 
-  #   namespace :api do
-  #     namespace :v1 do
-  #       resources :zones do
-  #         member do
-  #           get :history
-  #         end
-  #       end
-  #       resources :monsters
-  #       resources :items do
-  #         collection do
-  #           post :search
-  #         end
-  #         member do
-  #           post :assign
-  #           post :unassign
-  #         end
-  #       end
-  #       resources :npcs
-  #       resources :quests
-  #       resources :quest_objectives
-  #     end
-  #   end
+  with_options controller: :images do
+    resource :images, only: [] do
+      resources :items, only: [] do
+        get '/', action: :show
+        post '/', action: :save
+      end
+      resources :monster, only: [] do
+        get '/', action: :show
+        post '/', action: :save
+      end
+    end
+  end
 
   get '/test', to: 'test#index'
 
   resources :items, only: %i[new]
   resources :maps, only: %i[show]
-
-  # get 'up' => 'rails/health#show', as: :rails_health_check
 
   root to: proc { [404, {}, ['Not found.']] }
 end

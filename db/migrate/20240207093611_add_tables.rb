@@ -17,6 +17,12 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
+    create_table :images do |t|
+      t.binary :data, null: false
+      t.integer :size, null: false
+      t.string :mime, null: false
+    end
+
     create_table :locations do |t|
       t.references :zone, null: false, index: true
 
@@ -55,7 +61,7 @@ class AddTables < ActiveRecord::Migration[7.1]
 
     create_table :monsters do |t|
       t.references :patch, null: false, index: true
-
+      t.references :screenshot, foreign_key: { to_table: :images }, index: true
       t.references :location, null: false, index: true
 
       t.string :name, null: false, index: { unique: true }
@@ -76,6 +82,7 @@ class AddTables < ActiveRecord::Migration[7.1]
 
     create_table :items do |t|
       t.references :patch, null: false, index: true
+      t.references :screenshot, foreign_key: { to_table: :images }, index: true
 
       t.string :name, null: false, index: { unique: true }
       t.integer :buy_price
@@ -96,7 +103,7 @@ class AddTables < ActiveRecord::Migration[7.1]
 
     create_table :npcs do |t|
       t.references :patch, null: false, index: true
-
+      t.references :screenshot, foreign_key: { to_table: :images }, index: true
       t.references :location, null: false, index: true
 
       t.string :name, null: false, index: { unique: true }

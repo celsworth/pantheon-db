@@ -14,8 +14,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "images", force: :cascade do |t|
+    t.binary "data", null: false
+    t.integer "size", null: false
+    t.string "mime", null: false
+  end
+
   create_table "items", force: :cascade do |t|
     t.bigint "patch_id", null: false
+    t.bigint "screenshot_id"
     t.string "name", null: false
     t.integer "buy_price"
     t.integer "sell_price"
@@ -34,6 +41,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.index ["discarded_at"], name: "index_items_on_discarded_at"
     t.index ["name"], name: "index_items_on_name", unique: true
     t.index ["patch_id"], name: "index_items_on_patch_id"
+    t.index ["screenshot_id"], name: "index_items_on_screenshot_id"
     t.index ["stats"], name: "index_items_on_stats"
   end
 
@@ -69,6 +77,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
 
   create_table "monsters", force: :cascade do |t|
     t.bigint "patch_id", null: false
+    t.bigint "screenshot_id"
     t.bigint "location_id", null: false
     t.string "name", null: false
     t.integer "level", null: false
@@ -86,10 +95,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.index ["location_id"], name: "index_monsters_on_location_id"
     t.index ["name"], name: "index_monsters_on_name", unique: true
     t.index ["patch_id"], name: "index_monsters_on_patch_id"
+    t.index ["screenshot_id"], name: "index_monsters_on_screenshot_id"
   end
 
   create_table "npcs", force: :cascade do |t|
     t.bigint "patch_id", null: false
+    t.bigint "screenshot_id"
     t.bigint "location_id", null: false
     t.string "name", null: false
     t.string "subtitle"
@@ -106,6 +117,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.index ["location_id"], name: "index_npcs_on_location_id"
     t.index ["name"], name: "index_npcs_on_name", unique: true
     t.index ["patch_id"], name: "index_npcs_on_patch_id"
+    t.index ["screenshot_id"], name: "index_npcs_on_screenshot_id"
     t.index ["subtitle"], name: "index_npcs_on_subtitle"
   end
 
@@ -220,6 +232,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.index ["patch_id"], name: "index_zones_on_patch_id"
   end
 
+  add_foreign_key "items", "images", column: "screenshot_id"
+  add_foreign_key "monsters", "images", column: "screenshot_id"
+  add_foreign_key "npcs", "images", column: "screenshot_id"
   add_foreign_key "quests", "items", column: "dropped_as_id"
   add_foreign_key "quests", "npcs", column: "giver_id"
   add_foreign_key "quests", "npcs", column: "receiver_id"

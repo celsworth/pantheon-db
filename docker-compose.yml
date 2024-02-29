@@ -5,6 +5,8 @@ x-app: &app
     - .:/rails:delegated
     - /rails/node_modules
     - /rails/elm-stuff
+  environment:
+    - SECRET_KEY_BASE
   build:
     context: .
 
