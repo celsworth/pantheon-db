@@ -12,9 +12,9 @@ module Resolvers
     argument :location_id, ID, required: false, description: 'Location ID the Npc must be in'
     argument :zone_id, ID, required: false
 
-    argument :gives_quest, ID, required: false
-    argument :receives_quest, ID, required: false
-    argument :sells_item, ID, required: false
+    argument :gives_quest_id, ID, required: false
+    argument :receives_quest_id, ID, required: false
+    argument :sells_item_id, ID, required: false
 
     def resolve(**params)
       NpcSearch.new(**params).search.all

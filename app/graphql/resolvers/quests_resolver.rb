@@ -6,12 +6,15 @@ module Resolvers
 
     argument :id, ID, required: false
 
-    def resolve(id: nil)
-      # no need for a full QuestSearch yet
+    argument :name, String, required: false
+    argument :text, String, required: false
 
-      dataset = Quest
-      dataset = dataset.where(id:) if id
-      dataset.all
+    argument :giver_id, ID, required: false
+    argument :receiver_id, ID, required: false
+    argument :prereq_quest_id, ID, required: false
+
+    def resolve(**params)
+      QuestSearch.new(**params).search.all
     end
   end
 end

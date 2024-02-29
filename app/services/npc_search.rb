@@ -7,7 +7,7 @@ class NpcSearch
 
   FILTERS = %i[
     filter_id filter_name filter_subtitle filter_vendor filter_location filter_zone
-    filter_gives_quest filter_receives_quest filter_sells_item
+    filter_gives_quest_id filter_receives_quest_id filter_sells_item_id
   ].freeze
 
   def initialize(**params)
@@ -51,24 +51,24 @@ class NpcSearch
     where(id: ids)
   end
 
-  def filter_gives_quest
-    return unless @params[:gives_quest]
+  def filter_gives_quest_id
+    return unless @params[:gives_quest_id]
 
-    ids = Npc.joins(:quests_given).where('quests_given.id': @params[:gives_quest])
+    ids = Npc.joins(:quests_given).where('quests_given.id': @params[:gives_quest_id])
     where(id: ids)
   end
 
-  def filter_receives_quest
-    return unless @params[:receives_quest]
+  def filter_receives_quest_id
+    return unless @params[:receives_quest_id]
 
-    ids = Npc.joins(:quests_received).where('quests_given.id': @params[:receives_quest])
+    ids = Npc.joins(:quests_received).where('quests_given.id': @params[:receives_quest_id])
     where(id: ids)
   end
 
-  def filter_sells_item
-    return unless @params[:sells_item]
+  def filter_sells_item_id
+    return unless @params[:sells_item_id]
 
-    ids = Npc.joins(:sells_items).where('sells_items.id': @params[:sells_item])
+    ids = Npc.joins(:sells_items).where('sells_items.id': @params[:sells_item_id])
     where(id: ids)
   end
 
