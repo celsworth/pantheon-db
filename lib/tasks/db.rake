@@ -8,7 +8,7 @@ end
 namespace :db do
   task dump: :environment do
     models.each do |model|
-      data = model.all.to_json
+      data = model.order(:id).all.to_json
       File.write("dumps/#{model}.json", data)
     end
   end
