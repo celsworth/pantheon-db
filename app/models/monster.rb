@@ -16,7 +16,6 @@ class Monster < ApplicationRecord
 
   validates :name, presence: true, uniqueness: true
   validates :location, presence: true
-  validates :level, presence: true
 
   private
 

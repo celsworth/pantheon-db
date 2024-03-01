@@ -8,7 +8,7 @@ module Types
       argument :name, String
       argument :location_id, ID
 
-      argument :level, Integer
+      argument :level, Integer, required: false
       argument :elite, Boolean, required: false
       argument :named, Boolean, required: false
 

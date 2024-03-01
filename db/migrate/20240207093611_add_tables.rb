@@ -27,7 +27,7 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.references :zone, null: false, index: true
 
       t.string :name, null: false, index: { unique: true }
-      t.string :category, null: false
+      t.string :category, null: false, index: true
 
       t.decimal :loc_x
       t.decimal :loc_y
@@ -65,7 +65,7 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.references :location, null: false, index: true
 
       t.string :name, null: false, index: { unique: true }
-      t.integer :level, null: false
+      t.integer :level
       t.boolean :elite, null: false, default: false
       t.boolean :named, null: false, default: false
 
@@ -90,7 +90,7 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.decimal :weight, null: false
       t.integer :required_level
 
-      t.string :category
+      t.string :category, null: false
       t.string :slot
 
       t.jsonb :stats, default: {}, index: :gin

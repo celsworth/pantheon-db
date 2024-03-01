@@ -6,7 +6,7 @@ module Types
     field :patch, PatchType, null: false
 
     field :name, String, null: false
-    field :level, Integer, null: false
+    field :level, Integer
     field :elite, Boolean, null: false
     field :named, Boolean, null: false
 

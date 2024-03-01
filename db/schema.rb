@@ -28,7 +28,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.integer "sell_price"
     t.decimal "weight", null: false
     t.integer "required_level"
-    t.string "category"
+    t.string "category", null: false
     t.string "slot"
     t.jsonb "stats", default: {}
     t.jsonb "classes", default: []
@@ -69,6 +69,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_locations_on_category"
     t.index ["discarded_at"], name: "index_locations_on_discarded_at"
     t.index ["loc_x", "loc_y"], name: "index_locations_on_loc_x_and_loc_y"
     t.index ["name"], name: "index_locations_on_name", unique: true
@@ -80,7 +81,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.bigint "screenshot_id"
     t.bigint "location_id", null: false
     t.string "name", null: false
-    t.integer "level", null: false
+    t.integer "level"
     t.boolean "elite", default: false, null: false
     t.boolean "named", default: false, null: false
     t.decimal "loc_x"

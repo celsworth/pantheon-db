@@ -60,7 +60,7 @@ RUN npm install -g yarn
 # Run and own only the runtime files as a non-root user for security
 RUN useradd rails --create-home --shell /bin/bash && \
   mkdir -p elm-stuff && \
-  chown -R rails:rails db elm-stuff log tmp
+  chown -vR rails:rails db elm-stuff log tmp
 USER rails:rails
 
 # Entrypoint prepares the database.
