@@ -18,7 +18,8 @@ class ImagesController < ApplicationController
     mime = Marcel::MimeType.for data
     image = Image.create(data:, size: data.length, mime:)
     object.images << image
-    head 204
+
+    redirect_to image_path(image)
   end
 
   private

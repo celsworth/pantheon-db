@@ -217,3 +217,14 @@ Output:
 TBD! :)
 
 
+## Images
+
+There's a couple of non-GraphQL routes for uploading and retrieving images. For example, to upload an image for NPC id=50, you could do something like:
+
+```bash
+curl -H 'Content-type: image/png' --data-binary @scavenger.png -X POST http://yrk.cae.me.uk:3000/npcs/50/image
+```
+
+You can replace `npcs` with `items` or `monsters` accordingly. You will get a redirect to the newly created image URL (check the Location header in the response) - it will be something like http://yrk.cae.me.uk:3000/images/14
+
+You can also get a list of images for NPCs/Items/Monsters in the `images` attribute of GraphQL responses.
