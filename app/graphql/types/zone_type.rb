@@ -13,7 +13,7 @@ module Types
 
     field :name, String, null: false
 
-    field :locations, [LocationType]
+    field :locations, [LocationType], null: false
     field :monsters, [MonsterType], description: <<~DESC
       Shortcut for locations -> monsters
     DESC

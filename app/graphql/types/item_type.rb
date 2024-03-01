@@ -22,9 +22,9 @@ module Types
       An array of attributes on the item.
     DESC
 
-    field :dropped_by, [MonsterType]
+    field :dropped_by, [MonsterType], null: false
     field :starts_quest, QuestType
-    field :rewarded_from_quests, [QuestType]
+    field :rewarded_from_quests, [QuestType], null: false
 
     field :has_screenshot, Boolean, null: false
     def has_screenshot # rubocop:disable Naming/PredicateName

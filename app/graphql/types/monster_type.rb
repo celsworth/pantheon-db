@@ -14,7 +14,7 @@ module Types
       Shortcut for location -> zone. May be removed.
     DESC
     field :location, LocationType, null: false
-    field :drops, [ItemType]
+    field :drops, [ItemType], null: false
 
     field :loc_x, Float
     field :loc_y, Float

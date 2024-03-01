@@ -22,8 +22,8 @@ module Types
     field :loc_y, Float
     field :loc_z, Float
 
-    field :monsters, [MonsterType]
-    field :npcs, [NpcType]
+    field :monsters, [MonsterType], null: false
+    field :npcs, [NpcType], null: false
 
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
