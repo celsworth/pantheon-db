@@ -7,6 +7,8 @@ module Types
 
       argument :name, String, required: true
 
+      argument :location_id, ID
+
       # we try and work these out from the name, so not required in input
       argument :resource, ResourceResourceType
       argument :size, ResourceSizeType
