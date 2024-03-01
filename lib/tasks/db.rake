@@ -18,6 +18,7 @@ namespace :db do
       json = File.read("dumps/#{model}.json")
       data = JSON.parse(json)
       data.each do |row|
+        row.delete('id')
         model.create!(row)
       rescue StandardError => e
         puts "#{model} ignoring #{e} for #{row}"
