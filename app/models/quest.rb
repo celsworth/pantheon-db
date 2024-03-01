@@ -18,9 +18,10 @@ class Quest < ApplicationRecord
 
   # TODO: validation of either dropped_as or giver?
 
-  has_many :quest_objectives, inverse_of: :quest
-  has_many :quest_rewards, inverse_of: :quest
+  has_many :quest_objectives, inverse_of: :quest, dependent: :destroy
+  has_many :quest_rewards, inverse_of: :quest, dependent: :destroy
   has_many :successive_quests, class_name: 'Quest',
+                               dependent: :nullify,
                                foreign_key: :prereq_quest_id,
                                inverse_of: :prereq_quest
 
