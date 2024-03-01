@@ -23,6 +23,7 @@ class NpcDashboard < Administrate::BaseDashboard
     loc_y: Field::Number,
     loc_z: Field::Number,
     roamer: Field::Boolean,
+    images: Field::HasMany
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -53,6 +54,7 @@ class NpcDashboard < Administrate::BaseDashboard
     loc_y
     loc_z
     roamer
+    images
     patch
   ].freeze
 

@@ -2,7 +2,7 @@
 
 require 'administrate/base_dashboard'
 
-class MonsterDashboard < Administrate::BaseDashboard
+class ImageDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
   # a hash that describes the type of each of the model's fields.
   #
@@ -11,18 +11,12 @@ class MonsterDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
-    location: Field::BelongsTo,
-    drops: Field::HasMany,
-    level: Field::Number,
-    name: Field::String,
-    elite: Field::Boolean,
-    named: Field::Boolean,
-    patch: Field::BelongsTo,
-    loc_x: Field::Number,
-    loc_y: Field::Number,
-    loc_z: Field::Number,
-    roamer: Field::Boolean,
-    images: Field::HasMany
+    mime: Field::String,
+    size: Field::Number,
+    data: ImageField,
+    monsters: Field::HasMany,
+    npcs: Field::HasMany,
+    items: Field::HasMany
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -31,46 +25,28 @@ class MonsterDashboard < Administrate::BaseDashboard
   # By default, it's limited to four items to reduce clutter on index pages.
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
-    name
-    location
-    level
-    elite
-    named
-    patch
+    mime
+    size
+    monsters
+    npcs
+    items
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
-    name
-    location
-    level
-    elite
-    named
-    drops
-    loc_x
-    loc_y
-    loc_z
-    roamer
-    images
-    patch
+    mime
+    size
+    monsters
+    npcs
+    items
+    data
   ].freeze
 
   # FORM_ATTRIBUTES
   # an array of attributes that will be displayed
   # on the model's form (`new` and `edit`) pages.
-  FORM_ATTRIBUTES = %i[
-    name
-    location
-    level
-    elite
-    named
-    drops
-    loc_x
-    loc_y
-    loc_z
-    roamer
-  ].freeze
+  FORM_ATTRIBUTES = %i[].freeze
 
   # COLLECTION_FILTERS
   # a hash that defines filters that can be used while searching via the search
@@ -84,10 +60,10 @@ class MonsterDashboard < Administrate::BaseDashboard
   #   }.freeze
   COLLECTION_FILTERS = {}.freeze
 
-  # Overwrite this method to customize how monsters are displayed
+  # Overwrite this method to customize how zones are displayed
   # across all pages of the admin dashboard.
   #
-  def display_resource(monster)
-    monster.name
-  end
+  # def display_resource(zone)
+  # zone.name
+  # end
 end

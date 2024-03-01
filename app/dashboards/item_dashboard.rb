@@ -25,6 +25,7 @@ class ItemDashboard < Administrate::BaseDashboard
     stats: Field::JSONB,
     classes: Field::JSONB,
     attrs: Field::JSONB,
+    images: Field::HasMany,
     patch: Field::BelongsTo
   }.freeze
 
@@ -60,6 +61,7 @@ class ItemDashboard < Administrate::BaseDashboard
     stats
     classes
     attrs
+    images
     patch
   ].freeze
 
