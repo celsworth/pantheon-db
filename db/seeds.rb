@@ -11,7 +11,7 @@ avp = Zone.create(name: "Avendyr's Pass")
 z = Zone.create(name: 'Thronefast')
 availia = Location.create(zone: z, name: 'Availia', category: 'settlement')
 Location.create(zone: avp, name: 'Demith', category: 'settlement')
-tf = Location.create(zone: z)
+tf = Location.create(zone: z, name: 'Thronefast', category: 'zone')
 
 huntress = Npc.create(location: availia, name: 'The Huntress')
 scavenger = Npc.create(location: availia, name: 'The Scavenger')
