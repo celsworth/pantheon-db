@@ -21,10 +21,7 @@ module Types
     field :loc_z, Float
     field :roamer, Boolean, null: false
 
-    field :has_screenshot, Boolean, null: false
-    def has_screenshot # rubocop:disable Naming/PredicateName
-      !!object.screenshot_id
-    end
+    field :images, [ImageType], null: false
 
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false

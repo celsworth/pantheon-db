@@ -13,6 +13,7 @@ class Monster < ApplicationRecord
   has_one :zone, through: :location
 
   has_and_belongs_to_many :drops, class_name: 'Item', before_add: :check_drops
+  has_and_belongs_to_many :images
 
   validates :name, presence: true, uniqueness: true
   validates :location, presence: true

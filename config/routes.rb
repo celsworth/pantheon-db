@@ -19,18 +19,10 @@ Rails.application.routes.draw do
     root to: 'zones#index'
   end
 
-  with_options controller: :images do
-    resource :images, only: [] do
-      resources :items, only: [] do
-        get '/', action: :show
-        post '/', action: :save
-      end
-      resources :monster, only: [] do
-        get '/', action: :show
-        post '/', action: :save
-      end
-    end
-  end
+  post '/items/:item_id/image', controller: 'images', action: 'create'
+  post '/monsters/:monster_id/image', controller: 'images', action: 'create'
+  post '/npcs/:npc_id/image', controller: 'images', action: 'create'
+  resources :images, only: %i[show]
 
   get '/test', to: 'test#index'
 

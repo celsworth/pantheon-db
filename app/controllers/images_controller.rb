@@ -7,9 +7,9 @@ class ImagesController < ApplicationController
     send_data image.data, disposition: 'inline', type: image.mime
   end
 
-  MAX_IMAGE_SIZE = 10 * 1024 * 1024
+  MAX_IMAGE_SIZE = 2 * 1024 * 1024
 
-  def save
+  def create
     return head 413 if request.headers['Content-Length'].to_i > MAX_IMAGE_SIZE
 
     data = request.body.read
@@ -17,7 +17,7 @@ class ImagesController < ApplicationController
 
     mime = Marcel::MimeType.for data
     image = Image.create(data:, size: data.length, mime:)
-    object.update(screenshot: image)
+    object.images << image
     head 204
   end
 
@@ -34,6 +34,6 @@ class ImagesController < ApplicationController
   end
 
   def image
-    @image ||= Image.find(object.screenshot_id)
+    @image ||= Image.find(params[:id])
   end
 end

@@ -17,12 +17,6 @@ class AddTables < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
-    create_table :images do |t|
-      t.binary :data, null: false
-      t.integer :size, null: false
-      t.string :mime, null: false
-    end
-
     create_table :locations do |t|
       t.references :zone, null: false, index: true
 
@@ -180,6 +174,27 @@ class AddTables < ActiveRecord::Migration[7.1]
     create_join_table :items, :npcs do |t|
       t.index %i[item_id npc_id], unique: true
       t.index %i[npc_id item_id]
+    end
+
+    create_table :images do |t|
+      t.binary :data, null: false
+      t.integer :size, null: false
+      t.string :mime, null: false
+    end
+
+    create_join_table :images, :items do |t|
+      t.index %i[image_id item_id], unique: true
+      t.index %i[item_id image_id]
+    end
+
+    create_join_table :images, :monsters do |t|
+      t.index %i[image_id monster_id], unique: true
+      t.index %i[monster_id image_id]
+    end
+
+    create_join_table :images, :npcs do |t|
+      t.index %i[image_id npc_id], unique: true
+      t.index %i[npc_id image_id]
     end
   end
 end
