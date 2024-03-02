@@ -10,10 +10,8 @@ class ImagesController < ApplicationController
   MAX_IMAGE_SIZE = 2 * 1024 * 1024
 
   def create
-    return head 413 if request.headers['Content-Length'].to_i > MAX_IMAGE_SIZE
-
     data = request.body.read
-    return head 422 if data.length > MAX_IMAGE_SIZE
+    return head 413 if data.length > MAX_IMAGE_SIZE
 
     mime = Marcel::MimeType.for data
     image = Image.create(data:, size: data.length, mime:)
