@@ -23,6 +23,11 @@ module Types
 
     field :images, [ImageType], null: false
 
+    field :quest_objectives, [QuestObjectiveType], null: false
+    field :required_for_quests, [QuestType], null: false, description: <<~DESC
+      An array of Quests this Monster is listed as an objective for.
+    DESC
+
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
   end

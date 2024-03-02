@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class GraphqlController < ApplicationController
+  DEFAULT_PARAMS = {}.freeze
+
   # If accessing from outside this domain, nullify the session
   # This allows for outside API access while preventing CSRF attacks,
   # but you'll have to authenticate your user separately
@@ -33,14 +35,14 @@ class GraphqlController < ApplicationController
       if variables_param.present?
         JSON.parse(variables_param) || {}
       else
-        {}
+        DEFAULT_PARAMS
       end
     when Hash
       variables_param
     when ActionController::Parameters
       variables_param.to_unsafe_hash # GraphQL-Ruby will validate name and type of incoming variables.
     when nil
-      {}
+      DEFAULT_PARAMS
     else
       raise ArgumentError, "Unexpected parameter: #{variables_param}"
     end

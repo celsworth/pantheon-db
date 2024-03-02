@@ -15,6 +15,8 @@ class Item < ApplicationRecord
   has_one :starts_quest, class_name: 'Quest', inverse_of: :dropped_as
   has_many :quest_rewards
   has_many :rewarded_from_quests, through: :quest_rewards, source: :quest
+  has_many :quest_objectives
+  has_many :required_for_quests, through: :quest_objectives, source: :quest
 
   META_CATEGORIES = {
     'armor' => %w[cloth_armor leather_armor chain_armor plate_armor].freeze,

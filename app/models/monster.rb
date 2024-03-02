@@ -14,6 +14,8 @@ class Monster < ApplicationRecord
 
   has_and_belongs_to_many :drops, class_name: 'Item', before_add: :check_drops
   has_and_belongs_to_many :images
+  has_many :quest_objectives
+  has_many :required_for_quests, through: :quest_objectives, source: :quest
 
   validates :name, presence: true, uniqueness: true
   validates :location, presence: true

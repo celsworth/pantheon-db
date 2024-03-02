@@ -16,7 +16,7 @@ module Types
 
       This is mostly for convenience and is very rudimentary!
     DESC
-    field :text, String, null: false
+    field :text, String
 
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false

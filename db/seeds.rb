@@ -13,6 +13,9 @@ availia = Location.create(zone: z, name: 'Availia', category: 'settlement')
 Location.create(zone: avp, name: 'Demith', category: 'settlement')
 tf = Location.create(zone: z, name: 'Thronefast', category: 'zone')
 
+Location.create(zone: z, name: 'Oceanside Portal', category: 'portal',
+                loc_x: 4746.07, loc_y: 2856.59, loc_z: 608.27)
+
 huntress = Npc.create(location: availia, name: 'The Huntress')
 scavenger = Npc.create(location: availia, name: 'The Scavenger')
 clothier = Npc.create(location: availia, name: 'The Clothier')

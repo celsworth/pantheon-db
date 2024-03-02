@@ -9,6 +9,8 @@ class QuestObjective < ApplicationRecord
   belongs_to :patch
   before_validation { self.patch = Patch.current }
 
+  validates :quest, presence: true
+
   validate :only_item_or_monster
   validate :text_if_no_item_or_monster
   before_save :default_amount_if_item_or_monster
