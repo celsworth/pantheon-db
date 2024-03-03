@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class PantheonDbSchema < GraphQL::Schema
-  max_depth 10
-  max_complexity 100
+  max_depth 20
+  max_complexity 250
 
   query_analyzer(LogQueryComplexityAnalyzer)
   query_analyzer(LogQueryDepth)

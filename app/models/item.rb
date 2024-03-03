@@ -100,7 +100,7 @@ class Item < ApplicationRecord
       if STATS.include?(k)
         errors.add(:stats, "#{k}=#{v} is invalid, use numbers only") unless v.is_a?(Numeric) || v.nil?
       else
-        # now that we have StatsType this shouldn't happen, GraphQL protects us from uknown keys
+        # now that we have StatsType this shouldn't happen, GraphQL protects us from unknown keys
         errors.add(:stats, "#{k} is not a valid stats key")
       end
     end
