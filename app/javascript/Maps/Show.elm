@@ -2,6 +2,7 @@ module Maps.Show exposing (main)
 
 import Browser
 import Browser.Dom
+import Browser.Events
 import Html exposing (..)
 import Html.Attributes exposing (class, id, step, type_, value)
 import Html.Events exposing (onClick, onInput)
@@ -45,23 +46,23 @@ mapYSize =
     2880
 
 
-calibrationInput1 =
-    -- tavern keeper
-    { loc = { x = 3454.23, y = 3729 }
-    , map = { x = 1308.2, y = 1112.1 }
-    }
-
-
-calibrationInput2 =
-    -- oceanside portal
-    { loc = { x = 4746.07, y = 2856.59 }
-    , map = { x = 3087.02, y = 2316.98 }
-    }
-
-
 type DragData
     = NotDragging
     | Dragging { startingMapOffset : Offset, startingMousePos : Offset }
+
+
+type alias MapCalcInput =
+    { loc : Offset
+    , map : Offset
+    }
+
+
+type alias MapCalibration =
+    { xLeft : Float
+    , yBottom : Float
+    , xScale : Float
+    , yScale : Float
+    }
 
 
 type alias Model =
@@ -89,6 +90,7 @@ type Msg
     | ZoomChanged String
     | GotNpcs Query.Npcs.Msg
     | GotResources Query.Resources.Msg
+    | BrowserResized
     | GotSvgElement (Result Browser.Dom.Error Browser.Dom.Element)
     | ClickedPoi Poi
 
@@ -96,8 +98,17 @@ type Msg
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
-        _ =
-            Debug.log "calcCalibration" <| calcMapCalibration calibrationInput1 calibrationInput2
+        calibrationInput1 =
+            -- tavern keeper
+            { loc = { x = 3454.23, y = 3729 }
+            , map = { x = 1308.2, y = 1112.1 }
+            }
+
+        calibrationInput2 =
+            -- oceanside portal
+            { loc = { x = 4746.07, y = 2856.59 }
+            , map = { x = 3087.02, y = 2316.98 }
+            }
     in
     ( { flags = flags
       , zoom = 1
@@ -114,20 +125,6 @@ init flags =
         , Browser.Dom.getElement "svg-container" |> Task.attempt GotSvgElement
         ]
     )
-
-
-type alias MapCalcInput =
-    { loc : Offset
-    , map : Offset
-    }
-
-
-type alias MapCalibration =
-    { xLeft : Float
-    , yBottom : Float
-    , xScale : Float
-    , yScale : Float
-    }
 
 
 calcMapCalibration : MapCalcInput -> MapCalcInput -> MapCalibration
@@ -218,6 +215,11 @@ update msg model =
         MouseUp _ ->
             ( { model | dragData = NotDragging }, Cmd.none )
 
+        BrowserResized ->
+            ( model
+            , Browser.Dom.getElement "svg-container" |> Task.attempt GotSvgElement
+            )
+
         GotSvgElement (Ok element) ->
             let
                 newMapPageSize =
@@ -240,13 +242,13 @@ clickPositionToSvgCoordinates : ( Float, Float ) -> Model -> Offset
 clickPositionToSvgCoordinates ( x, y ) model =
     let
         -- this is 0 - model.mapPageSize.x (position in viewbox, not adjusted for offset or zoom)
-        -- adjust that for zoom
-        ( x2, y2 ) =
-            ( x / model.zoom, y / model.zoom )
-
         -- scale that to a proportion of mapPageSize
+        ( x2, y2 ) =
+            ( x / model.mapPageSize.x, y / model.mapPageSize.y )
+
+        -- adjust that for zoom
         ( x3, y3 ) =
-            ( x2 / model.mapPageSize.x, y2 / model.mapPageSize.y )
+            ( x2 / model.zoom, y2 / model.zoom )
 
         -- multiply that out to actual mapSize (2800 x 2080)
         ( x4, y4 ) =
@@ -259,20 +261,22 @@ clickPositionToSvgCoordinates ( x, y ) model =
     { x = x5, y = y5 }
 
 
+viewportWidth : Model -> ( Float, Float )
+viewportWidth model =
+    ( mapXSize / model.zoom, mapYSize / model.zoom )
+
+
 changeZoom : { xProp : Float, yProp : Float } -> Float -> Model -> Model
 changeZoom proportions newZoom model =
     let
-        currentViewportWidthX =
-            mapXSize / model.zoom
-
-        currentViewportWidthY =
-            mapYSize / model.zoom
+        ( viewportWidthX, viewportWidthY ) =
+            viewportWidth model
 
         centreOfViewX =
-            model.mapOffset.x + (currentViewportWidthX * proportions.xProp)
+            model.mapOffset.x + (viewportWidthX * proportions.xProp)
 
         centreOfViewY =
-            model.mapOffset.y + (currentViewportWidthY * proportions.yProp)
+            model.mapOffset.y + (viewportWidthY * proportions.yProp)
 
         desiredViewportSizeX =
             mapXSize / newZoom
@@ -312,11 +316,10 @@ calculateNewMapOffset event model =
                     , dragData.startingMousePos.y - offsetPosY
                     )
 
-                zoomCorrectionX =
-                    (mapXSize / model.mapPageSize.x) / model.zoom
-
-                zoomCorrectionY =
-                    (mapYSize / model.mapPageSize.y) / model.zoom
+                ( zoomCorrectionX, zoomCorrectionY ) =
+                    ( (mapXSize / model.mapPageSize.x) / model.zoom
+                    , (mapYSize / model.mapPageSize.y) / model.zoom
+                    )
 
                 newMapOffset =
                     boundMapOffset model.zoom <|
@@ -434,20 +437,17 @@ npcsForPanel model =
 svgView : Model -> Html Msg
 svgView model =
     let
-        zoomedX =
-            mapXSize / model.zoom
-
-        zoomedY =
-            mapYSize / model.zoom
+        ( viewportWidthX, viewportWidthY ) =
+            viewportWidth model
 
         viewBox =
             String.fromFloat model.mapOffset.x
                 ++ " "
                 ++ String.fromFloat model.mapOffset.y
                 ++ " "
-                ++ String.fromFloat zoomedX
+                ++ String.fromFloat viewportWidthX
                 ++ " "
-                ++ String.fromFloat zoomedY
+                ++ String.fromFloat viewportWidthY
     in
     svg
         [ id "svg-container", Svg.Attributes.viewBox viewBox ]
@@ -602,4 +602,4 @@ poiText npc model =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Sub.none
+    Browser.Events.onResize (\w h -> BrowserResized)
