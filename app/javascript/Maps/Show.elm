@@ -312,10 +312,16 @@ calculateNewMapOffset event model =
                     , dragData.startingMousePos.y - offsetPosY
                     )
 
+                zoomCorrectionX =
+                    (mapXSize / model.mapPageSize.x) / model.zoom
+
+                zoomCorrectionY =
+                    (mapYSize / model.mapPageSize.y) / model.zoom
+
                 newMapOffset =
                     boundMapOffset model.zoom <|
-                        { x = dragData.startingMapOffset.x + movedX
-                        , y = dragData.startingMapOffset.y + movedY
+                        { x = dragData.startingMapOffset.x + (movedX * zoomCorrectionX)
+                        , y = dragData.startingMapOffset.y + (movedY * zoomCorrectionY)
                         }
             in
             { model | mapOffset = newMapOffset }
