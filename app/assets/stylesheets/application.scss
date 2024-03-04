@@ -57,19 +57,25 @@ svg {
   circle {
     stroke: #000;
 
+    &.resource {
+      fill: #00BBBB;
+
+      &:hover {
+        fill: #00FFFF;
+      }
+    }
+
     &.npc {
       fill: #BBBB00;
 
       &:hover {
         fill: #FFFF00;
-
       }
     }
   }
 
-}
-
-.npc-list {
-  max-height: 500px;
-  overflow-y: scroll;
+  .npc-list {
+    max-height: 500px;
+    overflow-y: scroll;
+  }
 }

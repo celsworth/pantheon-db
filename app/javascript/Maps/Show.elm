@@ -8,10 +8,11 @@ import Html.Events exposing (onClick, onInput)
 import Html.Events.Extra.Mouse as Mouse
 import Html.Events.Extra.Wheel as Wheel
 import Query.Npcs
+import Query.Resources
 import Svg exposing (Svg, svg)
 import Svg.Attributes
 import Task
-import Types exposing (Npc)
+import Types exposing (Npc, Resource)
 
 
 type alias Flags =
@@ -71,7 +72,13 @@ type alias Model =
     , mapOffset : Offset
     , dragData : DragData
     , npcs : List Npc
+    , resources : List Resource
     }
+
+
+type Poi
+    = PoiNpc Npc
+    | PoiResource Resource
 
 
 type Msg
@@ -81,8 +88,9 @@ type Msg
     | MouseWheel Wheel.Event
     | ZoomChanged String
     | GotNpcs Query.Npcs.Msg
+    | GotResources Query.Resources.Msg
     | GotSvgElement (Result Browser.Dom.Error Browser.Dom.Element)
-    | ClickedThing Npc
+    | ClickedPoi Poi
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -98,9 +106,11 @@ init flags =
       , mapOffset = { x = 0, y = 0 }
       , dragData = NotDragging
       , npcs = []
+      , resources = []
       }
     , Cmd.batch
         [ Query.Npcs.makeRequest { url = flags.graphqlBaseUrl, toMsg = GotNpcs }
+        , Query.Resources.makeRequest { url = flags.graphqlBaseUrl, toMsg = GotResources }
         , Browser.Dom.getElement "svg-container" |> Task.attempt GotSvgElement
         ]
     )
@@ -142,11 +152,10 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         GotNpcs graphQlResponse ->
-            let
-                npcs =
-                    graphQlResponse |> Query.Npcs.parseResponse
-            in
-            ( { model | npcs = npcs }, Cmd.none )
+            ( { model | npcs = Query.Npcs.parseResponse graphQlResponse }, Cmd.none )
+
+        GotResources graphQlResponse ->
+            ( { model | resources = Query.Resources.parseResponse graphQlResponse }, Cmd.none )
 
         MouseWheel event ->
             let
@@ -219,10 +228,10 @@ update msg model =
         GotSvgElement (Err _) ->
             ( model, Cmd.none )
 
-        ClickedThing npc ->
+        ClickedPoi target ->
             let
                 _ =
-                    Debug.log "ClickedThing" npc
+                    Debug.log "ClickedPoi" target
             in
             ( model, Cmd.none )
 
@@ -448,43 +457,69 @@ svgView model =
 
 pois : Model -> List (Svg Msg)
 pois model =
-    model.npcs
-        |> List.map
-            (\npc ->
-                [ npcPoiCircle npc model
+    let
+        resources =
+            model.resources |> List.map PoiResource |> List.map (poiCircle model)
 
-                --    , npcPoiText npc model
-                ]
-            )
-        |> List.concat
+        npcs =
+            model.npcs |> List.map PoiNpc |> List.map (poiCircle model)
+    in
+    List.concat [ resources, npcs ]
 
 
-npcPoiCircle : Npc -> Model -> Svg Msg
-npcPoiCircle npc model =
-    case ( npc.loc_x, npc.loc_y ) of
+maybeLocsToMaybeSvgAttrs : Maybe Float -> Maybe Float -> Model -> Maybe (List (Svg.Attribute Msg))
+maybeLocsToMaybeSvgAttrs loc_x loc_y model =
+    let
+        offsetLocX x =
+            (x - model.mapCalibration.xLeft) * model.mapCalibration.xScale
+
+        offsetLocY y =
+            (model.mapCalibration.yBottom - y) * model.mapCalibration.yScale
+    in
+    case ( loc_x, loc_y ) of
         ( Just x, Just y ) ->
-            let
-                offsetLocX =
-                    (x - model.mapCalibration.xLeft) * model.mapCalibration.xScale
-
-                offsetLocY =
-                    (model.mapCalibration.yBottom - y) * model.mapCalibration.yScale
-            in
-            Svg.circle
-                [ Svg.Attributes.class "npc"
-                , Svg.Attributes.cx <| String.fromFloat offsetLocX
-                , Svg.Attributes.cy <| String.fromFloat offsetLocY
-                , Svg.Attributes.r "3"
-                , onClick <| ClickedThing npc
+            Just
+                [ Svg.Attributes.cx <| String.fromFloat <| offsetLocX x
+                , Svg.Attributes.cy <| String.fromFloat <| offsetLocY y
                 ]
-                []
 
         _ ->
-            text ""
+            Nothing
 
 
-npcPoiText : Npc -> Model -> Svg Msg
-npcPoiText npc model =
+poiCircle : Model -> Poi -> Svg Msg
+poiCircle model poi =
+    let
+        ( loc_x, loc_y ) =
+            case poi of
+                PoiResource r ->
+                    ( Just r.loc_x, Just r.loc_y )
+
+                PoiNpc n ->
+                    ( n.loc_x, n.loc_y )
+
+        cssClass =
+            case poi of
+                PoiNpc _ ->
+                    "npc"
+
+                PoiResource _ ->
+                    "resource"
+
+        circleAttrs =
+            [ Svg.Attributes.class cssClass
+            , Svg.Attributes.r "5"
+            , onClick <| ClickedPoi poi
+            ]
+    in
+    maybeLocsToMaybeSvgAttrs loc_x loc_y model
+        |> Maybe.map (List.append circleAttrs)
+        |> Maybe.map (\attrs -> Svg.circle attrs [])
+        |> Maybe.withDefault (text "")
+
+
+poiText : Npc -> Model -> Svg Msg
+poiText npc model =
     case ( npc.loc_x, npc.loc_y ) of
         ( Just x, Just y ) ->
             let

@@ -23,7 +23,7 @@ type alias Item =
 type alias Npc =
     { id : Api.ScalarCodecs.Id
     , name : String
-    , subtitle: Maybe String
+    , subtitle : Maybe String
     , loc_x : Maybe Float
     , loc_y : Maybe Float
     }
@@ -32,6 +32,8 @@ type alias Npc =
 type alias Resource =
     { id : Api.ScalarCodecs.Id
     , name : String
+    , loc_x : Float
+    , loc_y : Float
     }
 
 
