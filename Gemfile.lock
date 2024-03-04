@@ -86,7 +86,7 @@ GEM
     administrate-field-jsonb (0.4.6)
       administrate (< 1.0.0)
       rails (>= 4.2)
-    ar_lazy_preload (2.0.0)
+    ar_lazy_preload (2.1.0)
     ast (2.4.2)
     base64 (0.2.0)
     bigdecimal (3.1.6)
@@ -105,8 +105,7 @@ GEM
     discard (1.3.0)
       activerecord (>= 4.2, < 8)
     dotenv (3.1.0)
-    drb (2.2.0)
-      ruby2_keywords
+    drb (2.2.1)
     erubi (1.12.0)
     ffi (1.16.3)
     globalid (1.2.1)
@@ -115,9 +114,9 @@ GEM
       railties
     graphql (2.2.11)
       base64
-    graphql-fragment_cache (1.19.0)
+    graphql-fragment_cache (1.20.0)
       graphql (>= 1.12.0)
-      ruby-next (>= 0.10.0)
+      ruby-next (>= 0.15.0)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     io-console (0.7.2)
@@ -153,7 +152,7 @@ GEM
       net-imap
       net-pop
       net-smtp
-    marcel (1.0.3)
+    marcel (1.0.4)
     mini_mime (1.1.5)
     minitest (5.22.2)
     msgpack (1.7.2)
@@ -182,13 +181,12 @@ GEM
     parser (3.3.0.5)
       ast (~> 2.4.1)
       racc
-    pg (1.5.5)
-    prism (0.24.0)
+    pg (1.5.6)
     psych (5.1.2)
       stringio
     racc (1.7.3)
     rack (3.0.9.1)
-    rack-cors (2.0.1)
+    rack-cors (2.0.2)
       rack (>= 2.0.0)
     rack-session (2.0.0)
       rack (>= 3.0.0)
@@ -248,9 +246,8 @@ GEM
       rubocop-ast (>= 1.30.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 3.0)
-    rubocop-ast (1.31.0)
+    rubocop-ast (1.31.1)
       parser (>= 3.3.0.4)
-      prism (>= 0.24.0)
     ruby-next (1.0.2)
       paco (~> 0.2)
       require-hooks (~> 0.2)
@@ -261,7 +258,6 @@ GEM
     ruby-next-parser (3.2.2.0)
       parser (>= 3.0.3.1)
     ruby-progressbar (1.13.0)
-    ruby2_keywords (0.0.5)
     sassc (2.4.0)
       ffi (~> 1.9)
     sassc-rails (2.1.2)
