@@ -498,17 +498,29 @@ poiCircle model poi =
                 PoiNpc n ->
                     ( n.loc_x, n.loc_y )
 
+        testFlash =
+            case poi of
+                PoiNpc npc ->
+                    if npc.name == "Elinae Whispertree" then
+                        "highlighted"
+
+                    else
+                        ""
+
+                _ ->
+                    ""
+
         cssClass =
             case poi of
                 PoiNpc _ ->
-                    "npc"
+                    "npc " ++ testFlash
 
                 PoiResource _ ->
                     "resource"
 
         circleAttrs =
             [ Svg.Attributes.class cssClass
-            , Svg.Attributes.r "5"
+            , Svg.Attributes.r (String.fromFloat (13 - model.zoom))
             , onClick <| ClickedPoi poi
             ]
     in

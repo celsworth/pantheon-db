@@ -1,5 +1,7 @@
 @charset "utf-8";
 
+@use "sass:color";
+
 // override some Bulma defaults
 $body-size: 14px;
 $body-background-color: #f9fff9;
@@ -29,7 +31,7 @@ $body-background-color: #f9fff9;
 }
 
 .elm-select-menu-item {
-  margin: 0px 4px;
+  margin: 0 4px;
   padding: 6px 8px;
   border-radius: 10px;
 
@@ -46,7 +48,6 @@ svg {
   text {
     // avoid breaking dragging when going over a text element
     pointer-events: none;
-
     stroke: white;
     stroke-width: 0.6em;
     fill: black;
@@ -55,22 +56,40 @@ svg {
   }
 
   circle {
-    stroke: #000;
+    @keyframes color-change {
+      0% {
+        fill: white;
+      }
 
-    &.resource {
-      fill: #00BBBB;
-
-      &:hover {
-        fill: #00FFFF;
+      10% {
+        fill: white;
       }
     }
 
-    &.npc {
-      fill: #BBBB00;
+    @mixin hoverable-circle($fill) {
+      fill: $fill;
 
       &:hover {
-        fill: #FFFF00;
+        fill: color.adjust($fill, $lightness: 40%);
       }
+    }
+
+    stroke: #000;
+
+    &.highlighted {
+      animation: color-change 0.6s infinite alternate;
+    }
+
+    &.faded {
+      opacity: 0.3;
+    }
+
+    &.resource {
+      @include hoverable-circle($fill: #0BB);
+    }
+
+    &.npc {
+      @include hoverable-circle($fill: #BB0);
     }
   }
 
