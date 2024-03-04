@@ -52,9 +52,9 @@ calibrationInput1 =
 
 
 calibrationInput2 =
-    -- handsome jyss
-    { loc = { x = 3822.91, y = 3449.9 }
-    , map = { x = 1827.6, y = 1487.3 }
+    -- oceanside portal
+    { loc = { x = 4746.07, y = 2856.59 }
+    , map = { x = 3087.02, y = 2316.98 }
     }
 
 
