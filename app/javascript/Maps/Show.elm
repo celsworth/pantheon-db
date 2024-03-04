@@ -498,11 +498,23 @@ poiCircle model poi =
                 PoiNpc n ->
                     ( n.loc_x, n.loc_y )
 
-        testFlash =
+        testRadar =
+            case poi of
+                PoiNpc npc ->
+                    if npc.name == "Akola" then
+                        True
+
+                    else
+                        False
+
+                _ ->
+                    False
+
+        testHighlighted =
             case poi of
                 PoiNpc npc ->
                     if npc.name == "Elinae Whispertree" then
-                        "highlighted"
+                        " highlighted"
 
                     else
                         ""
@@ -513,20 +525,51 @@ poiCircle model poi =
         cssClass =
             case poi of
                 PoiNpc _ ->
-                    "npc " ++ testFlash
+                    "npc"
 
                 PoiResource _ ->
                     "resource"
 
         circleAttrs =
-            [ Svg.Attributes.class cssClass
+            [ Svg.Attributes.class <| cssClass ++ testHighlighted
             , Svg.Attributes.r (String.fromFloat (13 - model.zoom))
             , onClick <| ClickedPoi poi
             ]
+
+        radarAttrs =
+            [ Svg.Attributes.class <| cssClass
+            , Svg.Attributes.style "pointer-events: none"
+            ]
+
+        radarInner =
+            [ Svg.animate
+                [ Svg.Attributes.attributeName "r"
+                , Svg.Attributes.values "0;400"
+                , Svg.Attributes.dur "2s"
+                , Svg.Attributes.repeatCount "indefinite"
+                ]
+                []
+            , Svg.animate
+                [ Svg.Attributes.attributeName "opacity"
+                , Svg.Attributes.values "1;0"
+                , Svg.Attributes.dur "2s"
+                , Svg.Attributes.repeatCount "indefinite"
+                ]
+                []
+            ]
+
+        svgG locAttrs =
+            Svg.g []
+                [ Svg.circle (circleAttrs ++ locAttrs) []
+                , if testRadar == True then
+                    Svg.circle (radarAttrs ++ locAttrs) radarInner
+
+                  else
+                    text ""
+                ]
     in
     maybeLocsToMaybeSvgAttrs loc_x loc_y model
-        |> Maybe.map (List.append circleAttrs)
-        |> Maybe.map (\attrs -> Svg.circle attrs [])
+        |> Maybe.map svgG
         |> Maybe.withDefault (text "")
 
 
