@@ -19,6 +19,7 @@ type ResourceResource
     | Padrium
     | Tascium
     | Slytheril
+    | Vestium
     | Herb
     | Vegetable
     | Lily
@@ -32,7 +33,7 @@ type ResourceResource
 
 list : List ResourceResource
 list =
-    [ Apple, Pine, Ash, Oak, Maple, Walnut, Asherite, Caspilrite, Padrium, Tascium, Slytheril, Herb, Vegetable, Lily, WaterReed, Jute, Cotton, Flax, Blackberry, Gloomberry ]
+    [ Apple, Pine, Ash, Oak, Maple, Walnut, Asherite, Caspilrite, Padrium, Tascium, Slytheril, Vestium, Herb, Vegetable, Lily, WaterReed, Jute, Cotton, Flax, Blackberry, Gloomberry ]
 
 
 decoder : Decoder ResourceResource
@@ -73,6 +74,9 @@ decoder =
 
                     "slytheril" ->
                         Decode.succeed Slytheril
+
+                    "vestium" ->
+                        Decode.succeed Vestium
 
                     "herb" ->
                         Decode.succeed Herb
@@ -143,6 +147,9 @@ toString enum____ =
 
         Slytheril ->
             "slytheril"
+
+        Vestium ->
+            "vestium"
 
         Herb ->
             "herb"
@@ -218,6 +225,9 @@ fromString enumString____ =
 
         "slytheril" ->
             Just Slytheril
+
+        "vestium" ->
+            Just Vestium
 
         "herb" ->
             Just Herb

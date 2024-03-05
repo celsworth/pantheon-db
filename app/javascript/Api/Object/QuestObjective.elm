@@ -72,9 +72,9 @@ readable =
     Object.selectionForField "(Maybe String)" "readable" [] (Decode.string |> Decode.nullable)
 
 
-text : SelectionSet String Api.Object.QuestObjective
+text : SelectionSet (Maybe String) Api.Object.QuestObjective
 text =
-    Object.selectionForField "String" "text" [] Decode.string
+    Object.selectionForField "(Maybe String)" "text" [] (Decode.string |> Decode.nullable)
 
 
 updatedAt : SelectionSet Api.ScalarCodecs.ISO8601DateTime Api.Object.QuestObjective

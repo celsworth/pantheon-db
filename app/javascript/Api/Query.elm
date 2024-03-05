@@ -4,6 +4,9 @@
 
 module Api.Query exposing (..)
 
+import Api.Enum.LocationCategory
+import Api.Enum.ResourceResource
+import Api.Enum.ResourceSize
 import Api.InputObject
 import Api.Interface
 import Api.Object
@@ -25,9 +28,9 @@ type alias ItemsOptionalArguments =
     , category : OptionalArgument String
     , slot : OptionalArgument String
     , class : OptionalArgument String
-    , droppedBy : OptionalArgument Api.ScalarCodecs.Id
-    , startsQuest : OptionalArgument Api.ScalarCodecs.Id
-    , rewardFromQuest : OptionalArgument Api.ScalarCodecs.Id
+    , droppedById : OptionalArgument Api.ScalarCodecs.Id
+    , startsQuestId : OptionalArgument Api.ScalarCodecs.Id
+    , rewardFromQuestId : OptionalArgument Api.ScalarCodecs.Id
     , stats : OptionalArgument (List Api.InputObject.StatInputFilter)
     , requiredLevel : OptionalArgument (List Api.InputObject.FloatOperatorInputFilter)
     , weight : OptionalArgument (List Api.InputObject.FloatOperatorInputFilter)
@@ -41,20 +44,42 @@ items :
 items fillInOptionals____ object____ =
     let
         filledInOptionals____ =
-            fillInOptionals____ { id = Absent, name = Absent, category = Absent, slot = Absent, class = Absent, droppedBy = Absent, startsQuest = Absent, rewardFromQuest = Absent, stats = Absent, requiredLevel = Absent, weight = Absent }
+            fillInOptionals____ { id = Absent, name = Absent, category = Absent, slot = Absent, class = Absent, droppedById = Absent, startsQuestId = Absent, rewardFromQuestId = Absent, stats = Absent, requiredLevel = Absent, weight = Absent }
 
         optionalArgs____ =
-            [ Argument.optional "id" filledInOptionals____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "name" filledInOptionals____.name Encode.string, Argument.optional "category" filledInOptionals____.category Encode.string, Argument.optional "slot" filledInOptionals____.slot Encode.string, Argument.optional "class" filledInOptionals____.class Encode.string, Argument.optional "droppedBy" filledInOptionals____.droppedBy (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "startsQuest" filledInOptionals____.startsQuest (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "rewardFromQuest" filledInOptionals____.rewardFromQuest (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "stats" filledInOptionals____.stats (Api.InputObject.encodeStatInputFilter |> Encode.list), Argument.optional "requiredLevel" filledInOptionals____.requiredLevel (Api.InputObject.encodeFloatOperatorInputFilter |> Encode.list), Argument.optional "weight" filledInOptionals____.weight (Api.InputObject.encodeFloatOperatorInputFilter |> Encode.list) ]
+            [ Argument.optional "id" filledInOptionals____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "name" filledInOptionals____.name Encode.string, Argument.optional "category" filledInOptionals____.category Encode.string, Argument.optional "slot" filledInOptionals____.slot Encode.string, Argument.optional "class" filledInOptionals____.class Encode.string, Argument.optional "droppedById" filledInOptionals____.droppedById (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "startsQuestId" filledInOptionals____.startsQuestId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "rewardFromQuestId" filledInOptionals____.rewardFromQuestId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "stats" filledInOptionals____.stats (Api.InputObject.encodeStatInputFilter |> Encode.list), Argument.optional "requiredLevel" filledInOptionals____.requiredLevel (Api.InputObject.encodeFloatOperatorInputFilter |> Encode.list), Argument.optional "weight" filledInOptionals____.weight (Api.InputObject.encodeFloatOperatorInputFilter |> Encode.list) ]
                 |> List.filterMap Basics.identity
     in
     Object.selectionForCompositeField "items" optionalArgs____ object____ (Basics.identity >> Decode.list)
 
 
+type alias LocationsOptionalArguments =
+    { id : OptionalArgument Api.ScalarCodecs.Id
+    , zoneId : OptionalArgument Api.ScalarCodecs.Id
+    , name : OptionalArgument String
+    , category : OptionalArgument Api.Enum.LocationCategory.LocationCategory
+    }
+
+
+{-|
+
+  - zoneId - Zone ID the Location must be in
+
+-}
 locations :
-    SelectionSet decodesTo Api.Object.Location
+    (LocationsOptionalArguments -> LocationsOptionalArguments)
+    -> SelectionSet decodesTo Api.Object.Location
     -> SelectionSet (List decodesTo) RootQuery
-locations object____ =
-    Object.selectionForCompositeField "locations" [] object____ (Basics.identity >> Decode.list)
+locations fillInOptionals____ object____ =
+    let
+        filledInOptionals____ =
+            fillInOptionals____ { id = Absent, zoneId = Absent, name = Absent, category = Absent }
+
+        optionalArgs____ =
+            [ Argument.optional "id" filledInOptionals____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "zoneId" filledInOptionals____.zoneId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "name" filledInOptionals____.name Encode.string, Argument.optional "category" filledInOptionals____.category (Encode.enum Api.Enum.LocationCategory.toString) ]
+                |> List.filterMap Basics.identity
+    in
+    Object.selectionForCompositeField "locations" optionalArgs____ object____ (Basics.identity >> Decode.list)
 
 
 type alias MonstersOptionalArguments =
@@ -62,7 +87,7 @@ type alias MonstersOptionalArguments =
     , name : OptionalArgument String
     , elite : OptionalArgument Bool
     , named : OptionalArgument Bool
-    , drops : OptionalArgument Api.ScalarCodecs.Id
+    , dropsId : OptionalArgument Api.ScalarCodecs.Id
     , locationId : OptionalArgument Api.ScalarCodecs.Id
     , zoneId : OptionalArgument Api.ScalarCodecs.Id
     , level : OptionalArgument (List Api.InputObject.FloatOperatorInputFilter)
@@ -71,7 +96,7 @@ type alias MonstersOptionalArguments =
 
 {-|
 
-  - drops - Item ID of something the monster drops
+  - dropsId - Item ID of something the monster drops
   - locationId - Location ID the monster must be in
   - zoneId - Zone ID the monster must be in
 
@@ -83,10 +108,10 @@ monsters :
 monsters fillInOptionals____ object____ =
     let
         filledInOptionals____ =
-            fillInOptionals____ { id = Absent, name = Absent, elite = Absent, named = Absent, drops = Absent, locationId = Absent, zoneId = Absent, level = Absent }
+            fillInOptionals____ { id = Absent, name = Absent, elite = Absent, named = Absent, dropsId = Absent, locationId = Absent, zoneId = Absent, level = Absent }
 
         optionalArgs____ =
-            [ Argument.optional "id" filledInOptionals____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "name" filledInOptionals____.name Encode.string, Argument.optional "elite" filledInOptionals____.elite Encode.bool, Argument.optional "named" filledInOptionals____.named Encode.bool, Argument.optional "drops" filledInOptionals____.drops (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "locationId" filledInOptionals____.locationId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "zoneId" filledInOptionals____.zoneId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "level" filledInOptionals____.level (Api.InputObject.encodeFloatOperatorInputFilter |> Encode.list) ]
+            [ Argument.optional "id" filledInOptionals____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "name" filledInOptionals____.name Encode.string, Argument.optional "elite" filledInOptionals____.elite Encode.bool, Argument.optional "named" filledInOptionals____.named Encode.bool, Argument.optional "dropsId" filledInOptionals____.dropsId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "locationId" filledInOptionals____.locationId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "zoneId" filledInOptionals____.zoneId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "level" filledInOptionals____.level (Api.InputObject.encodeFloatOperatorInputFilter |> Encode.list) ]
                 |> List.filterMap Basics.identity
     in
     Object.selectionForCompositeField "monsters" optionalArgs____ object____ (Basics.identity >> Decode.list)
@@ -99,9 +124,9 @@ type alias NpcsOptionalArguments =
     , vendor : OptionalArgument Bool
     , locationId : OptionalArgument Api.ScalarCodecs.Id
     , zoneId : OptionalArgument Api.ScalarCodecs.Id
-    , givesQuest : OptionalArgument Api.ScalarCodecs.Id
-    , receivesQuest : OptionalArgument Api.ScalarCodecs.Id
-    , sellsItem : OptionalArgument Api.ScalarCodecs.Id
+    , givesQuestId : OptionalArgument Api.ScalarCodecs.Id
+    , receivesQuestId : OptionalArgument Api.ScalarCodecs.Id
+    , sellsItemId : OptionalArgument Api.ScalarCodecs.Id
     }
 
 
@@ -117,10 +142,10 @@ npcs :
 npcs fillInOptionals____ object____ =
     let
         filledInOptionals____ =
-            fillInOptionals____ { id = Absent, name = Absent, subtitle = Absent, vendor = Absent, locationId = Absent, zoneId = Absent, givesQuest = Absent, receivesQuest = Absent, sellsItem = Absent }
+            fillInOptionals____ { id = Absent, name = Absent, subtitle = Absent, vendor = Absent, locationId = Absent, zoneId = Absent, givesQuestId = Absent, receivesQuestId = Absent, sellsItemId = Absent }
 
         optionalArgs____ =
-            [ Argument.optional "id" filledInOptionals____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "name" filledInOptionals____.name Encode.string, Argument.optional "subtitle" filledInOptionals____.subtitle Encode.string, Argument.optional "vendor" filledInOptionals____.vendor Encode.bool, Argument.optional "locationId" filledInOptionals____.locationId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "zoneId" filledInOptionals____.zoneId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "givesQuest" filledInOptionals____.givesQuest (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "receivesQuest" filledInOptionals____.receivesQuest (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "sellsItem" filledInOptionals____.sellsItem (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId) ]
+            [ Argument.optional "id" filledInOptionals____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "name" filledInOptionals____.name Encode.string, Argument.optional "subtitle" filledInOptionals____.subtitle Encode.string, Argument.optional "vendor" filledInOptionals____.vendor Encode.bool, Argument.optional "locationId" filledInOptionals____.locationId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "zoneId" filledInOptionals____.zoneId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "givesQuestId" filledInOptionals____.givesQuestId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "receivesQuestId" filledInOptionals____.receivesQuestId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "sellsItemId" filledInOptionals____.sellsItemId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId) ]
                 |> List.filterMap Basics.identity
     in
     Object.selectionForCompositeField "npcs" optionalArgs____ object____ (Basics.identity >> Decode.list)
@@ -167,7 +192,13 @@ questRewards fillInOptionals____ object____ =
 
 
 type alias QuestsOptionalArguments =
-    { id : OptionalArgument Api.ScalarCodecs.Id }
+    { id : OptionalArgument Api.ScalarCodecs.Id
+    , name : OptionalArgument String
+    , text : OptionalArgument String
+    , giverId : OptionalArgument Api.ScalarCodecs.Id
+    , receiverId : OptionalArgument Api.ScalarCodecs.Id
+    , prereqQuestId : OptionalArgument Api.ScalarCodecs.Id
+    }
 
 
 quests :
@@ -177,10 +208,10 @@ quests :
 quests fillInOptionals____ object____ =
     let
         filledInOptionals____ =
-            fillInOptionals____ { id = Absent }
+            fillInOptionals____ { id = Absent, name = Absent, text = Absent, giverId = Absent, receiverId = Absent, prereqQuestId = Absent }
 
         optionalArgs____ =
-            [ Argument.optional "id" filledInOptionals____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId) ]
+            [ Argument.optional "id" filledInOptionals____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "name" filledInOptionals____.name Encode.string, Argument.optional "text" filledInOptionals____.text Encode.string, Argument.optional "giverId" filledInOptionals____.giverId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "receiverId" filledInOptionals____.receiverId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "prereqQuestId" filledInOptionals____.prereqQuestId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId) ]
                 |> List.filterMap Basics.identity
     in
     Object.selectionForCompositeField "quests" optionalArgs____ object____ (Basics.identity >> Decode.list)
@@ -189,13 +220,20 @@ quests fillInOptionals____ object____ =
 type alias ResourcesOptionalArguments =
     { id : OptionalArgument Api.ScalarCodecs.Id
     , name : OptionalArgument String
+    , resource : OptionalArgument (List Api.Enum.ResourceResource.ResourceResource)
+    , size : OptionalArgument (List Api.Enum.ResourceSize.ResourceSize)
     }
 
 
 {-|
 
   - id - Filter to the given Resource ID
-  - name - Filter to matching Resource names
+
+  - name - Filter to matching Resource name
+
+  - resource - Filter to any matching Resource types
+
+  - size - Filter to any matching Resource sizes
 
 -}
 resources :
@@ -205,10 +243,10 @@ resources :
 resources fillInOptionals____ object____ =
     let
         filledInOptionals____ =
-            fillInOptionals____ { id = Absent, name = Absent }
+            fillInOptionals____ { id = Absent, name = Absent, resource = Absent, size = Absent }
 
         optionalArgs____ =
-            [ Argument.optional "id" filledInOptionals____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "name" filledInOptionals____.name Encode.string ]
+            [ Argument.optional "id" filledInOptionals____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "name" filledInOptionals____.name Encode.string, Argument.optional "resource" filledInOptionals____.resource (Encode.enum Api.Enum.ResourceResource.toString |> Encode.list), Argument.optional "size" filledInOptionals____.size (Encode.enum Api.Enum.ResourceSize.toString |> Encode.list) ]
                 |> List.filterMap Basics.identity
     in
     Object.selectionForCompositeField "resources" optionalArgs____ object____ (Basics.identity >> Decode.list)

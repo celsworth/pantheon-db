@@ -8,6 +8,7 @@ import Api.Enum.Class
 import Api.Enum.ItemAttr
 import Api.Enum.ItemCategory
 import Api.Enum.ItemSlot
+import Api.Enum.LocationCategory
 import Api.Enum.Operator
 import Api.Enum.ResourceResource
 import Api.Enum.ResourceSize
@@ -111,6 +112,53 @@ encodeItemAttributes input____ =
         [ ( "name", Encode.string input____.name |> Just ), ( "buyPrice", Encode.int |> Encode.optional input____.buyPrice ), ( "sellPrice", Encode.int |> Encode.optional input____.sellPrice ), ( "weight", Encode.float input____.weight |> Just ), ( "requiredLevel", Encode.int |> Encode.optional input____.requiredLevel ), ( "category", Encode.enum Api.Enum.ItemCategory.toString |> Encode.optional input____.category ), ( "slot", Encode.enum Api.Enum.ItemSlot.toString |> Encode.optional input____.slot ), ( "stats", encodeStatsInput |> Encode.optional input____.stats ), ( "classes", (Encode.enum Api.Enum.Class.toString |> Encode.list) |> Encode.optional input____.classes ), ( "attrs", (Encode.enum Api.Enum.ItemAttr.toString |> Encode.list) |> Encode.optional input____.attrs ), ( "startsQuest", (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId) |> Encode.optional input____.startsQuest ) ]
 
 
+buildLocationAttributes :
+    LocationAttributesRequiredFields
+    -> (LocationAttributesOptionalFields -> LocationAttributesOptionalFields)
+    -> LocationAttributes
+buildLocationAttributes required____ fillOptionals____ =
+    let
+        optionals____ =
+            fillOptionals____
+                { locX = Absent, locY = Absent, locZ = Absent }
+    in
+    { zoneId = required____.zoneId, name = required____.name, category = required____.category, locX = optionals____.locX, locY = optionals____.locY, locZ = optionals____.locZ }
+
+
+type alias LocationAttributesRequiredFields =
+    { zoneId : Api.ScalarCodecs.Id
+    , name : String
+    , category : Api.Enum.LocationCategory.LocationCategory
+    }
+
+
+type alias LocationAttributesOptionalFields =
+    { locX : OptionalArgument Float
+    , locY : OptionalArgument Float
+    , locZ : OptionalArgument Float
+    }
+
+
+{-| Type for the LocationAttributes input object.
+-}
+type alias LocationAttributes =
+    { zoneId : Api.ScalarCodecs.Id
+    , name : String
+    , category : Api.Enum.LocationCategory.LocationCategory
+    , locX : OptionalArgument Float
+    , locY : OptionalArgument Float
+    , locZ : OptionalArgument Float
+    }
+
+
+{-| Encode a LocationAttributes into a value that can be used as an argument.
+-}
+encodeLocationAttributes : LocationAttributes -> Value
+encodeLocationAttributes input____ =
+    Encode.maybeObject
+        [ ( "zoneId", (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId) input____.zoneId |> Just ), ( "name", Encode.string input____.name |> Just ), ( "category", Encode.enum Api.Enum.LocationCategory.toString input____.category |> Just ), ( "locX", Encode.float |> Encode.optional input____.locX ), ( "locY", Encode.float |> Encode.optional input____.locY ), ( "locZ", Encode.float |> Encode.optional input____.locZ ) ]
+
+
 buildMonsterAttributes :
     MonsterAttributesRequiredFields
     -> (MonsterAttributesOptionalFields -> MonsterAttributesOptionalFields)
@@ -119,24 +167,25 @@ buildMonsterAttributes required____ fillOptionals____ =
     let
         optionals____ =
             fillOptionals____
-                { elite = Absent, named = Absent, locX = Absent, locY = Absent, locZ = Absent }
+                { level = Absent, elite = Absent, named = Absent, locX = Absent, locY = Absent, locZ = Absent, roamer = Absent }
     in
-    { name = required____.name, zoneId = required____.zoneId, level = required____.level, elite = optionals____.elite, named = optionals____.named, locX = optionals____.locX, locY = optionals____.locY, locZ = optionals____.locZ }
+    { name = required____.name, locationId = required____.locationId, level = optionals____.level, elite = optionals____.elite, named = optionals____.named, locX = optionals____.locX, locY = optionals____.locY, locZ = optionals____.locZ, roamer = optionals____.roamer }
 
 
 type alias MonsterAttributesRequiredFields =
     { name : String
-    , zoneId : Api.ScalarCodecs.Id
-    , level : Int
+    , locationId : Api.ScalarCodecs.Id
     }
 
 
 type alias MonsterAttributesOptionalFields =
-    { elite : OptionalArgument Bool
+    { level : OptionalArgument Int
+    , elite : OptionalArgument Bool
     , named : OptionalArgument Bool
     , locX : OptionalArgument Float
     , locY : OptionalArgument Float
     , locZ : OptionalArgument Float
+    , roamer : OptionalArgument Bool
     }
 
 
@@ -144,13 +193,14 @@ type alias MonsterAttributesOptionalFields =
 -}
 type alias MonsterAttributes =
     { name : String
-    , zoneId : Api.ScalarCodecs.Id
-    , level : Int
+    , locationId : Api.ScalarCodecs.Id
+    , level : OptionalArgument Int
     , elite : OptionalArgument Bool
     , named : OptionalArgument Bool
     , locX : OptionalArgument Float
     , locY : OptionalArgument Float
     , locZ : OptionalArgument Float
+    , roamer : OptionalArgument Bool
     }
 
 
@@ -159,7 +209,7 @@ type alias MonsterAttributes =
 encodeMonsterAttributes : MonsterAttributes -> Value
 encodeMonsterAttributes input____ =
     Encode.maybeObject
-        [ ( "name", Encode.string input____.name |> Just ), ( "zoneId", (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId) input____.zoneId |> Just ), ( "level", Encode.int input____.level |> Just ), ( "elite", Encode.bool |> Encode.optional input____.elite ), ( "named", Encode.bool |> Encode.optional input____.named ), ( "locX", Encode.float |> Encode.optional input____.locX ), ( "locY", Encode.float |> Encode.optional input____.locY ), ( "locZ", Encode.float |> Encode.optional input____.locZ ) ]
+        [ ( "name", Encode.string input____.name |> Just ), ( "locationId", (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId) input____.locationId |> Just ), ( "level", Encode.int |> Encode.optional input____.level ), ( "elite", Encode.bool |> Encode.optional input____.elite ), ( "named", Encode.bool |> Encode.optional input____.named ), ( "locX", Encode.float |> Encode.optional input____.locX ), ( "locY", Encode.float |> Encode.optional input____.locY ), ( "locZ", Encode.float |> Encode.optional input____.locZ ), ( "roamer", Encode.bool |> Encode.optional input____.roamer ) ]
 
 
 buildNpcAttributes :
@@ -170,13 +220,13 @@ buildNpcAttributes required____ fillOptionals____ =
     let
         optionals____ =
             fillOptionals____
-                { subtitle = Absent, vendor = Absent, locX = Absent, locY = Absent, locZ = Absent }
+                { subtitle = Absent, vendor = Absent, locX = Absent, locY = Absent, locZ = Absent, roamer = Absent }
     in
-    { zoneId = required____.zoneId, name = required____.name, subtitle = optionals____.subtitle, vendor = optionals____.vendor, locX = optionals____.locX, locY = optionals____.locY, locZ = optionals____.locZ }
+    { locationId = required____.locationId, name = required____.name, subtitle = optionals____.subtitle, vendor = optionals____.vendor, locX = optionals____.locX, locY = optionals____.locY, locZ = optionals____.locZ, roamer = optionals____.roamer }
 
 
 type alias NpcAttributesRequiredFields =
-    { zoneId : Api.ScalarCodecs.Id
+    { locationId : Api.ScalarCodecs.Id
     , name : String
     }
 
@@ -187,19 +237,21 @@ type alias NpcAttributesOptionalFields =
     , locX : OptionalArgument Float
     , locY : OptionalArgument Float
     , locZ : OptionalArgument Float
+    , roamer : OptionalArgument Bool
     }
 
 
 {-| Type for the NpcAttributes input object.
 -}
 type alias NpcAttributes =
-    { zoneId : Api.ScalarCodecs.Id
+    { locationId : Api.ScalarCodecs.Id
     , name : String
     , subtitle : OptionalArgument String
     , vendor : OptionalArgument Bool
     , locX : OptionalArgument Float
     , locY : OptionalArgument Float
     , locZ : OptionalArgument Float
+    , roamer : OptionalArgument Bool
     }
 
 
@@ -208,7 +260,7 @@ type alias NpcAttributes =
 encodeNpcAttributes : NpcAttributes -> Value
 encodeNpcAttributes input____ =
     Encode.maybeObject
-        [ ( "zoneId", (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId) input____.zoneId |> Just ), ( "name", Encode.string input____.name |> Just ), ( "subtitle", Encode.string |> Encode.optional input____.subtitle ), ( "vendor", Encode.bool |> Encode.optional input____.vendor ), ( "locX", Encode.float |> Encode.optional input____.locX ), ( "locY", Encode.float |> Encode.optional input____.locY ), ( "locZ", Encode.float |> Encode.optional input____.locZ ) ]
+        [ ( "locationId", (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId) input____.locationId |> Just ), ( "name", Encode.string input____.name |> Just ), ( "subtitle", Encode.string |> Encode.optional input____.subtitle ), ( "vendor", Encode.bool |> Encode.optional input____.vendor ), ( "locX", Encode.float |> Encode.optional input____.locX ), ( "locY", Encode.float |> Encode.optional input____.locY ), ( "locZ", Encode.float |> Encode.optional input____.locZ ), ( "roamer", Encode.bool |> Encode.optional input____.roamer ) ]
 
 
 buildQuestAttributes :
@@ -356,11 +408,12 @@ buildResourceAttributes :
     ResourceAttributesRequiredFields
     -> ResourceAttributes
 buildResourceAttributes required____ =
-    { name = required____.name, resource = required____.resource, size = required____.size, locX = required____.locX, locY = required____.locY, locZ = required____.locZ }
+    { name = required____.name, locationId = required____.locationId, resource = required____.resource, size = required____.size, locX = required____.locX, locY = required____.locY, locZ = required____.locZ }
 
 
 type alias ResourceAttributesRequiredFields =
     { name : String
+    , locationId : Api.ScalarCodecs.Id
     , resource : Api.Enum.ResourceResource.ResourceResource
     , size : Api.Enum.ResourceSize.ResourceSize
     , locX : Float
@@ -373,6 +426,7 @@ type alias ResourceAttributesRequiredFields =
 -}
 type alias ResourceAttributes =
     { name : String
+    , locationId : Api.ScalarCodecs.Id
     , resource : Api.Enum.ResourceResource.ResourceResource
     , size : Api.Enum.ResourceSize.ResourceSize
     , locX : Float
@@ -386,7 +440,7 @@ type alias ResourceAttributes =
 encodeResourceAttributes : ResourceAttributes -> Value
 encodeResourceAttributes input____ =
     Encode.maybeObject
-        [ ( "name", Encode.string input____.name |> Just ), ( "resource", Encode.enum Api.Enum.ResourceResource.toString input____.resource |> Just ), ( "size", Encode.enum Api.Enum.ResourceSize.toString input____.size |> Just ), ( "locX", Encode.float input____.locX |> Just ), ( "locY", Encode.float input____.locY |> Just ), ( "locZ", Encode.float input____.locZ |> Just ) ]
+        [ ( "name", Encode.string input____.name |> Just ), ( "locationId", (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId) input____.locationId |> Just ), ( "resource", Encode.enum Api.Enum.ResourceResource.toString input____.resource |> Just ), ( "size", Encode.enum Api.Enum.ResourceSize.toString input____.size |> Just ), ( "locX", Encode.float input____.locX |> Just ), ( "locY", Encode.float input____.locY |> Just ), ( "locZ", Encode.float input____.locZ |> Just ) ]
 
 
 buildStatInputFilter :

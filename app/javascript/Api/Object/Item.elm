@@ -54,14 +54,21 @@ createdAt =
 
 droppedBy :
     SelectionSet decodesTo Api.Object.Monster
-    -> SelectionSet (Maybe (List decodesTo)) Api.Object.Item
+    -> SelectionSet (List decodesTo) Api.Object.Item
 droppedBy object____ =
-    Object.selectionForCompositeField "droppedBy" [] object____ (Basics.identity >> Decode.list >> Decode.nullable)
+    Object.selectionForCompositeField "droppedBy" [] object____ (Basics.identity >> Decode.list)
 
 
 id : SelectionSet Api.ScalarCodecs.Id Api.Object.Item
 id =
     Object.selectionForField "ScalarCodecs.Id" "id" [] (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapCodecs |> .codecId |> .decoder)
+
+
+images :
+    SelectionSet decodesTo Api.Object.Image
+    -> SelectionSet (List decodesTo) Api.Object.Item
+images object____ =
+    Object.selectionForCompositeField "images" [] object____ (Basics.identity >> Decode.list)
 
 
 name : SelectionSet String Api.Object.Item
@@ -76,6 +83,22 @@ patch object____ =
     Object.selectionForCompositeField "patch" [] object____ Basics.identity
 
 
+questObjectives :
+    SelectionSet decodesTo Api.Object.QuestObjective
+    -> SelectionSet (List decodesTo) Api.Object.Item
+questObjectives object____ =
+    Object.selectionForCompositeField "questObjectives" [] object____ (Basics.identity >> Decode.list)
+
+
+{-| An array of Quests this Item is listed as an objective for.
+-}
+requiredForQuests :
+    SelectionSet decodesTo Api.Object.Quest
+    -> SelectionSet (List decodesTo) Api.Object.Item
+requiredForQuests object____ =
+    Object.selectionForCompositeField "requiredForQuests" [] object____ (Basics.identity >> Decode.list)
+
+
 requiredLevel : SelectionSet (Maybe Int) Api.Object.Item
 requiredLevel =
     Object.selectionForField "(Maybe Int)" "requiredLevel" [] (Decode.int |> Decode.nullable)
@@ -83,9 +106,9 @@ requiredLevel =
 
 rewardedFromQuests :
     SelectionSet decodesTo Api.Object.Quest
-    -> SelectionSet (Maybe (List decodesTo)) Api.Object.Item
+    -> SelectionSet (List decodesTo) Api.Object.Item
 rewardedFromQuests object____ =
-    Object.selectionForCompositeField "rewardedFromQuests" [] object____ (Basics.identity >> Decode.list >> Decode.nullable)
+    Object.selectionForCompositeField "rewardedFromQuests" [] object____ (Basics.identity >> Decode.list)
 
 
 sellPrice : SelectionSet (Maybe Int) Api.Object.Item

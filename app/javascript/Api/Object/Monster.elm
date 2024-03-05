@@ -26,9 +26,9 @@ createdAt =
 
 drops :
     SelectionSet decodesTo Api.Object.Item
-    -> SelectionSet (Maybe (List decodesTo)) Api.Object.Monster
+    -> SelectionSet (List decodesTo) Api.Object.Monster
 drops object____ =
-    Object.selectionForCompositeField "drops" [] object____ (Basics.identity >> Decode.list >> Decode.nullable)
+    Object.selectionForCompositeField "drops" [] object____ (Basics.identity >> Decode.list)
 
 
 elite : SelectionSet Bool Api.Object.Monster
@@ -41,9 +41,16 @@ id =
     Object.selectionForField "ScalarCodecs.Id" "id" [] (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapCodecs |> .codecId |> .decoder)
 
 
-level : SelectionSet Int Api.Object.Monster
+images :
+    SelectionSet decodesTo Api.Object.Image
+    -> SelectionSet (List decodesTo) Api.Object.Monster
+images object____ =
+    Object.selectionForCompositeField "images" [] object____ (Basics.identity >> Decode.list)
+
+
+level : SelectionSet (Maybe Int) Api.Object.Monster
 level =
-    Object.selectionForField "Int" "level" [] Decode.int
+    Object.selectionForField "(Maybe Int)" "level" [] (Decode.int |> Decode.nullable)
 
 
 locX : SelectionSet (Maybe Float) Api.Object.Monster
@@ -83,6 +90,27 @@ patch :
     -> SelectionSet decodesTo Api.Object.Monster
 patch object____ =
     Object.selectionForCompositeField "patch" [] object____ Basics.identity
+
+
+questObjectives :
+    SelectionSet decodesTo Api.Object.QuestObjective
+    -> SelectionSet (List decodesTo) Api.Object.Monster
+questObjectives object____ =
+    Object.selectionForCompositeField "questObjectives" [] object____ (Basics.identity >> Decode.list)
+
+
+{-| An array of Quests this Monster is listed as an objective for.
+-}
+requiredForQuests :
+    SelectionSet decodesTo Api.Object.Quest
+    -> SelectionSet (List decodesTo) Api.Object.Monster
+requiredForQuests object____ =
+    Object.selectionForCompositeField "requiredForQuests" [] object____ (Basics.identity >> Decode.list)
+
+
+roamer : SelectionSet Bool Api.Object.Monster
+roamer =
+    Object.selectionForField "Bool" "roamer" [] Decode.bool
 
 
 updatedAt : SelectionSet Api.ScalarCodecs.ISO8601DateTime Api.Object.Monster

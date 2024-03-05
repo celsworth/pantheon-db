@@ -5,6 +5,10 @@
 module Api.Object exposing (..)
 
 
+type Image
+    = Image
+
+
 type Item
     = Item
 
@@ -19,6 +23,10 @@ type ItemStats
 
 type Location
     = Location
+
+
+type LocationResult
+    = LocationResult
 
 
 type Monster

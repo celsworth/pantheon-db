@@ -29,6 +29,13 @@ id =
     Object.selectionForField "ScalarCodecs.Id" "id" [] (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapCodecs |> .codecId |> .decoder)
 
 
+images :
+    SelectionSet decodesTo Api.Object.Image
+    -> SelectionSet (List decodesTo) Api.Object.Npc
+images object____ =
+    Object.selectionForCompositeField "images" [] object____ (Basics.identity >> Decode.list)
+
+
 locX : SelectionSet (Maybe Float) Api.Object.Npc
 locX =
     Object.selectionForField "(Maybe Float)" "locX" [] (Decode.float |> Decode.nullable)
@@ -75,6 +82,11 @@ questsReceived :
     -> SelectionSet (List decodesTo) Api.Object.Npc
 questsReceived object____ =
     Object.selectionForCompositeField "questsReceived" [] object____ (Basics.identity >> Decode.list)
+
+
+roamer : SelectionSet Bool Api.Object.Npc
+roamer =
+    Object.selectionForField "Bool" "roamer" [] Decode.bool
 
 
 sellsItems :

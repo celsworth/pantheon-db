@@ -71,6 +71,18 @@ createItem requiredArgs____ object____ =
     Object.selectionForCompositeField "createItem" [ Argument.required "attributes" requiredArgs____.attributes Api.InputObject.encodeItemAttributes ] object____ (Basics.identity >> Decode.nullable)
 
 
+type alias CreateLocationRequiredArguments =
+    { attributes : Api.InputObject.LocationAttributes }
+
+
+createLocation :
+    CreateLocationRequiredArguments
+    -> SelectionSet decodesTo Api.Object.LocationResult
+    -> SelectionSet (Maybe decodesTo) RootMutation
+createLocation requiredArgs____ object____ =
+    Object.selectionForCompositeField "createLocation" [ Argument.required "attributes" requiredArgs____.attributes Api.InputObject.encodeLocationAttributes ] object____ (Basics.identity >> Decode.nullable)
+
+
 type alias CreateMonsterRequiredArguments =
     { attributes : Api.InputObject.MonsterAttributes }
 
@@ -155,42 +167,6 @@ createZone requiredArgs____ object____ =
     Object.selectionForCompositeField "createZone" [ Argument.required "attributes" requiredArgs____.attributes Api.InputObject.encodeZoneAttributes ] object____ (Basics.identity >> Decode.nullable)
 
 
-type alias DeleteItemRequiredArguments =
-    { id : Api.ScalarCodecs.Id }
-
-
-deleteItem :
-    DeleteItemRequiredArguments
-    -> SelectionSet decodesTo Api.Object.ItemResult
-    -> SelectionSet (Maybe decodesTo) RootMutation
-deleteItem requiredArgs____ object____ =
-    Object.selectionForCompositeField "deleteItem" [ Argument.required "id" requiredArgs____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId) ] object____ (Basics.identity >> Decode.nullable)
-
-
-type alias DeleteMonsterRequiredArguments =
-    { id : Api.ScalarCodecs.Id }
-
-
-deleteMonster :
-    DeleteMonsterRequiredArguments
-    -> SelectionSet decodesTo Api.Object.MonsterResult
-    -> SelectionSet (Maybe decodesTo) RootMutation
-deleteMonster requiredArgs____ object____ =
-    Object.selectionForCompositeField "deleteMonster" [ Argument.required "id" requiredArgs____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId) ] object____ (Basics.identity >> Decode.nullable)
-
-
-type alias DeleteNpcRequiredArguments =
-    { id : Api.ScalarCodecs.Id }
-
-
-deleteNpc :
-    DeleteNpcRequiredArguments
-    -> SelectionSet decodesTo Api.Object.NpcResult
-    -> SelectionSet (Maybe decodesTo) RootMutation
-deleteNpc requiredArgs____ object____ =
-    Object.selectionForCompositeField "deleteNpc" [ Argument.required "id" requiredArgs____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId) ] object____ (Basics.identity >> Decode.nullable)
-
-
 type alias RemoveDroppedItemFromMonsterRequiredArguments =
     { monsterId : Api.ScalarCodecs.Id
     , itemId : Api.ScalarCodecs.Id
@@ -245,6 +221,20 @@ updateItem :
     -> SelectionSet (Maybe decodesTo) RootMutation
 updateItem requiredArgs____ object____ =
     Object.selectionForCompositeField "updateItem" [ Argument.required "id" requiredArgs____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.required "attributes" requiredArgs____.attributes Api.InputObject.encodeItemAttributes ] object____ (Basics.identity >> Decode.nullable)
+
+
+type alias UpdateLocationRequiredArguments =
+    { id : Api.ScalarCodecs.Id
+    , attributes : Api.InputObject.LocationAttributes
+    }
+
+
+updateLocation :
+    UpdateLocationRequiredArguments
+    -> SelectionSet decodesTo Api.Object.LocationResult
+    -> SelectionSet (Maybe decodesTo) RootMutation
+updateLocation requiredArgs____ object____ =
+    Object.selectionForCompositeField "updateLocation" [ Argument.required "id" requiredArgs____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.required "attributes" requiredArgs____.attributes Api.InputObject.encodeLocationAttributes ] object____ (Basics.identity >> Decode.nullable)
 
 
 type alias UpdateMonsterRequiredArguments =

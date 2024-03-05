@@ -4,6 +4,7 @@
 
 module Api.Object.Location exposing (..)
 
+import Api.Enum.LocationCategory
 import Api.InputObject
 import Api.Interface
 import Api.Object
@@ -19,9 +20,9 @@ import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
 
 
-category : SelectionSet String Api.Object.Location
+category : SelectionSet Api.Enum.LocationCategory.LocationCategory Api.Object.Location
 category =
-    Object.selectionForField "String" "category" [] Decode.string
+    Object.selectionForField "Enum.LocationCategory.LocationCategory" "category" [] Api.Enum.LocationCategory.decoder
 
 
 createdAt : SelectionSet Api.ScalarCodecs.ISO8601DateTime Api.Object.Location
@@ -51,9 +52,9 @@ locZ =
 
 monsters :
     SelectionSet decodesTo Api.Object.Monster
-    -> SelectionSet (Maybe (List decodesTo)) Api.Object.Location
+    -> SelectionSet (List decodesTo) Api.Object.Location
 monsters object____ =
-    Object.selectionForCompositeField "monsters" [] object____ (Basics.identity >> Decode.list >> Decode.nullable)
+    Object.selectionForCompositeField "monsters" [] object____ (Basics.identity >> Decode.list)
 
 
 name : SelectionSet String Api.Object.Location
@@ -63,9 +64,9 @@ name =
 
 npcs :
     SelectionSet decodesTo Api.Object.Npc
-    -> SelectionSet (Maybe (List decodesTo)) Api.Object.Location
+    -> SelectionSet (List decodesTo) Api.Object.Location
 npcs object____ =
-    Object.selectionForCompositeField "npcs" [] object____ (Basics.identity >> Decode.list >> Decode.nullable)
+    Object.selectionForCompositeField "npcs" [] object____ (Basics.identity >> Decode.list)
 
 
 updatedAt : SelectionSet Api.ScalarCodecs.ISO8601DateTime Api.Object.Location

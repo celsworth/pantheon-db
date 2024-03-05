@@ -31,9 +31,9 @@ id =
 
 locations :
     SelectionSet decodesTo Api.Object.Location
-    -> SelectionSet (Maybe (List decodesTo)) Api.Object.Zone
+    -> SelectionSet (List decodesTo) Api.Object.Zone
 locations object____ =
-    Object.selectionForCompositeField "locations" [] object____ (Basics.identity >> Decode.list >> Decode.nullable)
+    Object.selectionForCompositeField "locations" [] object____ (Basics.identity >> Decode.list)
 
 
 {-| Shortcut for locations -> monsters
