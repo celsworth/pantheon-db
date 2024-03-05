@@ -4,7 +4,7 @@
 
 // override some Bulma defaults
 $body-size: 14px;
-$body-background-color: #f9fff9;
+$body-background-color: #c9ccc9;
 
 @import "bulma/bulma";
 
@@ -42,6 +42,19 @@ $body-background-color: #f9fff9;
 
 .elm-select-menu-item-selectable {
   cursor: pointer;
+}
+
+.map-container {
+  position: relative;
+
+  .zoom-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: white;
+    opacity: 0.8;
+    padding: 5px;
+  }
 }
 
 svg {
@@ -92,9 +105,19 @@ svg {
       @include hoverable-circle($fill: #BB0);
     }
   }
+}
 
-  .npc-list {
-    max-height: 500px;
+.panel {
+  background: #f9fff9;
+
+  .sticky-top {
+    position: sticky;
+    top: 0;
+    background: inherit;
+  }
+
+  &.npc-list {
+    height: 100%;
     overflow-y: scroll;
   }
 }

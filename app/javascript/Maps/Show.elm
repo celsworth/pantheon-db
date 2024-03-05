@@ -1,10 +1,11 @@
 module Maps.Show exposing (main)
 
+import Api.Enum.ResourceResource
 import Browser
 import Browser.Dom
 import Browser.Events
 import Html exposing (..)
-import Html.Attributes exposing (class, id, step, type_, value)
+import Html.Attributes exposing (class, id, placeholder, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Html.Events.Extra.Mouse as Mouse
 import Html.Events.Extra.Wheel as Wheel
@@ -46,11 +47,6 @@ mapYSize =
     2880
 
 
-type DragData
-    = NotDragging
-    | Dragging { startingMapOffset : Offset, startingMousePos : Offset }
-
-
 type alias MapCalcInput =
     { loc : Offset
     , map : Offset
@@ -65,6 +61,19 @@ type alias MapCalibration =
     }
 
 
+type alias PoiVisibility =
+    { asherite : { name : String, visibility : Bool }
+    , caspilrite : { name : String, visibility : Bool }
+    }
+
+
+poiVisibility : PoiVisibility
+poiVisibility =
+    { asherite = { name = "Asherite Ore", visibility = True }
+    , caspilrite = { name = "Caspilrite Ore", visibility = True }
+    }
+
+
 type alias Model =
     { flags : Flags
     , zoom : Float
@@ -72,6 +81,7 @@ type alias Model =
     , mapPageSize : Offset
     , mapOffset : Offset
     , dragData : DragData
+    , poiVisibility : PoiVisibility
     , npcs : List Npc
     , resources : List Resource
     }
@@ -80,6 +90,11 @@ type alias Model =
 type Poi
     = PoiNpc Npc
     | PoiResource Resource
+
+
+type DragData
+    = NotDragging
+    | Dragging { startingMapOffset : Offset, startingMousePos : Offset }
 
 
 type Msg
@@ -116,6 +131,7 @@ init flags =
       , mapPageSize = { x = 0, y = 0 }
       , mapOffset = { x = 0, y = 0 }
       , dragData = NotDragging
+      , poiVisibility = poiVisibility
       , npcs = []
       , resources = []
       }
@@ -382,35 +398,66 @@ boundMapOffset zoom mapOffset =
 
 view : Model -> Html Msg
 view model =
+    div [ class "columns" ]
+        [ div [ class "column" ] [ svgView model ]
+        , div [ class "column is-one-fifth" ] [ sidePanel model ]
+        ]
+
+
+sidePanel : Model -> Html Msg
+sidePanel model =
     let
-        mouseEvents =
-            case model.dragData of
-                Dragging _ ->
-                    [ Mouse.onUp MouseUp, Mouse.onMove MouseMove, Mouse.onLeave MouseUp ]
+        selectedTab =
+            "npcs"
 
-                NotDragging ->
-                    [ Wheel.onWheel MouseWheel, Mouse.onDown MouseDown ]
-    in
-    div []
-        [ input
-            [ type_ "range"
-            , Html.Attributes.min "1"
-            , Html.Attributes.max "10"
-            , step "0.2"
-            , onInput ZoomChanged
-            , value <| String.fromFloat model.zoom
-            ]
-            []
-        , div [ class "columns" ]
-            [ div [ class "column" ] [ div mouseEvents [ svgView model ] ]
-            , div [ class "column is-one-fifth" ]
-                [ nav [ class "npc-list panel is-primary" ]
-                    [ p [ class "panel-heading" ] [ text "Things" ]
+        allTabClass =
+            if selectedTab == "all" then
+                "is-active"
 
-                    -- , npcsForPanel model
+            else
+                ""
+
+        npcsTabClass =
+            if selectedTab == "npcs" then
+                "is-active"
+
+            else
+                ""
+
+        resourcesTabClass =
+            if selectedTab == "resources" then
+                "is-active"
+
+            else
+                ""
+
+        searchBlock =
+            div [ class "search-block panel-block" ]
+                [ div [ class "control has-icons-left" ]
+                    [ input [ class "input is-primary", type_ "text", placeholder "Search" ] []
+                    , span [ class "icon is-left" ] [ i [ class "fas fa-search" ] [] ]
                     ]
                 ]
+    in
+    nav
+        [ style "height" (String.fromFloat model.mapPageSize.y ++ "px")
+        , class "npc-list panel is-success"
+        ]
+        [ div [ class "sticky-top" ]
+            [ div [ class "panel-tabs" ]
+                [ a [ class allTabClass ] [ text "All" ]
+                , a [ class npcsTabClass ] [ text "NPCs" ]
+
+                --, a [  ] [ text "Mobs" ]
+                , a [ class resourcesTabClass ] [ text "Resources" ]
+                ]
+            , searchBlock
             ]
+        , if selectedTab == "npcs" then
+            npcsForPanel model
+
+          else
+            text ""
         ]
 
 
@@ -420,15 +467,18 @@ npcsForPanel model =
         npcString npc =
             case npc.subtitle of
                 Just subtitle ->
-                    npc.name ++ " (" ++ subtitle ++ ")"
+                    span []
+                        [ text npc.name
+                        , span [ class "has-text-grey" ] [ text <| " (" ++ subtitle ++ ")" ]
+                        ]
 
                 Nothing ->
-                    npc.name
+                    text npc.name
 
         npcPanelBlock : Npc -> Html Msg
         npcPanelBlock npc =
             a [ class "panel-block" ]
-                [ text <| npcString npc
+                [ npcString npc
                 ]
     in
     div [] <| List.map npcPanelBlock model.npcs
@@ -437,6 +487,14 @@ npcsForPanel model =
 svgView : Model -> Html Msg
 svgView model =
     let
+        mouseEvents =
+            case model.dragData of
+                Dragging _ ->
+                    [ Mouse.onUp MouseUp, Mouse.onMove MouseMove, Mouse.onLeave MouseUp ]
+
+                NotDragging ->
+                    [ Wheel.onWheel MouseWheel, Mouse.onDown MouseDown ]
+
         ( viewportWidthX, viewportWidthY ) =
             viewportWidth model
 
@@ -448,17 +506,32 @@ svgView model =
                 ++ String.fromFloat viewportWidthX
                 ++ " "
                 ++ String.fromFloat viewportWidthY
+
+        zoomSlider =
+            input
+                [ type_ "range"
+                , Html.Attributes.min "1"
+                , Html.Attributes.max "10"
+                , step "0.2"
+                , onInput ZoomChanged
+                , value <| String.fromFloat model.zoom
+                ]
+                []
+
+        svgImage =
+            Svg.image
+                [ Svg.Attributes.xlinkHref "https://cdn.discordapp.com/attachments/1175493372430000218/1210710301767507998/Thronefast_2024-02-14.png?ex=65eb8cd5&is=65d917d5&hm=b5991cb0c52746a90fe644314bd2fdc7d1c4eb85edd96e9339b1c5c31385e9d5&"
+                , Svg.Attributes.width <| String.fromInt mapXSize
+                , Svg.Attributes.height <| String.fromInt mapYSize
+                ]
+                []
     in
-    svg
-        [ id "svg-container", Svg.Attributes.viewBox viewBox ]
-        (Svg.image
-            [ Svg.Attributes.xlinkHref "https://cdn.discordapp.com/attachments/1175493372430000218/1210710301767507998/Thronefast_2024-02-14.png?ex=65eb8cd5&is=65d917d5&hm=b5991cb0c52746a90fe644314bd2fdc7d1c4eb85edd96e9339b1c5c31385e9d5&"
-            , Svg.Attributes.width <| String.fromInt mapXSize
-            , Svg.Attributes.height <| String.fromInt mapYSize
-            ]
-            []
-            :: pois model
-        )
+    div [ class "map-container" ]
+        [ div [ class "zoom-container" ] [ zoomSlider ]
+        , svg
+            (mouseEvents ++ [ id "svg-container", Svg.Attributes.viewBox viewBox ])
+            (svgImage :: pois model)
+        ]
 
 
 pois : Model -> List (Svg Msg)
@@ -533,8 +606,8 @@ poiCircle model poi =
                 PoiNpc _ ->
                     "npc"
 
-                PoiResource _ ->
-                    "resource"
+                PoiResource resource ->
+                    "resource resource__" ++ Api.Enum.ResourceResource.toString resource.resource
 
         circleAttrs =
             [ Svg.Attributes.class <| cssClass ++ testHighlighted
