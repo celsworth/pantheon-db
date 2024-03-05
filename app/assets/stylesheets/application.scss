@@ -1,10 +1,9 @@
 @charset "utf-8";
-
 @use "sass:color";
 
 // override some Bulma defaults
 $body-size: 14px;
-$body-background-color: #c9ccc9;
+$body-background-color: #9a9;
 
 @import "bulma/bulma";
 
