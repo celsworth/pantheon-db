@@ -1,6 +1,7 @@
 module Types exposing (Item, Loc, Npc, Resource, Zone)
 
 import Api.ScalarCodecs
+import Api.Enum.ResourceResource
 
 
 type alias Loc =
@@ -34,6 +35,7 @@ type alias Resource =
     , name : String
     , loc_x : Float
     , loc_y : Float
+    , resource: Api.Enum.ResourceResource.ResourceResource
     }
 
 

@@ -547,19 +547,22 @@ poiCircle model poi =
             , Svg.Attributes.style "pointer-events: none"
             ]
 
-        radarInner =
+        radarAnim =
             [ Svg.animate
                 [ Svg.Attributes.attributeName "r"
-                , Svg.Attributes.values "0;400"
-                , Svg.Attributes.dur "2s"
-                , Svg.Attributes.repeatCount "indefinite"
+                , Svg.Attributes.id "radarOp1"
+                , Svg.Attributes.from "0"
+                , Svg.Attributes.to "400"
+                , Svg.Attributes.dur "0.5s"
+                , Svg.Attributes.begin "0s;radarOp1.end+1.5s"
                 ]
                 []
             , Svg.animate
                 [ Svg.Attributes.attributeName "opacity"
-                , Svg.Attributes.values "1;0"
-                , Svg.Attributes.dur "2s"
-                , Svg.Attributes.repeatCount "indefinite"
+                , Svg.Attributes.from "0.7"
+                , Svg.Attributes.to "0"
+                , Svg.Attributes.dur "0.5s"
+                , Svg.Attributes.begin "0s;radarOp1.end+1.5s"
                 ]
                 []
             ]
@@ -568,7 +571,7 @@ poiCircle model poi =
             Svg.g []
                 [ Svg.circle (circleAttrs ++ locAttrs) []
                 , if testRadar == True then
-                    Svg.circle (radarAttrs ++ locAttrs) radarInner
+                    Svg.circle (radarAttrs ++ locAttrs) radarAnim
 
                   else
                     text ""

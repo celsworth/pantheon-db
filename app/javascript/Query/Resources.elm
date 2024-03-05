@@ -22,6 +22,7 @@ query =
             |> with Resource.name
             |> with Resource.locX
             |> with Resource.locY
+            |> with Resource.resource
         )
 
 
