@@ -4,6 +4,7 @@ import Api.Enum.ResourceResource
 import Browser
 import Browser.Dom
 import Browser.Events
+import Helpers.FuzzyFilter
 import Html exposing (..)
 import Html.Attributes exposing (class, id, placeholder, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
@@ -84,6 +85,7 @@ type alias Model =
     , poiVisibility : PoiVisibility
     , npcs : List Npc
     , resources : List Resource
+    , searchText : Maybe String
     }
 
 
@@ -108,6 +110,7 @@ type Msg
     | BrowserResized
     | GotSvgElement (Result Browser.Dom.Error Browser.Dom.Element)
     | ClickedPoi Poi
+    | SearchBoxChanged String
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -134,6 +137,7 @@ init flags =
       , poiVisibility = poiVisibility
       , npcs = []
       , resources = []
+      , searchText = Nothing
       }
     , Cmd.batch
         [ Query.Npcs.makeRequest { url = flags.graphqlBaseUrl, toMsg = GotNpcs }
@@ -252,6 +256,17 @@ update msg model =
                     Debug.log "ClickedPoi" target
             in
             ( model, Cmd.none )
+
+        SearchBoxChanged searchText ->
+            let
+                maybeSearchText =
+                    if String.isEmpty searchText then
+                        Nothing
+
+                    else
+                        Just searchText
+            in
+            ( { model | searchText = maybeSearchText }, Cmd.none )
 
 
 clickPositionToSvgCoordinates : ( Float, Float ) -> Model -> Offset
@@ -398,14 +413,27 @@ boundMapOffset zoom mapOffset =
 
 view : Model -> Html Msg
 view model =
+    let
+        npcs =
+            case model.searchText of
+                Just searchText ->
+                    Helpers.FuzzyFilter.filter 1
+                        (\npc -> npc.name ++ " " ++ Maybe.withDefault "" npc.subtitle)
+                        searchText
+                        model.npcs
+                        |> Maybe.withDefault model.npcs
+
+                Nothing ->
+                    model.npcs
+    in
     div [ class "columns" ]
-        [ div [ class "column" ] [ svgView model ]
-        , div [ class "column is-one-fifth" ] [ sidePanel model ]
+        [ div [ class "column" ] [ svgView model npcs ]
+        , div [ class "column is-one-fifth" ] [ sidePanel model npcs ]
         ]
 
 
-sidePanel : Model -> Html Msg
-sidePanel model =
+sidePanel : Model -> List Npc -> Html Msg
+sidePanel model npcs =
     let
         selectedTab =
             "npcs"
@@ -434,7 +462,13 @@ sidePanel model =
         searchBlock =
             div [ class "search-block panel-block" ]
                 [ div [ class "control has-icons-left" ]
-                    [ input [ class "input is-primary", type_ "text", placeholder "Search" ] []
+                    [ input
+                        [ class "input is-primary"
+                        , type_ "text"
+                        , placeholder "Search"
+                        , onInput SearchBoxChanged
+                        ]
+                        []
                     , span [ class "icon is-left" ] [ i [ class "fas fa-search" ] [] ]
                     ]
                 ]
@@ -454,15 +488,15 @@ sidePanel model =
             , searchBlock
             ]
         , if selectedTab == "npcs" then
-            npcsForPanel model
+            npcsForPanel model npcs
 
           else
             text ""
         ]
 
 
-npcsForPanel : Model -> Html Msg
-npcsForPanel model =
+npcsForPanel : Model -> List Npc -> Html Msg
+npcsForPanel model npcs =
     let
         npcString npc =
             case npc.subtitle of
@@ -475,17 +509,14 @@ npcsForPanel model =
                 Nothing ->
                     text npc.name
 
-        npcPanelBlock : Npc -> Html Msg
         npcPanelBlock npc =
-            a [ class "panel-block" ]
-                [ npcString npc
-                ]
+            a [ class "panel-block" ] [ npcString npc ]
     in
-    div [] <| List.map npcPanelBlock model.npcs
+    div [] <| List.map npcPanelBlock npcs
 
 
-svgView : Model -> Html Msg
-svgView model =
+svgView : Model -> List Npc -> Html Msg
+svgView model npcs =
     let
         mouseEvents =
             case model.dragData of
@@ -530,20 +561,20 @@ svgView model =
         [ div [ class "zoom-container" ] [ zoomSlider ]
         , svg
             (mouseEvents ++ [ id "svg-container", Svg.Attributes.viewBox viewBox ])
-            (svgImage :: pois model)
+            (svgImage :: pois model npcs)
         ]
 
 
-pois : Model -> List (Svg Msg)
-pois model =
+pois : Model -> List Npc -> List (Svg Msg)
+pois model npcs =
     let
         resources =
             model.resources |> List.map PoiResource |> List.map (poiCircle model)
-
-        npcs =
-            model.npcs |> List.map PoiNpc |> List.map (poiCircle model)
     in
-    List.concat [ resources, npcs ]
+    List.concat
+        [ resources
+        , npcs |> List.map PoiNpc |> List.map (poiCircle model)
+        ]
 
 
 maybeLocsToMaybeSvgAttrs : Maybe Float -> Maybe Float -> Model -> Maybe (List (Svg.Attribute Msg))
