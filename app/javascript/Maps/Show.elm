@@ -618,48 +618,20 @@ resourcesPanel model =
             , Api.Enum.ResourceResource.Cotton
             , Api.Enum.ResourceResource.Flax
             ]
+
+        panelBlock resources label =
+            a [ onClick <| ChangePoiResourceVisibility resources, class "panel-block" ]
+                [ span [] [ text label ] ]
     in
     div []
-        [ a
-            [ onClick <| ChangePoiResourceVisibility miningNodes
-            , class "panel-block"
-            ]
-            [ span [] [ text "Mining" ] ]
-        , a
-            [ onClick <| ChangePoiResourceVisibility woodCuttingNodes
-            , class "panel-block"
-            ]
-            [ span [] [ text "Woodcutting" ] ]
-        , a
-            [ onClick <| ChangePoiResourceVisibility fibreNodes
-            , class "panel-block"
-            ]
-            [ span [] [ text "Fibres" ] ]
-        , a
-            [ onClick <| ChangePoiResourceVisibility [ Api.Enum.ResourceResource.Vegetable ]
-            , class "panel-block"
-            ]
-            [ span [] [ text "Wild Vegetables" ] ]
-        , a
-            [ onClick <| ChangePoiResourceVisibility [ Api.Enum.ResourceResource.Herb ]
-            , class "panel-block"
-            ]
-            [ span [] [ text "Wild Herbs" ] ]
-        , a
-            [ onClick <| ChangePoiResourceVisibility [ Api.Enum.ResourceResource.Blackberry ]
-            , class "panel-block"
-            ]
-            [ span [] [ text "Blackberry Bush" ] ]
-        , a
-            [ onClick <| ChangePoiResourceVisibility [ Api.Enum.ResourceResource.Lily ]
-            , class "panel-block"
-            ]
-            [ span [] [ text "Flame/Moon Lilies" ] ]
-        , a
-            [ onClick <| ChangePoiResourceVisibility [ Api.Enum.ResourceResource.WaterReed ]
-            , class "panel-block"
-            ]
-            [ span [] [ text "Water Reeds" ] ]
+        [ panelBlock miningNodes "Mining"
+        , panelBlock woodCuttingNodes "Woodcutting"
+        , panelBlock fibreNodes "Plants"
+        , panelBlock [ Api.Enum.ResourceResource.Vegetable ] "Wild Vegetables"
+        , panelBlock [ Api.Enum.ResourceResource.Herb ] "Wild Herbs"
+        , panelBlock [ Api.Enum.ResourceResource.Blackberry ] "Blackberry Bush"
+        , panelBlock [ Api.Enum.ResourceResource.Lily ] "Flame/Moon Lilies"
+        , panelBlock [ Api.Enum.ResourceResource.WaterReed ] "Water Reeds"
         ]
 
 
