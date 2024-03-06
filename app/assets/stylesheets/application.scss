@@ -199,19 +199,16 @@ svg {
 
 .panel {
   background: #f9fff9;
+  user-select: none;
+
+  &.poi-list {
+    height: 100%;
+    overflow-y: auto;
+  }
 
   .sticky-top {
     position: sticky;
     top: 0;
     background: inherit;
-  }
-
-  &.npc-list {
-    height: 100%;
-    overflow-y: auto;
-  }
-
-  .test {
-    font-weight: bold;
   }
 }

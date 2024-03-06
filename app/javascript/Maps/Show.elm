@@ -527,6 +527,7 @@ sidePanel model npcs =
                         [ class "input is-primary"
                         , type_ "text"
                         , placeholder "Search"
+                        , value (model.searchText |> Maybe.withDefault "")
                         , onInput SearchBoxChanged
                         ]
                         []
@@ -536,7 +537,7 @@ sidePanel model npcs =
     in
     nav
         [ style "height" (String.fromFloat model.mapPageSize.y ++ "px")
-        , class "npc-list panel is-danger"
+        , class "panel is-danger poi-list"
         ]
         [ div [ class "sticky-top" ]
             [ div [ class "panel-tabs" ]
@@ -552,16 +553,22 @@ sidePanel model npcs =
                     ]
                     [ text "Resources" ]
                 ]
-            , searchBlock
             ]
-        , if model.sidePanelTabSelected == SidePanelTabSelectionNpcs then
-            Html.Lazy.lazy npcsPanel npcs
+        , div []
+            (case model.sidePanelTabSelected of
+                SidePanelTabSelectionNpcs ->
+                    [ searchBlock
+                    , Html.Lazy.lazy npcsPanel npcs
+                    ]
 
-          else if model.sidePanelTabSelected == SidePanelTabSelectionResources then
-            Html.Lazy.lazy resourcesPanel model
+                SidePanelTabSelectionMobs ->
+                    [ searchBlock
+                    , text ""
+                    ]
 
-          else
-            text ""
+                SidePanelTabSelectionResources ->
+                    [ Html.Lazy.lazy resourcesPanel model ]
+            )
         ]
 
 
