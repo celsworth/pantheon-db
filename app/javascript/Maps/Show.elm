@@ -121,6 +121,7 @@ type Msg
     | ChangeSidePanelTab SidePanelTabSelection
     | SearchBoxChanged String
     | ChangePoiResourceVisibility (List Api.Enum.ResourceResource.ResourceResource)
+    | SetPoiResourceVisibility Bool
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -274,6 +275,23 @@ update msg model =
 
         ChangePoiResourceVisibility listOfResources ->
             ( model |> changePoiResourceVisibility listOfResources, Cmd.none )
+
+        SetPoiResourceVisibility allClicked ->
+            let
+                newPoiResourceVisibility =
+                    if allClicked then
+                        defaultPoiVisibility.resources
+
+                    else
+                        []
+
+                poiVisibility =
+                    model.poiVisibility
+
+                newPoiVisibility =
+                    { poiVisibility | resources = newPoiResourceVisibility }
+            in
+            ( { model | poiVisibility = newPoiVisibility }, Cmd.none )
 
 
 changePoiResourceVisibility : List Api.Enum.ResourceResource.ResourceResource -> Model -> Model
@@ -624,7 +642,17 @@ resourcesPanel model =
                 [ span [] [ text label ] ]
     in
     div []
-        [ panelBlock miningNodes "Mining"
+        [ div [ class "panel-block buttons is-flex is-justify-content-center mb-0" ]
+            [ button
+                [ onClick <| SetPoiResourceVisibility True, class "button mb-0 is-info" ]
+                [ text "All" ]
+            , button
+                [ onClick <| SetPoiResourceVisibility False
+                , class "button mb-0 is-info is-outlined is-light"
+                ]
+                [ text "None" ]
+            ]
+        , panelBlock miningNodes "Mining"
         , panelBlock woodCuttingNodes "Woodcutting"
         , panelBlock fibreNodes "Plants"
         , panelBlock [ Api.Enum.ResourceResource.Vegetable ] "Wild Vegetables"
