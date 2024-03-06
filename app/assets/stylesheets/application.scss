@@ -109,9 +109,10 @@ svg {
       $fiber-base: #55e;
       $vegetable: #953;
       $herb: #2cc;
-      $waterReed: #fcc;
+      $water-reed: #fcc;
       $lily: #f7f;
       $blackberry: #717;
+      $gloomberry: #a3a;
 
       &__asherite {
         @include hoverable-circle($fill: color.adjust($mining-base, $lightness: 0%));
@@ -183,7 +184,7 @@ svg {
       }
 
       &__waterReed {
-        @include hoverable-circle($fill: $waterReed);
+        @include hoverable-circle($fill: $water-reed);
       }
 
       &__blackberry {

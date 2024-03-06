@@ -552,11 +552,31 @@ sidePanel model npcs =
                     , span [ class "icon is-left" ] [ i [ class "fas fa-search" ] [] ]
                     ]
                 ]
+
+        allOrNoneBlock =
+            div [ class "panel-block buttons is-flex is-justify-content-center mb-0" ]
+                [ button
+                    [ onClick <| SetPoiResourceVisibility True, class "button mb-0 is-info" ]
+                    [ text "All" ]
+                , button
+                    [ onClick <| SetPoiResourceVisibility False
+                    , class "button mb-0 is-info is-outlined is-light"
+                    ]
+                    [ text "None" ]
+                ]
+
+        ( stickyContent, content ) =
+            case model.sidePanelTabSelected of
+                SidePanelTabSelectionNpcs ->
+                    ( searchBlock, Html.Lazy.lazy npcsPanel npcs )
+
+                SidePanelTabSelectionMobs ->
+                    ( searchBlock, text "" )
+
+                SidePanelTabSelectionResources ->
+                    ( allOrNoneBlock, Html.Lazy.lazy resourcesPanel model )
     in
-    nav
-        [ style "height" (String.fromFloat model.mapPageSize.y ++ "px")
-        , class "panel is-danger poi-list"
-        ]
+    nav [ style "height" (String.fromFloat model.mapPageSize.y ++ "px"), class "panel is-danger poi-list" ]
         [ div [ class "sticky-top" ]
             [ div [ class "panel-tabs" ]
                 [ a
@@ -571,22 +591,9 @@ sidePanel model npcs =
                     ]
                     [ text "Resources" ]
                 ]
+            , stickyContent
             ]
-        , div []
-            (case model.sidePanelTabSelected of
-                SidePanelTabSelectionNpcs ->
-                    [ searchBlock
-                    , Html.Lazy.lazy npcsPanel npcs
-                    ]
-
-                SidePanelTabSelectionMobs ->
-                    [ searchBlock
-                    , text ""
-                    ]
-
-                SidePanelTabSelectionResources ->
-                    [ Html.Lazy.lazy resourcesPanel model ]
-            )
+        , content
         ]
 
 
@@ -663,17 +670,7 @@ resourcesPanel model =
                 [ text label ]
     in
     div []
-        [ div [ class "panel-block buttons is-flex is-justify-content-center mb-0" ]
-            [ button
-                [ onClick <| SetPoiResourceVisibility True, class "button mb-0 is-info" ]
-                [ text "All" ]
-            , button
-                [ onClick <| SetPoiResourceVisibility False
-                , class "button mb-0 is-info is-outlined is-light"
-                ]
-                [ text "None" ]
-            ]
-        , panelBlock miningNodes "Mining"
+        [ panelBlock miningNodes "Mining"
         , indentedPpanelBlock [ Api.Enum.ResourceResource.Asherite ] "Asherite Ore"
         , indentedPpanelBlock [ Api.Enum.ResourceResource.Caspilrite ] "Caspilrite Ore"
         , indentedPpanelBlock [ Api.Enum.ResourceResource.Padrium ] "Padrium Ore"
@@ -693,6 +690,7 @@ resourcesPanel model =
         , panelBlock [ Api.Enum.ResourceResource.Vegetable ] "Wild Vegetables"
         , panelBlock [ Api.Enum.ResourceResource.Herb ] "Wild Herbs"
         , panelBlock [ Api.Enum.ResourceResource.Blackberry ] "Blackberry Bush"
+        , panelBlock [ Api.Enum.ResourceResource.Gloomberry ] "Gloomberry Bush"
         , panelBlock [ Api.Enum.ResourceResource.Lily ] "Flame/Moon Lilies"
         , panelBlock [ Api.Enum.ResourceResource.WaterReed ] "Water Reeds"
         ]
