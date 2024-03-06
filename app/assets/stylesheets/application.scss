@@ -102,7 +102,93 @@ svg {
     }
 
     &.resource {
-      @include hoverable-circle($fill: #0BB);
+      @include hoverable-circle($fill: #F00);
+
+      $mining-base: #755;
+      $tree-base: #060;
+      $fiber-base: #55e;
+      $vegetable: #953;
+      $herb: #2cc;
+      $waterReed: #fcc;
+      $lily: #f7f;
+      $blackberry: #717;
+
+      &__asherite {
+        @include hoverable-circle($fill: color.adjust($mining-base, $lightness: 0%));
+      }
+
+      &__caspilrite {
+        @include hoverable-circle($fill: color.adjust($mining-base, $lightness: 10%));
+      }
+
+      &__padrium {
+        @include hoverable-circle($fill: color.adjust($mining-base, $lightness: 20%));
+      }
+
+      &__tascium {
+        @include hoverable-circle($fill: color.adjust($mining-base, $lightness: 30%));
+      }
+
+      &__slytheril {
+        @include hoverable-circle($fill: color.adjust($mining-base, $lightness: 40%));
+      }
+
+      &__apple {
+        @include hoverable-circle($fill: color.adjust($tree-base, $lightness: 0%));
+      }
+
+      &__pine {
+        @include hoverable-circle($fill: color.adjust($tree-base, $lightness: 10%));
+      }
+
+      &__maple {
+        @include hoverable-circle($fill: color.adjust($tree-base, $lightness: 20%));
+      }
+
+      &__ash {
+        @include hoverable-circle($fill: color.adjust($tree-base, $lightness: 30%));
+      }
+
+      &__oak {
+        @include hoverable-circle($fill: color.adjust($tree-base, $lightness: 40%));
+      }
+
+      &__walnut {
+        @include hoverable-circle($fill: color.adjust($tree-base, $lightness: 50%));
+      }
+
+
+      &__jute {
+        @include hoverable-circle($fill: color.adjust($fiber-base, $lightness: 0%));
+      }
+
+      &__cotton {
+        @include hoverable-circle($fill: color.adjust($fiber-base, $lightness: 10%));
+      }
+
+      &__flax {
+        @include hoverable-circle($fill: color.adjust($fiber-base, $lightness: 20%));
+      }
+
+      &__vegetable {
+        @include hoverable-circle($fill: $vegetable);
+      }
+
+      &__herb {
+        @include hoverable-circle($fill: $herb);
+      }
+
+      &__lily {
+        @include hoverable-circle($fill: $lily);
+      }
+
+      &__waterReed {
+        @include hoverable-circle($fill: $waterReed);
+      }
+
+      &__blackberry {
+        @include hoverable-circle($fill: $blackberry);
+      }
     }
 
     &.npc {
@@ -122,6 +208,10 @@ svg {
 
   &.npc-list {
     height: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
+  }
+
+  .test {
+    font-weight: bold;
   }
 }

@@ -1,15 +1,16 @@
 module Maps.Show exposing (main)
 
-import Api.Enum.ResourceResource
+import Api.Enum.ResourceResource exposing (ResourceResource(..))
 import Browser
 import Browser.Dom
 import Browser.Events
-import Helpers.FuzzyFilter
 import Html exposing (..)
 import Html.Attributes exposing (class, id, placeholder, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Html.Events.Extra.Mouse as Mouse
 import Html.Events.Extra.Wheel as Wheel
+import Html.Lazy
+import List.Extra
 import Query.Npcs
 import Query.Resources
 import Svg exposing (Svg, svg)
@@ -63,15 +64,15 @@ type alias MapCalibration =
 
 
 type alias PoiVisibility =
-    { asherite : { name : String, visibility : Bool }
-    , caspilrite : { name : String, visibility : Bool }
+    { -- a list of ResourceResource that are selected as visible in sidebar
+      resources : List Api.Enum.ResourceResource.ResourceResource
     }
 
 
-poiVisibility : PoiVisibility
-poiVisibility =
-    { asherite = { name = "Asherite Ore", visibility = True }
-    , caspilrite = { name = "Caspilrite Ore", visibility = True }
+defaultPoiVisibility : PoiVisibility
+defaultPoiVisibility =
+    { -- all resources by default
+      resources = Api.Enum.ResourceResource.list
     }
 
 
@@ -86,7 +87,14 @@ type alias Model =
     , npcs : List Npc
     , resources : List Resource
     , searchText : Maybe String
+    , sidePanelTabSelected : SidePanelTabSelection
     }
+
+
+type SidePanelTabSelection
+    = SidePanelTabSelectionNpcs
+    | SidePanelTabSelectionMobs
+    | SidePanelTabSelectionResources
 
 
 type Poi
@@ -110,7 +118,9 @@ type Msg
     | BrowserResized
     | GotSvgElement (Result Browser.Dom.Error Browser.Dom.Element)
     | ClickedPoi Poi
+    | ChangeSidePanelTab SidePanelTabSelection
     | SearchBoxChanged String
+    | ChangePoiResourceVisibility (List Api.Enum.ResourceResource.ResourceResource)
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -134,10 +144,11 @@ init flags =
       , mapPageSize = { x = 0, y = 0 }
       , mapOffset = { x = 0, y = 0 }
       , dragData = NotDragging
-      , poiVisibility = poiVisibility
+      , poiVisibility = defaultPoiVisibility
       , npcs = []
       , resources = []
       , searchText = Nothing
+      , sidePanelTabSelected = SidePanelTabSelectionResources
       }
     , Cmd.batch
         [ Query.Npcs.makeRequest { url = flags.graphqlBaseUrl, toMsg = GotNpcs }
@@ -205,20 +216,10 @@ update msg model =
             )
 
         MouseMove event ->
-            let
-                _ =
-                    Debug.log "MouseMove" event
-            in
             ( model |> calculateNewMapOffset event, Cmd.none )
 
         MouseDown event ->
             let
-                _ =
-                    Debug.log "MouseDown" event
-
-                _ =
-                    Debug.log "clickPositionToSvgCoordinates" <| clickPositionToSvgCoordinates event.offsetPos model
-
                 ( offsetPosX, offsetPosY ) =
                     event.offsetPos
             in
@@ -268,6 +269,38 @@ update msg model =
             in
             ( { model | searchText = maybeSearchText }, Cmd.none )
 
+        ChangeSidePanelTab toTab ->
+            ( { model | sidePanelTabSelected = toTab }, Cmd.none )
+
+        ChangePoiResourceVisibility listOfResources ->
+            ( model |> changePoiResourceVisibility listOfResources, Cmd.none )
+
+
+changePoiResourceVisibility : List Api.Enum.ResourceResource.ResourceResource -> Model -> Model
+changePoiResourceVisibility listOfResources model =
+    let
+        toggleResource resource list =
+            if List.member resource list then
+                List.Extra.remove resource list
+
+            else
+                resource :: list
+
+        poiVisibility =
+            model.poiVisibility
+
+        newResources =
+            List.foldl toggleResource listOfResources poiVisibility.resources
+
+        newPoiVisibility =
+            { poiVisibility | resources = newResources }
+    in
+    { model | poiVisibility = newPoiVisibility }
+
+
+
+--- clickPositionToSvgCoordinates (unused) {{{
+
 
 clickPositionToSvgCoordinates : ( Float, Float ) -> Model -> Offset
 clickPositionToSvgCoordinates ( x, y ) model =
@@ -290,6 +323,10 @@ clickPositionToSvgCoordinates ( x, y ) model =
             ( x4 + model.mapOffset.x, y4 + model.mapOffset.y )
     in
     { x = x5, y = y5 }
+
+
+
+--- }}}
 
 
 viewportWidth : Model -> ( Float, Float )
@@ -415,49 +452,73 @@ view : Model -> Html Msg
 view model =
     let
         npcs =
-            case model.searchText of
-                Just searchText ->
-                    Helpers.FuzzyFilter.filter 1
-                        (\npc -> npc.name ++ " " ++ Maybe.withDefault "" npc.subtitle)
-                        searchText
-                        model.npcs
-                        |> Maybe.withDefault model.npcs
+            npcsForTabSelection model.npcs model.searchText model.sidePanelTabSelected
 
-                Nothing ->
-                    model.npcs
+        resources =
+            resourcesForTabSelection model.resources model.sidePanelTabSelected
+                |> List.filter (\r -> List.member r.resource model.poiVisibility.resources)
     in
     div [ class "columns" ]
-        [ div [ class "column" ] [ svgView model npcs ]
+        [ div [ class "column" ] [ svgView model npcs resources ]
         , div [ class "column is-one-fifth" ] [ sidePanel model npcs ]
         ]
 
 
+npcsForTabSelection : List Npc -> Maybe String -> SidePanelTabSelection -> List Npc
+npcsForTabSelection npcs searchText selection =
+    let
+        selected =
+            selection == SidePanelTabSelectionNpcs
+
+        npcToSearchString npc =
+            String.toLower (npc.name ++ " " ++ Maybe.withDefault "" npc.subtitle)
+
+        filter text =
+            npcs |> List.filter (\npc -> String.contains text (npcToSearchString npc))
+    in
+    if selected then
+        case searchText of
+            Just t ->
+                filter (String.toLower t)
+
+            Nothing ->
+                npcs
+
+    else
+        []
+
+
+resourcesForTabSelection : List Resource -> SidePanelTabSelection -> List Resource
+resourcesForTabSelection resources selection =
+    let
+        selected =
+            selection == SidePanelTabSelectionResources
+    in
+    if selected then
+        resources
+
+    else
+        []
+
+
 sidePanel : Model -> List Npc -> Html Msg
 sidePanel model npcs =
+    -- TODO: mouseover should highlight the dot?
+    -- TODO: click should put the name into searchbox, hence filtering to that one only
+    -- TODO: when one npc showing, use radar effect?
     let
-        selectedTab =
-            "npcs"
-
-        allTabClass =
-            if selectedTab == "all" then
+        activeIfSelected b =
+            if b then
                 "is-active"
 
             else
                 ""
 
         npcsTabClass =
-            if selectedTab == "npcs" then
-                "is-active"
-
-            else
-                ""
+            activeIfSelected <| model.sidePanelTabSelected == SidePanelTabSelectionNpcs
 
         resourcesTabClass =
-            if selectedTab == "resources" then
-                "is-active"
-
-            else
-                ""
+            activeIfSelected <| model.sidePanelTabSelected == SidePanelTabSelectionResources
 
         searchBlock =
             div [ class "search-block panel-block" ]
@@ -475,28 +536,37 @@ sidePanel model npcs =
     in
     nav
         [ style "height" (String.fromFloat model.mapPageSize.y ++ "px")
-        , class "npc-list panel is-success"
+        , class "npc-list panel is-danger"
         ]
         [ div [ class "sticky-top" ]
             [ div [ class "panel-tabs" ]
-                [ a [ class allTabClass ] [ text "All" ]
-                , a [ class npcsTabClass ] [ text "NPCs" ]
-
-                --, a [  ] [ text "Mobs" ]
-                , a [ class resourcesTabClass ] [ text "Resources" ]
+                [ a
+                    [ onClick <| ChangeSidePanelTab SidePanelTabSelectionNpcs
+                    , class npcsTabClass
+                    ]
+                    [ text "NPCs" ]
+                , a [ class "has-text-grey-light" ] [ text "Mobs" ]
+                , a
+                    [ onClick <| ChangeSidePanelTab SidePanelTabSelectionResources
+                    , class resourcesTabClass
+                    ]
+                    [ text "Resources" ]
                 ]
             , searchBlock
             ]
-        , if selectedTab == "npcs" then
-            npcsForPanel model npcs
+        , if model.sidePanelTabSelected == SidePanelTabSelectionNpcs then
+            Html.Lazy.lazy npcsPanel npcs
+
+          else if model.sidePanelTabSelected == SidePanelTabSelectionResources then
+            Html.Lazy.lazy resourcesPanel model
 
           else
             text ""
         ]
 
 
-npcsForPanel : Model -> List Npc -> Html Msg
-npcsForPanel model npcs =
+npcsPanel : List Npc -> Html Msg
+npcsPanel npcs =
     let
         npcString npc =
             case npc.subtitle of
@@ -515,8 +585,79 @@ npcsForPanel model npcs =
     div [] <| List.map npcPanelBlock npcs
 
 
-svgView : Model -> List Npc -> Html Msg
-svgView model npcs =
+resourcesPanel : Model -> Html Msg
+resourcesPanel model =
+    let
+        miningNodes =
+            [ Api.Enum.ResourceResource.Asherite
+            , Api.Enum.ResourceResource.Caspilrite
+            , Api.Enum.ResourceResource.Padrium
+            , Api.Enum.ResourceResource.Tascium
+            , Api.Enum.ResourceResource.Slytheril
+            , Api.Enum.ResourceResource.Vestium
+            ]
+
+        woodCuttingNodes =
+            [ Api.Enum.ResourceResource.Apple
+            , Api.Enum.ResourceResource.Pine
+            , Api.Enum.ResourceResource.Ash
+            , Api.Enum.ResourceResource.Oak
+            , Api.Enum.ResourceResource.Maple
+            , Api.Enum.ResourceResource.Walnut
+            ]
+
+        fibreNodes =
+            [ Api.Enum.ResourceResource.Jute
+            , Api.Enum.ResourceResource.Cotton
+            , Api.Enum.ResourceResource.Flax
+            ]
+    in
+    div []
+        [ a
+            [ onClick <| ChangePoiResourceVisibility miningNodes
+            , class "panel-block"
+            ]
+            [ span [] [ text "Mining" ] ]
+        , a
+            [ onClick <| ChangePoiResourceVisibility woodCuttingNodes
+            , class "panel-block"
+            ]
+            [ span [] [ text "Woodcutting" ] ]
+        , a
+            [ onClick <| ChangePoiResourceVisibility fibreNodes
+            , class "panel-block"
+            ]
+            [ span [] [ text "Fibres" ] ]
+        , a
+            [ onClick <| ChangePoiResourceVisibility [ Api.Enum.ResourceResource.Vegetable ]
+            , class "panel-block"
+            ]
+            [ span [] [ text "Wild Vegetables" ] ]
+        , a
+            [ onClick <| ChangePoiResourceVisibility [ Api.Enum.ResourceResource.Herb ]
+            , class "panel-block"
+            ]
+            [ span [] [ text "Wild Herbs" ] ]
+        , a
+            [ onClick <| ChangePoiResourceVisibility [ Api.Enum.ResourceResource.Blackberry ]
+            , class "panel-block"
+            ]
+            [ span [] [ text "Blackberry Bush" ] ]
+        , a
+            [ onClick <| ChangePoiResourceVisibility [ Api.Enum.ResourceResource.Lily ]
+            , class "panel-block"
+            ]
+            [ span [] [ text "Flame/Moon Lilies" ] ]
+        , a
+            [ onClick <| ChangePoiResourceVisibility [ Api.Enum.ResourceResource.WaterReed ]
+            , class "panel-block"
+            ]
+            [ span [] [ text "Water Reeds" ] ]
+        ]
+
+
+svgView : Model -> List Npc -> List Resource -> Html Msg
+svgView model npcs resources =
     let
         mouseEvents =
             case model.dragData of
@@ -561,18 +702,14 @@ svgView model npcs =
         [ div [ class "zoom-container" ] [ zoomSlider ]
         , svg
             (mouseEvents ++ [ id "svg-container", Svg.Attributes.viewBox viewBox ])
-            (svgImage :: pois model npcs)
+            (svgImage :: pois model npcs resources)
         ]
 
 
-pois : Model -> List Npc -> List (Svg Msg)
-pois model npcs =
-    let
-        resources =
-            model.resources |> List.map PoiResource |> List.map (poiCircle model)
-    in
+pois : Model -> List Npc -> List Resource -> List (Svg Msg)
+pois model npcs resources =
     List.concat
-        [ resources
+        [ resources |> List.map PoiResource |> List.map (poiCircle model)
         , npcs |> List.map PoiNpc |> List.map (poiCircle model)
         ]
 
@@ -651,31 +788,19 @@ poiCircle model poi =
             , Svg.Attributes.style "pointer-events: none"
             ]
 
-        radarAnim =
-            [ Svg.animate
-                [ Svg.Attributes.attributeName "r"
-                , Svg.Attributes.id "radarOp1"
-                , Svg.Attributes.from "0"
-                , Svg.Attributes.to "400"
-                , Svg.Attributes.dur "0.5s"
-                , Svg.Attributes.begin "0s;radarOp1.end+1.5s"
-                ]
-                []
-            , Svg.animate
-                [ Svg.Attributes.attributeName "opacity"
-                , Svg.Attributes.from "0.7"
-                , Svg.Attributes.to "0"
-                , Svg.Attributes.dur "0.5s"
-                , Svg.Attributes.begin "0s;radarOp1.end+1.5s"
-                ]
-                []
+        radarAnimCommonAttrs =
+            [ Svg.Attributes.dur "2s", Svg.Attributes.keyTimes "0; 0.2; 1", Svg.Attributes.repeatCount "indefinite" ]
+
+        radarAnimElements =
+            [ Svg.animate ([ Svg.Attributes.attributeName "r", Svg.Attributes.from "0", Svg.Attributes.to "400", Svg.Attributes.values "0; 400; 400" ] ++ radarAnimCommonAttrs) []
+            , Svg.animate ([ Svg.Attributes.attributeName "opacity", Svg.Attributes.from "0.7", Svg.Attributes.to "0", Svg.Attributes.values "0.7; 0; 0" ] ++ radarAnimCommonAttrs) []
             ]
 
         svgG locAttrs =
             Svg.g []
                 [ Svg.circle (circleAttrs ++ locAttrs) []
                 , if testRadar == True then
-                    Svg.circle (radarAttrs ++ locAttrs) radarAnim
+                    Svg.circle (radarAttrs ++ locAttrs) radarAnimElements
 
                   else
                     text ""
@@ -709,4 +834,4 @@ poiText npc model =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Browser.Events.onResize (\w h -> BrowserResized)
+    Browser.Events.onResize (\_ _ -> BrowserResized)

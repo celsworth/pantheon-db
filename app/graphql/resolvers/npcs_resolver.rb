@@ -17,7 +17,7 @@ module Resolvers
     argument :sells_item_id, ID, required: false
 
     def resolve(**params)
-      NpcSearch.new(**params).search.all
+      NpcSearch.new(**params).search.order(:name).all
     end
   end
 end
