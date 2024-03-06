@@ -637,9 +637,30 @@ resourcesPanel model =
             , Api.Enum.ResourceResource.Flax
             ]
 
+        labelResourceIsVisible resources =
+            List.any (\r -> List.member r model.poiVisibility.resources) resources
+
+        panelBlockClass resources =
+            if labelResourceIsVisible resources then
+                ""
+
+            else
+                "has-text-grey-lighter"
+
+        indentedPpanelBlock resources label =
+            a
+                [ onClick <| ChangePoiResourceVisibility resources
+                , class <| "panel-block " ++ panelBlockClass resources
+                , style "padding-left" "32px"
+                ]
+                [ text label ]
+
         panelBlock resources label =
-            a [ onClick <| ChangePoiResourceVisibility resources, class "panel-block" ]
-                [ span [] [ text label ] ]
+            a
+                [ onClick <| ChangePoiResourceVisibility resources
+                , class <| "panel-block " ++ panelBlockClass resources
+                ]
+                [ text label ]
     in
     div []
         [ div [ class "panel-block buttons is-flex is-justify-content-center mb-0" ]
@@ -653,8 +674,22 @@ resourcesPanel model =
                 [ text "None" ]
             ]
         , panelBlock miningNodes "Mining"
+        , indentedPpanelBlock [ Api.Enum.ResourceResource.Asherite ] "Asherite Ore"
+        , indentedPpanelBlock [ Api.Enum.ResourceResource.Caspilrite ] "Caspilrite Ore"
+        , indentedPpanelBlock [ Api.Enum.ResourceResource.Padrium ] "Padrium Ore"
+        , indentedPpanelBlock [ Api.Enum.ResourceResource.Slytheril ] "Slytheril Crystals"
+        , indentedPpanelBlock [ Api.Enum.ResourceResource.Tascium ] "Tascium Crystals"
         , panelBlock woodCuttingNodes "Woodcutting"
+        , indentedPpanelBlock [ Api.Enum.ResourceResource.Apple ] "Apple Tree"
+        , indentedPpanelBlock [ Api.Enum.ResourceResource.Pine ] "Pine Tree"
+        , indentedPpanelBlock [ Api.Enum.ResourceResource.Ash ] "Ash Tree"
+        , indentedPpanelBlock [ Api.Enum.ResourceResource.Oak ] "Oak Tree"
+        , indentedPpanelBlock [ Api.Enum.ResourceResource.Maple ] "Maple Tree"
+        , indentedPpanelBlock [ Api.Enum.ResourceResource.Walnut ] "Walnut Tree"
         , panelBlock fibreNodes "Plants"
+        , indentedPpanelBlock [ Api.Enum.ResourceResource.Jute ] "Jute Plant"
+        , indentedPpanelBlock [ Api.Enum.ResourceResource.Cotton ] "Cotton Plant"
+        , indentedPpanelBlock [ Api.Enum.ResourceResource.Flax ] "Flax Plant"
         , panelBlock [ Api.Enum.ResourceResource.Vegetable ] "Wild Vegetables"
         , panelBlock [ Api.Enum.ResourceResource.Herb ] "Wild Herbs"
         , panelBlock [ Api.Enum.ResourceResource.Blackberry ] "Blackberry Bush"
