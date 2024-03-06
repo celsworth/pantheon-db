@@ -7,15 +7,15 @@ import Browser.Events
 import Helpers
 import Html exposing (..)
 import Html.Attributes exposing (class, id, placeholder, step, style, type_, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, onMouseEnter, onMouseLeave)
 import Html.Events.Extra.Mouse as Mouse
 import Html.Events.Extra.Wheel as Wheel
 import Html.Lazy
 import List.Extra
+import Query.Common
 import Query.Monsters
 import Query.Npcs
 import Query.Resources
-import Query.Common
 import Svg exposing (Svg, svg)
 import Svg.Attributes
 import Task
@@ -87,6 +87,7 @@ type alias Model =
     , mapOffset : Offset
     , dragData : DragData
     , poiVisibility : PoiVisibility
+    , poiHover : Maybe Poi
     , npcs : List Npc
     , monsters : List Monster
     , resources : List Resource
@@ -123,6 +124,8 @@ type Msg
     | BrowserResized
     | GotSvgElement (Result Browser.Dom.Error Browser.Dom.Element)
     | ClickedPoi Poi
+    | PoiHoverEnter Poi
+    | PoiHoverLeave
     | ChangeSidePanelTab ObjectType
     | SearchBoxChanged String
     | ChangePoiResourceVisibility (List Api.Enum.ResourceResource.ResourceResource)
@@ -151,6 +154,7 @@ init flags =
       , mapOffset = { x = 0, y = 0 }
       , dragData = NotDragging
       , poiVisibility = defaultPoiVisibility
+      , poiHover = Nothing
       , npcs = []
       , monsters = []
       , resources = []
@@ -259,6 +263,12 @@ update msg model =
 
         GotSvgElement (Err _) ->
             ( model, Cmd.none )
+
+        PoiHoverEnter poi ->
+            ( { model | poiHover = Just poi }, Cmd.none )
+
+        PoiHoverLeave ->
+            ( { model | poiHover = Nothing }, Cmd.none )
 
         ClickedPoi target ->
             let
@@ -566,22 +576,24 @@ sidePanel model npcs =
         ]
 
 
+npcDisplayLabel : Npc -> Html Msg
+npcDisplayLabel npc =
+    case npc.subtitle of
+        Just subtitle ->
+            span []
+                [ text npc.name
+                , span [ class "has-text-grey" ] [ text <| " (" ++ subtitle ++ ")" ]
+                ]
+
+        Nothing ->
+            text npc.name
+
+
 npcsPanel : List Npc -> Html Msg
 npcsPanel npcs =
     let
-        npcLabel npc =
-            case npc.subtitle of
-                Just subtitle ->
-                    span []
-                        [ text npc.name
-                        , span [ class "has-text-grey" ] [ text <| " (" ++ subtitle ++ ")" ]
-                        ]
-
-                Nothing ->
-                    text npc.name
-
         npcPanelBlock npc =
-            a [ class "panel-block" ] [ npcLabel npc ]
+            a [ class "panel-block" ] [ npcDisplayLabel npc ]
     in
     div [] <| List.map npcPanelBlock npcs
 
@@ -683,6 +695,17 @@ svgView model npcs resources =
                 , String.fromFloat viewportWidthY
                 ]
 
+        poiHoverContainer =
+            case model.poiHover of
+                Just (PoiNpc npc) ->
+                    div [ class "overlay-container poi" ] [ npcDisplayLabel npc ]
+
+                Just (PoiResource resource) ->
+                    div [ class "overlay-container poi" ] [ text resource.name ]
+                _ ->
+                    text ""
+
+
         zoomSlider =
             input
                 [ type_ "range"
@@ -703,7 +726,8 @@ svgView model npcs resources =
                 []
     in
     div [ class "map-container" ]
-        [ div [ class "zoom-container" ] [ zoomSlider ]
+        [ div [ class "overlay-container zoom" ] [ zoomSlider ]
+        , poiHoverContainer
         , svg
             (mouseEvents ++ [ id "svg-container", Svg.Attributes.viewBox viewBox ])
             (svgImage :: pois model npcs resources)
@@ -781,6 +805,8 @@ poiCircle model poi =
             [ Svg.Attributes.class <| cssClass ++ testHighlighted
             , Svg.Attributes.r (String.fromFloat (13 - model.zoom))
             , onClick <| ClickedPoi poi
+            , onMouseEnter <| PoiHoverEnter poi
+            , onMouseLeave <| PoiHoverLeave
             ]
 
         radarAttrs =

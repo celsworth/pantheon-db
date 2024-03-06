@@ -46,16 +46,27 @@ $body-background-color: #9a9;
 .map-container {
   position: relative;
 
-  .zoom-container {
+  .overlay-container {
     position: absolute;
-    top: 1px;
-    right: 1px;
-    background: #aaa;
-    opacity: 0.6;
-    padding: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
+
+    &.zoom {
+      top: 1px;
+      right: 1px;
+      background: #aaa;
+      opacity: 0.6;
+      padding: 8px;
+    }
+
+    &.poi {
+      top: 10px;
+      left: 10px;
+      background: #fff;
+      opacity: 0.9;
+      padding: 8px;
+    }
   }
 }
 
