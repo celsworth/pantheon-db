@@ -87,7 +87,7 @@ svg {
       fill: $fill;
 
       &:hover {
-        fill: color.adjust($fill, $lightness: 40%);
+        fill: color.adjust($fill, $lightness: 25%);
       }
     }
 
@@ -102,6 +102,7 @@ svg {
     }
 
     &.resource {
+      // default bright red to spot things that aren't overridden
       @include hoverable-circle($fill: #F00);
 
       $mining-base: #755;
@@ -199,7 +200,7 @@ svg {
 }
 
 .panel {
-  background: #f9fff9;
+  background: #fff;
   user-select: none;
 
   &.poi-list {

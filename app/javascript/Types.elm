@@ -1,7 +1,7 @@
-module Types exposing (Item, Loc, Npc, Resource, Zone)
+module Types exposing (Item, Loc, Monster, Npc, Resource, Zone)
 
-import Api.ScalarCodecs
 import Api.Enum.ResourceResource
+import Api.ScalarCodecs
 
 
 type alias Loc =
@@ -21,6 +21,14 @@ type alias Item =
     }
 
 
+type alias Monster =
+    { id : Api.ScalarCodecs.Id
+    , name : String
+    , loc_x : Maybe Float
+    , loc_y : Maybe Float
+    }
+
+
 type alias Npc =
     { id : Api.ScalarCodecs.Id
     , name : String
@@ -35,7 +43,7 @@ type alias Resource =
     , name : String
     , loc_x : Float
     , loc_y : Float
-    , resource: Api.Enum.ResourceResource.ResourceResource
+    , resource : Api.Enum.ResourceResource.ResourceResource
     }
 
 

@@ -4,6 +4,7 @@ import Api.Enum.ResourceResource exposing (ResourceResource(..))
 import Browser
 import Browser.Dom
 import Browser.Events
+import Helpers
 import Html exposing (..)
 import Html.Attributes exposing (class, id, placeholder, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
@@ -11,12 +12,14 @@ import Html.Events.Extra.Mouse as Mouse
 import Html.Events.Extra.Wheel as Wheel
 import Html.Lazy
 import List.Extra
+import Query.Monsters
 import Query.Npcs
 import Query.Resources
+import Query.Common
 import Svg exposing (Svg, svg)
 import Svg.Attributes
 import Task
-import Types exposing (Npc, Resource)
+import Types exposing (Monster, Npc, Resource)
 
 
 type alias Flags =
@@ -85,16 +88,17 @@ type alias Model =
     , dragData : DragData
     , poiVisibility : PoiVisibility
     , npcs : List Npc
+    , monsters : List Monster
     , resources : List Resource
     , searchText : Maybe String
-    , sidePanelTabSelected : SidePanelTabSelection
+    , sidePanelTabSelected : ObjectType
     }
 
 
-type SidePanelTabSelection
-    = SidePanelTabSelectionNpcs
-    | SidePanelTabSelectionMobs
-    | SidePanelTabSelectionResources
+type ObjectType
+    = Npc
+    | Mob
+    | Resource
 
 
 type Poi
@@ -113,12 +117,13 @@ type Msg
     | MouseUp Mouse.Event
     | MouseWheel Wheel.Event
     | ZoomChanged String
-    | GotNpcs Query.Npcs.Msg
-    | GotResources Query.Resources.Msg
+    | GotNpcs (Query.Common.Msg Npc)
+    | GotMonsters (Query.Common.Msg Monster)
+    | GotResources (Query.Common.Msg Resource)
     | BrowserResized
     | GotSvgElement (Result Browser.Dom.Error Browser.Dom.Element)
     | ClickedPoi Poi
-    | ChangeSidePanelTab SidePanelTabSelection
+    | ChangeSidePanelTab ObjectType
     | SearchBoxChanged String
     | ChangePoiResourceVisibility (List Api.Enum.ResourceResource.ResourceResource)
     | SetPoiResourceVisibility Bool
@@ -147,12 +152,14 @@ init flags =
       , dragData = NotDragging
       , poiVisibility = defaultPoiVisibility
       , npcs = []
+      , monsters = []
       , resources = []
       , searchText = Nothing
-      , sidePanelTabSelected = SidePanelTabSelectionResources
+      , sidePanelTabSelected = Resource
       }
     , Cmd.batch
         [ Query.Npcs.makeRequest { url = flags.graphqlBaseUrl, toMsg = GotNpcs }
+        , Query.Monsters.makeRequest { url = flags.graphqlBaseUrl, toMsg = GotMonsters }
         , Query.Resources.makeRequest { url = flags.graphqlBaseUrl, toMsg = GotResources }
         , Browser.Dom.getElement "svg-container" |> Task.attempt GotSvgElement
         ]
@@ -180,11 +187,14 @@ calcMapCalibration input1 input2 =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        GotNpcs graphQlResponse ->
-            ( { model | npcs = Query.Npcs.parseResponse graphQlResponse }, Cmd.none )
+        GotNpcs response ->
+            ( { model | npcs = Query.Common.parseList response }, Cmd.none )
 
-        GotResources graphQlResponse ->
-            ( { model | resources = Query.Resources.parseResponse graphQlResponse }, Cmd.none )
+        GotMonsters response ->
+            ( { model | monsters = Query.Common.parseList response }, Cmd.none )
+
+        GotResources response ->
+            ( { model | resources = Query.Common.parseList response }, Cmd.none )
 
         MouseWheel event ->
             let
@@ -200,13 +210,13 @@ update msg model =
                 ( xProp, yProp, newZoom ) =
                     if event.deltaY > 0 then
                         -- zooming out keeps centre of map as-is
-                        ( 0.5, 0.5, model.zoom - 0.2 |> boundZoom )
+                        ( 0.5, 0.5, model.zoom - 0.2 |> clampZoom )
 
                     else
                         -- zooming in tries to aim at where the mouse is
                         ( newCentrepointX / model.mapPageSize.x
                         , newCentrepointY / model.mapPageSize.y
-                        , model.zoom + 0.2 |> boundZoom
+                        , model.zoom + 0.2 |> clampZoom
                         )
             in
             ( model |> changeZoom { xProp = xProp, yProp = yProp } newZoom, Cmd.none )
@@ -238,9 +248,7 @@ update msg model =
             ( { model | dragData = NotDragging }, Cmd.none )
 
         BrowserResized ->
-            ( model
-            , Browser.Dom.getElement "svg-container" |> Task.attempt GotSvgElement
-            )
+            ( model, Browser.Dom.getElement "svg-container" |> Task.attempt GotSvgElement )
 
         GotSvgElement (Ok element) ->
             let
@@ -262,11 +270,7 @@ update msg model =
         SearchBoxChanged searchText ->
             let
                 maybeSearchText =
-                    if String.isEmpty searchText then
-                        Nothing
-
-                    else
-                        Just searchText
+                    Helpers.maybeIf (not <| String.isEmpty searchText) searchText
             in
             ( { model | searchText = maybeSearchText }, Cmd.none )
 
@@ -377,7 +381,7 @@ changeZoom proportions newZoom model =
             desiredViewportSizeY / 2
 
         newMapOffset =
-            boundMapOffset newZoom <|
+            clampMapOffset newZoom <|
                 { x = centreOfViewX - offsetToLeft
                 , y = centreOfViewY - offsetToTop
                 }
@@ -408,7 +412,7 @@ calculateNewMapOffset event model =
                     )
 
                 newMapOffset =
-                    boundMapOffset model.zoom <|
+                    clampMapOffset model.zoom <|
                         { x = dragData.startingMapOffset.x + (movedX * zoomCorrectionX)
                         , y = dragData.startingMapOffset.y + (movedY * zoomCorrectionY)
                         }
@@ -417,48 +421,25 @@ calculateNewMapOffset event model =
 
 
 
---- BOUNDING FUNCTIONS {{{
+--- CLAMPING FUNCTIONS {{{
 
 
-boundZoom : Float -> Float
-boundZoom zoom =
-    if zoom < 1 then
-        1
-
-    else if zoom > 10 then
-        10
-
-    else
-        zoom
+clampZoom : Float -> Float
+clampZoom zoom =
+    clamp 1 10 zoom
 
 
-boundMapOffset : Float -> Offset -> Offset
-boundMapOffset zoom mapOffset =
+clampMapOffset : Float -> Offset -> Offset
+clampMapOffset zoom mapOffset =
     let
         maxX =
             mapXSize - (mapXSize / zoom)
 
         maxY =
             mapYSize - (mapYSize / zoom)
-
-        boundAtMax : Float -> Float -> Float
-        boundAtMax max n =
-            if n > max then
-                max
-
-            else
-                n
-
-        boundAtZero : Float -> Float
-        boundAtZero n =
-            if n < 0 then
-                0
-
-            else
-                n
     in
-    { x = boundAtMax maxX <| boundAtZero <| mapOffset.x
-    , y = boundAtMax maxY <| boundAtZero <| mapOffset.y
+    { x = clamp 0 maxX <| mapOffset.x
+    , y = clamp 0 maxY <| mapOffset.y
     }
 
 
@@ -482,19 +463,17 @@ view model =
         ]
 
 
-npcsForTabSelection : List Npc -> Maybe String -> SidePanelTabSelection -> List Npc
+npcsForTabSelection : List Npc -> Maybe String -> ObjectType -> List Npc
 npcsForTabSelection npcs searchText selection =
     let
-        selected =
-            selection == SidePanelTabSelectionNpcs
-
         npcToSearchString npc =
-            String.toLower (npc.name ++ " " ++ Maybe.withDefault "" npc.subtitle)
+            String.join " " [ npc.name, Maybe.withDefault "" npc.subtitle ]
+                |> String.toLower
 
         filter text =
             npcs |> List.filter (\npc -> String.contains text (npcToSearchString npc))
     in
-    if selected then
+    if selection == Npc then
         case searchText of
             Just t ->
                 filter (String.toLower t)
@@ -506,13 +485,9 @@ npcsForTabSelection npcs searchText selection =
         []
 
 
-resourcesForTabSelection : List Resource -> SidePanelTabSelection -> List Resource
+resourcesForTabSelection : List Resource -> ObjectType -> List Resource
 resourcesForTabSelection resources selection =
-    let
-        selected =
-            selection == SidePanelTabSelectionResources
-    in
-    if selected then
+    if selection == Resource then
         resources
 
     else
@@ -525,18 +500,8 @@ sidePanel model npcs =
     -- TODO: click should put the name into searchbox, hence filtering to that one only
     -- TODO: when one npc showing, use radar effect?
     let
-        activeIfSelected b =
-            if b then
-                "is-active"
-
-            else
-                ""
-
-        npcsTabClass =
-            activeIfSelected <| model.sidePanelTabSelected == SidePanelTabSelectionNpcs
-
-        resourcesTabClass =
-            activeIfSelected <| model.sidePanelTabSelected == SidePanelTabSelectionResources
+        activeIf b =
+            Helpers.strIf b "is-active"
 
         searchBlock =
             div [ class "search-block panel-block" ]
@@ -567,27 +532,31 @@ sidePanel model npcs =
 
         ( stickyContent, content ) =
             case model.sidePanelTabSelected of
-                SidePanelTabSelectionNpcs ->
+                Npc ->
                     ( searchBlock, Html.Lazy.lazy npcsPanel npcs )
 
-                SidePanelTabSelectionMobs ->
+                Mob ->
                     ( searchBlock, text "" )
 
-                SidePanelTabSelectionResources ->
+                Resource ->
                     ( allOrNoneBlock, Html.Lazy.lazy resourcesPanel model )
     in
     nav [ style "height" (String.fromFloat model.mapPageSize.y ++ "px"), class "panel is-danger poi-list" ]
         [ div [ class "sticky-top" ]
             [ div [ class "panel-tabs" ]
                 [ a
-                    [ onClick <| ChangeSidePanelTab SidePanelTabSelectionNpcs
-                    , class npcsTabClass
+                    [ onClick <| ChangeSidePanelTab Npc
+                    , class (activeIf <| model.sidePanelTabSelected == Npc)
                     ]
                     [ text "NPCs" ]
-                , a [ class "has-text-grey-light" ] [ text "Mobs" ]
                 , a
-                    [ onClick <| ChangeSidePanelTab SidePanelTabSelectionResources
-                    , class resourcesTabClass
+                    [ class "has-text-grey-light"
+                    , class (activeIf <| model.sidePanelTabSelected == Mob)
+                    ]
+                    [ text "Mobs" ]
+                , a
+                    [ onClick <| ChangeSidePanelTab Resource
+                    , class (activeIf <| model.sidePanelTabSelected == Resource)
                     ]
                     [ text "Resources" ]
                 ]
@@ -600,7 +569,7 @@ sidePanel model npcs =
 npcsPanel : List Npc -> Html Msg
 npcsPanel npcs =
     let
-        npcString npc =
+        npcLabel npc =
             case npc.subtitle of
                 Just subtitle ->
                     span []
@@ -612,7 +581,7 @@ npcsPanel npcs =
                     text npc.name
 
         npcPanelBlock npc =
-            a [ class "panel-block" ] [ npcString npc ]
+            a [ class "panel-block" ] [ npcLabel npc ]
     in
     div [] <| List.map npcPanelBlock npcs
 
@@ -648,13 +617,9 @@ resourcesPanel model =
             List.any (\r -> List.member r model.poiVisibility.resources) resources
 
         panelBlockClass resources =
-            if labelResourceIsVisible resources then
-                ""
+            Helpers.strIf (not <| labelResourceIsVisible resources) "has-text-grey-lighter"
 
-            else
-                "has-text-grey-lighter"
-
-        indentedPpanelBlock resources label =
+        indentedPanelBlock resources label =
             a
                 [ onClick <| ChangePoiResourceVisibility resources
                 , class <| "panel-block " ++ panelBlockClass resources
@@ -671,22 +636,22 @@ resourcesPanel model =
     in
     div []
         [ panelBlock miningNodes "Mining"
-        , indentedPpanelBlock [ Api.Enum.ResourceResource.Asherite ] "Asherite Ore"
-        , indentedPpanelBlock [ Api.Enum.ResourceResource.Caspilrite ] "Caspilrite Ore"
-        , indentedPpanelBlock [ Api.Enum.ResourceResource.Padrium ] "Padrium Ore"
-        , indentedPpanelBlock [ Api.Enum.ResourceResource.Slytheril ] "Slytheril Crystals"
-        , indentedPpanelBlock [ Api.Enum.ResourceResource.Tascium ] "Tascium Crystals"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Asherite ] "Asherite Ore"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Caspilrite ] "Caspilrite Ore"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Padrium ] "Padrium Ore"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Slytheril ] "Slytheril Crystals"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Tascium ] "Tascium Crystals"
         , panelBlock woodCuttingNodes "Woodcutting"
-        , indentedPpanelBlock [ Api.Enum.ResourceResource.Apple ] "Apple Tree"
-        , indentedPpanelBlock [ Api.Enum.ResourceResource.Pine ] "Pine Tree"
-        , indentedPpanelBlock [ Api.Enum.ResourceResource.Ash ] "Ash Tree"
-        , indentedPpanelBlock [ Api.Enum.ResourceResource.Oak ] "Oak Tree"
-        , indentedPpanelBlock [ Api.Enum.ResourceResource.Maple ] "Maple Tree"
-        , indentedPpanelBlock [ Api.Enum.ResourceResource.Walnut ] "Walnut Tree"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Apple ] "Apple Tree"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Pine ] "Pine Tree"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Ash ] "Ash Tree"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Oak ] "Oak Tree"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Maple ] "Maple Tree"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Walnut ] "Walnut Tree"
         , panelBlock fibreNodes "Plants"
-        , indentedPpanelBlock [ Api.Enum.ResourceResource.Jute ] "Jute Plant"
-        , indentedPpanelBlock [ Api.Enum.ResourceResource.Cotton ] "Cotton Plant"
-        , indentedPpanelBlock [ Api.Enum.ResourceResource.Flax ] "Flax Plant"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Jute ] "Jute Plant"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Cotton ] "Cotton Plant"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Flax ] "Flax Plant"
         , panelBlock [ Api.Enum.ResourceResource.Vegetable ] "Wild Vegetables"
         , panelBlock [ Api.Enum.ResourceResource.Herb ] "Wild Herbs"
         , panelBlock [ Api.Enum.ResourceResource.Blackberry ] "Blackberry Bush"
@@ -711,13 +676,12 @@ svgView model npcs resources =
             viewportWidth model
 
         viewBox =
-            String.fromFloat model.mapOffset.x
-                ++ " "
-                ++ String.fromFloat model.mapOffset.y
-                ++ " "
-                ++ String.fromFloat viewportWidthX
-                ++ " "
-                ++ String.fromFloat viewportWidthY
+            String.join " "
+                [ String.fromFloat model.mapOffset.x
+                , String.fromFloat model.mapOffset.y
+                , String.fromFloat viewportWidthX
+                , String.fromFloat viewportWidthY
+                ]
 
         zoomSlider =
             input
@@ -800,11 +764,7 @@ poiCircle model poi =
         testHighlighted =
             case poi of
                 PoiNpc npc ->
-                    if npc.name == "Elinae Whispertree" then
-                        " highlighted"
-
-                    else
-                        ""
+                    Helpers.strIf (npc.name == "Elinae Whispertree") " highlighted"
 
                 _ ->
                     ""
@@ -839,11 +799,7 @@ poiCircle model poi =
         svgG locAttrs =
             Svg.g []
                 [ Svg.circle (circleAttrs ++ locAttrs) []
-                , if testRadar == True then
-                    Svg.circle (radarAttrs ++ locAttrs) radarAnimElements
-
-                  else
-                    text ""
+                , Helpers.htmlIf (testRadar == True) <| Svg.circle (radarAttrs ++ locAttrs) radarAnimElements
                 ]
     in
     maybeLocsToMaybeSvgAttrs loc_x loc_y model
