@@ -45,28 +45,27 @@ $body-background-color: #9a9;
 
 .map-container {
   position: relative;
+}
 
-  .overlay-container {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.overlay-container {
+  pointer-events: none;
+  z-index: 1;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
 
-    &.zoom {
-      top: 1px;
-      right: 1px;
-      background: #aaa;
-      opacity: 0.6;
-      padding: 8px;
-    }
+  &.zoom {
+    top: 1px;
+    right: 1px;
+    background: #aaa;
+    opacity: 0.6;
+  }
 
-    &.poi {
-      top: 10px;
-      left: 10px;
-      background: #fff;
-      opacity: 0.9;
-      padding: 8px;
-    }
+  &.poi {
+    background: #fff;
+    opacity: 0.9;
   }
 }
 

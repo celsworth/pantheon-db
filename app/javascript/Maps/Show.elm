@@ -85,9 +85,10 @@ type alias Model =
     , mapCalibration : MapCalibration
     , mapPageSize : Offset
     , mapOffset : Offset
+    , mousePosition : Offset
     , dragData : DragData
     , poiVisibility : PoiVisibility
-    , poiHover : Maybe Poi
+    , poiHover : Maybe ( Poi, Mouse.Event )
     , npcs : List Npc
     , monsters : List Monster
     , resources : List Resource
@@ -124,8 +125,8 @@ type Msg
     | BrowserResized
     | GotSvgElement (Result Browser.Dom.Error Browser.Dom.Element)
     | ClickedPoi Poi
-    | PoiHoverEnter Poi
-    | PoiHoverLeave
+    | PoiHoverEnter Poi Mouse.Event
+    | PoiHoverLeave Mouse.Event
     | ChangeSidePanelTab ObjectType
     | SearchBoxChanged String
     | ChangePoiResourceVisibility (List Api.Enum.ResourceResource.ResourceResource)
@@ -152,6 +153,7 @@ init flags =
       , mapCalibration = calcMapCalibration calibrationInput1 calibrationInput2
       , mapPageSize = { x = 0, y = 0 }
       , mapOffset = { x = 0, y = 0 }
+      , mousePosition = { x = 0, y = 0 }
       , dragData = NotDragging
       , poiVisibility = defaultPoiVisibility
       , poiHover = Nothing
@@ -188,6 +190,15 @@ calcMapCalibration input1 input2 =
     { xLeft = xLeft, yBottom = yBottom, xScale = abs xScale, yScale = abs yScale }
 
 
+mouseEventToOffset : Mouse.Event -> Offset
+mouseEventToOffset event =
+    let
+        ( x, y ) =
+            event.offsetPos
+    in
+    { x = x, y = y }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -201,29 +212,7 @@ update msg model =
             ( { model | resources = Query.Common.parseList response }, Cmd.none )
 
         MouseWheel event ->
-            let
-                ( offsetPosX, offsetPosY ) =
-                    event.mouseEvent.offsetPos
-
-                newCentrepointX =
-                    (model.mapPageSize.x / 2) - (((model.mapPageSize.x / 2) - offsetPosX) / 10)
-
-                newCentrepointY =
-                    (model.mapPageSize.y / 2) - (((model.mapPageSize.y / 2) - offsetPosY) / 10)
-
-                ( xProp, yProp, newZoom ) =
-                    if event.deltaY > 0 then
-                        -- zooming out keeps centre of map as-is
-                        ( 0.5, 0.5, model.zoom - 0.2 |> clampZoom )
-
-                    else
-                        -- zooming in tries to aim at where the mouse is
-                        ( newCentrepointX / model.mapPageSize.x
-                        , newCentrepointY / model.mapPageSize.y
-                        , model.zoom + 0.2 |> clampZoom
-                        )
-            in
-            ( model |> changeZoom { xProp = xProp, yProp = yProp } newZoom, Cmd.none )
+            ( model |> applyMouseWheelZoom event, Cmd.none )
 
         ZoomChanged value ->
             ( model |> changeZoom { xProp = 0.5, yProp = 0.5 } (value |> String.toFloat |> Maybe.withDefault 1)
@@ -231,18 +220,14 @@ update msg model =
             )
 
         MouseMove event ->
-            ( model |> calculateNewMapOffset event, Cmd.none )
+            ( model |> calculateNewMapOffset event |> storeMousePosition event, Cmd.none )
 
         MouseDown event ->
-            let
-                ( offsetPosX, offsetPosY ) =
-                    event.offsetPos
-            in
             ( { model
                 | dragData =
                     Dragging
                         { startingMapOffset = model.mapOffset
-                        , startingMousePos = { x = offsetPosX, y = offsetPosY }
+                        , startingMousePos = mouseEventToOffset event
                         }
               }
             , Cmd.none
@@ -264,10 +249,10 @@ update msg model =
         GotSvgElement (Err _) ->
             ( model, Cmd.none )
 
-        PoiHoverEnter poi ->
-            ( { model | poiHover = Just poi }, Cmd.none )
+        PoiHoverEnter poi event ->
+            ( { model | poiHover = Just ( poi, event ) }, Cmd.none )
 
-        PoiHoverLeave ->
+        PoiHoverLeave event ->
             ( { model | poiHover = Nothing }, Cmd.none )
 
         ClickedPoi target ->
@@ -366,6 +351,33 @@ viewportWidth model =
     ( mapXSize / model.zoom, mapYSize / model.zoom )
 
 
+applyMouseWheelZoom : Wheel.Event -> Model -> Model
+applyMouseWheelZoom event model =
+    let
+        offset =
+            mouseEventToOffset event.mouseEvent
+
+        newCentrepointX =
+            (model.mapPageSize.x / 2) - (((model.mapPageSize.x / 2) - offset.x) / 10)
+
+        newCentrepointY =
+            (model.mapPageSize.y / 2) - (((model.mapPageSize.y / 2) - offset.y) / 10)
+
+        ( xProp, yProp, newZoom ) =
+            if event.deltaY > 0 then
+                -- zooming out keeps centre of map as-is
+                ( 0.5, 0.5, model.zoom - 0.2 |> clampZoom )
+
+            else
+                -- zooming in tries to aim at where the mouse is
+                ( newCentrepointX / model.mapPageSize.x
+                , newCentrepointY / model.mapPageSize.y
+                , model.zoom + 0.2 |> clampZoom
+                )
+    in
+    model |> changeZoom { xProp = xProp, yProp = yProp } newZoom
+
+
 changeZoom : { xProp : Float, yProp : Float } -> Float -> Model -> Model
 changeZoom proportions newZoom model =
     let
@@ -399,6 +411,11 @@ changeZoom proportions newZoom model =
     { model | zoom = newZoom, mapOffset = newMapOffset }
 
 
+storeMousePosition : Mouse.Event -> Model -> Model
+storeMousePosition event model =
+    { model | mousePosition = mouseEventToOffset event }
+
+
 calculateNewMapOffset : Mouse.Event -> Model -> Model
 calculateNewMapOffset event model =
     case model.dragData of
@@ -408,13 +425,11 @@ calculateNewMapOffset event model =
 
         Dragging dragData ->
             let
-                ( offsetPosX, offsetPosY ) =
-                    event.offsetPos
+                pos =
+                    mouseEventToOffset event
 
                 ( movedX, movedY ) =
-                    ( dragData.startingMousePos.x - offsetPosX
-                    , dragData.startingMousePos.y - offsetPosY
-                    )
+                    ( dragData.startingMousePos.x - pos.x, dragData.startingMousePos.y - pos.y )
 
                 ( zoomCorrectionX, zoomCorrectionY ) =
                     ( (mapXSize / model.mapPageSize.x) / model.zoom
@@ -682,7 +697,7 @@ svgView model npcs resources =
                     [ Mouse.onUp MouseUp, Mouse.onMove MouseMove, Mouse.onLeave MouseUp ]
 
                 NotDragging ->
-                    [ Wheel.onWheel MouseWheel, Mouse.onDown MouseDown ]
+                    [ Mouse.onDown MouseDown, Mouse.onMove MouseMove, Wheel.onWheel MouseWheel ]
 
         ( viewportWidthX, viewportWidthY ) =
             viewportWidth model
@@ -694,17 +709,6 @@ svgView model npcs resources =
                 , String.fromFloat viewportWidthX
                 , String.fromFloat viewportWidthY
                 ]
-
-        poiHoverContainer =
-            case model.poiHover of
-                Just (PoiNpc npc) ->
-                    div [ class "overlay-container poi" ] [ npcDisplayLabel npc ]
-
-                Just (PoiResource resource) ->
-                    div [ class "overlay-container poi" ] [ text resource.name ]
-                _ ->
-                    text ""
-
 
         zoomSlider =
             input
@@ -725,13 +729,41 @@ svgView model npcs resources =
                 ]
                 []
     in
-    div [ class "map-container" ]
-        [ div [ class "overlay-container zoom" ] [ zoomSlider ]
-        , poiHoverContainer
-        , svg
-            (mouseEvents ++ [ id "svg-container", Svg.Attributes.viewBox viewBox ])
-            (svgImage :: pois model npcs resources)
+    div []
+        [ poiHoverContainer model
+        , div [ class "map-container" ]
+            [ div [ class "overlay-container zoom" ] [ zoomSlider ]
+            , svg
+                (mouseEvents ++ [ id "svg-container", Svg.Attributes.viewBox viewBox ])
+                (svgImage :: pois model npcs resources)
+            ]
         ]
+
+
+poiHoverContainer : Model -> Html Msg
+poiHoverContainer model =
+    let
+        { x, y } =
+            model.mousePosition
+
+        classes =
+            "overlay-container poi has-text-weight-semibold"
+
+        topStyle =
+            style "top" <| String.join "" [ String.fromFloat (y + 5), "px" ]
+
+        leftStyle =
+            style "left" <| String.join "" [ String.fromFloat (x + 5), "px" ]
+    in
+    case model.poiHover of
+        Just ( PoiNpc npc, _ ) ->
+            div [ topStyle, leftStyle, class classes ] [ npcDisplayLabel npc ]
+
+        Just ( PoiResource resource, _ ) ->
+            div [ topStyle, leftStyle, class classes ] [ text resource.name ]
+
+        Nothing ->
+            text ""
 
 
 pois : Model -> List Npc -> List Resource -> List (Svg Msg)
@@ -805,8 +837,8 @@ poiCircle model poi =
             [ Svg.Attributes.class <| cssClass ++ testHighlighted
             , Svg.Attributes.r (String.fromFloat (13 - model.zoom))
             , onClick <| ClickedPoi poi
-            , onMouseEnter <| PoiHoverEnter poi
-            , onMouseLeave <| PoiHoverLeave
+            , Mouse.onOver <| PoiHoverEnter poi
+            , Mouse.onLeave <| PoiHoverLeave
             ]
 
         radarAttrs =
