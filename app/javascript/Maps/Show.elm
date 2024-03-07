@@ -1,5 +1,6 @@
 module Maps.Show exposing (main)
 
+import Api.Enum.LocationCategory exposing (LocationCategory(..))
 import Api.Enum.ResourceResource exposing (ResourceResource(..))
 import Browser
 import Browser.Dom
@@ -7,7 +8,7 @@ import Browser.Events
 import Helpers
 import Html exposing (..)
 import Html.Attributes exposing (class, id, placeholder, step, style, type_, value)
-import Html.Events exposing (onClick, onInput, onMouseEnter, onMouseLeave)
+import Html.Events exposing (onClick, onInput)
 import Html.Events.Extra.Mouse as Mouse
 import Html.Events.Extra.Wheel as Wheel
 import Html.Lazy
@@ -20,6 +21,7 @@ import Svg exposing (Svg, svg)
 import Svg.Attributes
 import Task
 import Types exposing (Monster, Npc, Resource)
+import VirtualDom
 
 
 type alias Flags =
@@ -69,13 +71,15 @@ type alias MapCalibration =
 type alias PoiVisibility =
     { -- a list of ResourceResource that are selected as visible in sidebar
       resources : List Api.Enum.ResourceResource.ResourceResource
+    , locations : List Api.Enum.LocationCategory.LocationCategory
     }
 
 
 defaultPoiVisibility : PoiVisibility
 defaultPoiVisibility =
-    { -- all resources by default
+    { -- all on by default
       resources = Api.Enum.ResourceResource.list
+    , locations = Api.Enum.LocationCategory.list
     }
 
 
@@ -101,6 +105,7 @@ type ObjectType
     = Npc
     | Mob
     | Resource
+    | Location
 
 
 type Poi
@@ -130,7 +135,8 @@ type Msg
     | ChangeSidePanelTab ObjectType
     | SearchBoxChanged String
     | ChangePoiResourceVisibility (List Api.Enum.ResourceResource.ResourceResource)
-    | SetPoiResourceVisibility Bool
+    | ChangePoiLocationVisibility (List Api.Enum.LocationCategory.LocationCategory)
+    | SetPoiVisibility ObjectType Bool
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -252,7 +258,7 @@ update msg model =
         PoiHoverEnter poi event ->
             ( { model | poiHover = Just ( poi, event ) }, Cmd.none )
 
-        PoiHoverLeave event ->
+        PoiHoverLeave _ ->
             ( { model | poiHover = Nothing }, Cmd.none )
 
         ClickedPoi target ->
@@ -275,22 +281,40 @@ update msg model =
         ChangePoiResourceVisibility listOfResources ->
             ( model |> changePoiResourceVisibility listOfResources, Cmd.none )
 
-        SetPoiResourceVisibility allClicked ->
-            let
-                newPoiResourceVisibility =
-                    if allClicked then
-                        defaultPoiVisibility.resources
+        ChangePoiLocationVisibility listOfLocations ->
+            ( model |> changePoiLocationVisibility listOfLocations, Cmd.none )
+
+        SetPoiVisibility objectType toVisible ->
+            ( model |> setPoiVisibility objectType toVisible, Cmd.none )
+
+
+setPoiVisibility : ObjectType -> Bool -> Model -> Model
+setPoiVisibility objectType toVisible model =
+    let
+        poiVisibility =
+            model.poiVisibility
+
+        newPoiVisibility =
+            case objectType of
+                Resource ->
+                    if toVisible then
+                        { poiVisibility | resources = defaultPoiVisibility.resources }
 
                     else
-                        []
+                        { poiVisibility | resources = [] }
 
-                poiVisibility =
-                    model.poiVisibility
+                Location ->
+                    if toVisible then
+                        { poiVisibility | locations = defaultPoiVisibility.locations }
 
-                newPoiVisibility =
-                    { poiVisibility | resources = newPoiResourceVisibility }
-            in
-            ( { model | poiVisibility = newPoiVisibility }, Cmd.none )
+                    else
+                        { poiVisibility | locations = [] }
+
+                _ ->
+                    -- should not be reached
+                    poiVisibility
+    in
+    { model | poiVisibility = newPoiVisibility }
 
 
 changePoiResourceVisibility : List Api.Enum.ResourceResource.ResourceResource -> Model -> Model
@@ -311,6 +335,28 @@ changePoiResourceVisibility listOfResources model =
 
         newPoiVisibility =
             { poiVisibility | resources = newResources }
+    in
+    { model | poiVisibility = newPoiVisibility }
+
+
+changePoiLocationVisibility : List Api.Enum.LocationCategory.LocationCategory -> Model -> Model
+changePoiLocationVisibility listOfLocations model =
+    let
+        toggleLocation location list =
+            if List.member location list then
+                List.Extra.remove location list
+
+            else
+                location :: list
+
+        poiVisibility =
+            model.poiVisibility
+
+        newLocations =
+            List.foldl toggleLocation listOfLocations poiVisibility.locations
+
+        newPoiVisibility =
+            { poiVisibility | locations = newLocations }
     in
     { model | poiVisibility = newPoiVisibility }
 
@@ -543,13 +589,13 @@ sidePanel model npcs =
                     ]
                 ]
 
-        allOrNoneBlock =
+        allOrNoneBlock objectType =
             div [ class "panel-block buttons is-flex is-justify-content-center mb-0" ]
                 [ button
-                    [ onClick <| SetPoiResourceVisibility True, class "button mb-0 is-info" ]
+                    [ onClick <| SetPoiVisibility objectType True, class "button mb-0 is-info" ]
                     [ text "All" ]
                 , button
-                    [ onClick <| SetPoiResourceVisibility False
+                    [ onClick <| SetPoiVisibility objectType False
                     , class "button mb-0 is-info is-outlined is-light"
                     ]
                     [ text "None" ]
@@ -564,7 +610,10 @@ sidePanel model npcs =
                     ( searchBlock, text "" )
 
                 Resource ->
-                    ( allOrNoneBlock, Html.Lazy.lazy resourcesPanel model )
+                    ( allOrNoneBlock Resource, Html.Lazy.lazy resourcesPanel model )
+
+                Location ->
+                    ( allOrNoneBlock Location, Html.Lazy.lazy otherPanel model )
     in
     nav [ style "height" (String.fromFloat model.mapPageSize.y ++ "px"), class "panel is-danger poi-list" ]
         [ div [ class "sticky-top" ]
@@ -583,7 +632,12 @@ sidePanel model npcs =
                     [ onClick <| ChangeSidePanelTab Resource
                     , class (activeIf <| model.sidePanelTabSelected == Resource)
                     ]
-                    [ text "Resources" ]
+                    [ text "Nodes" ]
+                , a
+                    [ onClick <| ChangeSidePanelTab Location
+                    , class (activeIf <| model.sidePanelTabSelected == Location)
+                    ]
+                    [ text "Other" ]
                 ]
             , stickyContent
             ]
@@ -640,11 +694,11 @@ resourcesPanel model =
             , Api.Enum.ResourceResource.Flax
             ]
 
-        labelResourceIsVisible resources =
+        labelIsVisible resources =
             List.any (\r -> List.member r model.poiVisibility.resources) resources
 
         panelBlockClass resources =
-            Helpers.strIf (not <| labelResourceIsVisible resources) "has-text-grey-lighter"
+            Helpers.strIf (not <| labelIsVisible resources) "has-text-grey-lighter"
 
         indentedPanelBlock resources label =
             a
@@ -688,6 +742,29 @@ resourcesPanel model =
         ]
 
 
+otherPanel : Model -> Html Msg
+otherPanel model =
+    let
+        labelIsVisible locations =
+            List.any (\r -> List.member r model.poiVisibility.locations) locations
+
+        panelBlockClass locations =
+            Helpers.strIf (not <| labelIsVisible locations) "has-text-grey-lighter"
+
+        panelBlock locations label =
+            a
+                [ onClick <| ChangePoiLocationVisibility locations
+                , class <| "panel-block " ++ panelBlockClass locations
+                ]
+                [ text label ]
+    in
+    div []
+        [ panelBlock [ Api.Enum.LocationCategory.Bindstone ] "Bindstones"
+        , panelBlock [ Api.Enum.LocationCategory.Portal ] "Portals"
+        , panelBlock [ Api.Enum.LocationCategory.Landmark ] "Landmarks"
+        ]
+
+
 svgView : Model -> List Npc -> List Resource -> Html Msg
 svgView model npcs resources =
     let
@@ -721,9 +798,12 @@ svgView model npcs resources =
                 ]
                 []
 
+        svgUse =
+            Svg.use [ VirtualDom.attribute "href" "" ] []
+
         svgImage =
             Svg.image
-                [ Svg.Attributes.xlinkHref "https://cdn.discordapp.com/attachments/1175493372430000218/1210710301767507998/Thronefast_2024-02-14.png?ex=65eb8cd5&is=65d917d5&hm=b5991cb0c52746a90fe644314bd2fdc7d1c4eb85edd96e9339b1c5c31385e9d5&"
+                [ VirtualDom.attribute "href" "https://cdn.discordapp.com/attachments/1175493372430000218/1210710301767507998/Thronefast_2024-02-14.png?ex=65eb8cd5&is=65d917d5&hm=b5991cb0c52746a90fe644314bd2fdc7d1c4eb85edd96e9339b1c5c31385e9d5&"
                 , Svg.Attributes.width <| String.fromInt mapXSize
                 , Svg.Attributes.height <| String.fromInt mapYSize
                 ]
