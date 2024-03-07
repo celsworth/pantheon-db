@@ -768,9 +768,13 @@ poiHoverContainer model =
 
 pois : Model -> List Npc -> List Resource -> List (Svg Msg)
 pois model npcs resources =
+    let
+        npcRadar =
+            List.length npcs == 1
+    in
     List.concat
-        [ resources |> List.map PoiResource |> List.map (poiCircle model)
-        , npcs |> List.map PoiNpc |> List.map (poiCircle model)
+        [ resources |> List.map PoiResource |> List.map (poiCircle False model)
+        , npcs |> List.map PoiNpc |> List.map (poiCircle npcRadar model)
         ]
 
 
@@ -794,8 +798,8 @@ maybeLocsToMaybeSvgAttrs loc_x loc_y model =
             Nothing
 
 
-poiCircle : Model -> Poi -> Svg Msg
-poiCircle model poi =
+poiCircle : Bool -> Model -> Poi -> Svg Msg
+poiCircle enableRadar model poi =
     let
         ( loc_x, loc_y ) =
             case poi of
@@ -804,26 +808,6 @@ poiCircle model poi =
 
                 PoiNpc n ->
                     ( n.loc_x, n.loc_y )
-
-        testRadar =
-            case poi of
-                PoiNpc npc ->
-                    if npc.name == "Akola" then
-                        True
-
-                    else
-                        False
-
-                _ ->
-                    False
-
-        testHighlighted =
-            case poi of
-                PoiNpc npc ->
-                    Helpers.strIf (npc.name == "Elinae Whispertree") " highlighted"
-
-                _ ->
-                    ""
 
         cssClass =
             case poi of
@@ -834,7 +818,7 @@ poiCircle model poi =
                     "resource resource__" ++ Api.Enum.ResourceResource.toString resource.resource
 
         circleAttrs =
-            [ Svg.Attributes.class <| cssClass ++ testHighlighted
+            [ Svg.Attributes.class <| cssClass
             , Svg.Attributes.r (String.fromFloat (13 - model.zoom))
             , onClick <| ClickedPoi poi
             , Mouse.onOver <| PoiHoverEnter poi
@@ -842,9 +826,7 @@ poiCircle model poi =
             ]
 
         radarAttrs =
-            [ Svg.Attributes.class <| cssClass
-            , Svg.Attributes.style "pointer-events: none"
-            ]
+            [ Svg.Attributes.class <| cssClass, Svg.Attributes.style "pointer-events: none" ]
 
         radarAnimCommonAttrs =
             [ Svg.Attributes.dur "2s", Svg.Attributes.keyTimes "0; 0.2; 1", Svg.Attributes.repeatCount "indefinite" ]
@@ -857,7 +839,7 @@ poiCircle model poi =
         svgG locAttrs =
             Svg.g []
                 [ Svg.circle (circleAttrs ++ locAttrs) []
-                , Helpers.htmlIf (testRadar == True) <| Svg.circle (radarAttrs ++ locAttrs) radarAnimElements
+                , Helpers.htmlIf (enableRadar == True) <| Svg.circle (radarAttrs ++ locAttrs) radarAnimElements
                 ]
     in
     maybeLocsToMaybeSvgAttrs loc_x loc_y model
