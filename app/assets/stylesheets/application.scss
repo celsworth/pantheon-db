@@ -73,14 +73,26 @@ $body-background-color: #9a9;
 svg {
   border: 1px solid black;
 
-  text {
+  line.loc-grid {
+    stroke: #222;
+    stroke-width: 1;
+    stroke-opacity: 0.9;
+    stroke-dasharray: 1, 2;
+    pointer-events: none;
+  }
+
+  text.loc-line-label {
     // avoid breaking dragging when going over a text element
     pointer-events: none;
-    stroke: white;
-    stroke-width: 0.6em;
-    fill: black;
-    paint-order: stroke;
-    stroke-linejoin: round;
+    fill: #222;
+    opacity: 0.6;
+
+    // old experimental white background
+    // stroke: white;
+    // stroke-width: 0.6em;
+    // fill: black;
+    // paint-order: stroke;
+    // stroke-linejoin: round;
   }
 
   circle {
@@ -204,7 +216,7 @@ svg {
       }
     }
 
-    &.monster{
+    &.monster {
       @include hoverable-circle($fill: #F40);
     }
 

@@ -231,6 +231,10 @@ update msg model =
             ( model |> calculateNewMapOffset event |> storeMousePosition event, Cmd.none )
 
         MouseDown event ->
+            let
+                _ =
+                    Debug.log "MouseDown" event
+            in
             ( { model
                 | dragData =
                     Dragging
@@ -808,6 +812,52 @@ svgView model npcs resources monsters =
                 , Svg.Attributes.height <| String.fromInt mapYSize
                 ]
                 []
+
+        locLineLocsX =
+            [ 3000, 3500, 4000, 4500, 5000, 5500 ]
+
+        locLineLocsY =
+            [ 3000, 3500, 4000, 4500, 5000, 5500 ]
+
+        locLine x1 y1 x2 y2 =
+            Svg.line
+                [ Svg.Attributes.x1 <| String.fromFloat x1
+                , Svg.Attributes.y1 <| String.fromFloat y1
+                , Svg.Attributes.x2 <| String.fromFloat x2
+                , Svg.Attributes.y2 <| String.fromFloat y2
+                , Svg.Attributes.class "loc-grid"
+                ]
+                []
+
+        locLabel label x y =
+            Svg.text_
+                [ Svg.Attributes.x <| String.fromFloat x
+                , Svg.Attributes.y <| String.fromFloat y
+                , Svg.Attributes.class "loc-line-label"
+                ]
+                [ text <| String.fromFloat <| label ]
+
+        verticalLocs =
+            locLineLocsX
+                |> List.map (\loc_x -> ( loc_x, locsToSvgCoordinates loc_x 0 model ))
+                |> List.map
+                    (\( loc, ( x, _ ) ) ->
+                        [ locLine x 0 x mapYSize
+                        , locLabel loc (x + 2) (model.mapOffset.y + 15)
+                        ]
+                    )
+                |> List.concat
+
+        horizontalLocs =
+            locLineLocsY
+                |> List.map (\loc_y -> ( loc_y, locsToSvgCoordinates 0 loc_y model ))
+                |> List.map
+                    (\( loc, ( _, y ) ) ->
+                        [ locLine 0 y mapXSize y
+                        , locLabel loc (model.mapOffset.x + 5) (y - 2)
+                        ]
+                    )
+                |> List.concat
     in
     div []
         [ poiHoverContainer model
@@ -815,7 +865,13 @@ svgView model npcs resources monsters =
             [ div [ class "overlay-container zoom" ] [ zoomSlider ]
             , svg
                 (mouseEvents ++ [ id "svg-container", Svg.Attributes.viewBox viewBox ])
-                (svgImage :: svgPois model monsters npcs resources)
+                ([ [ svgImage ]
+                 , svgPois model monsters npcs resources
+                 , verticalLocs
+                 , horizontalLocs
+                 ]
+                    |> List.concat
+                )
             ]
         ]
 
@@ -860,6 +916,18 @@ svgPois model monsters npcs resources =
         , resources |> List.map PoiResource |> List.map (poiCircle False model)
         , npcs |> List.map PoiNpc |> List.map (poiCircle npcRadar model)
         ]
+
+
+locsToSvgCoordinates : Float -> Float -> Model -> ( Float, Float )
+locsToSvgCoordinates loc_x loc_y model =
+    let
+        offsetLocX x =
+            (x - model.mapCalibration.xLeft) * model.mapCalibration.xScale
+
+        offsetLocY y =
+            (model.mapCalibration.yBottom - y) * model.mapCalibration.yScale
+    in
+    ( offsetLocX loc_x, offsetLocY loc_y )
 
 
 maybeLocsToMaybeSvgAttrs : Maybe Float -> Maybe Float -> Model -> Maybe (List (Svg.Attribute Msg))
