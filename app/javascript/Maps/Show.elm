@@ -198,14 +198,6 @@ calcMapCalibration input1 input2 =
     { xLeft = xLeft, yBottom = yBottom, xScale = abs xScale, yScale = abs yScale }
 
 
-mouseEventToOffset : Mouse.Event -> Offset
-mouseEventToOffset event =
-    let
-        ( x, y ) =
-            event.offsetPos
-    in
-    { x = x, y = y }
-
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -836,9 +828,9 @@ svgView model npcs resources monsters =
 
         verticalLocs =
             locLineLocsX
-                |> List.map (\loc_x -> ( loc_x, locsToSvgCoordinates loc_x 0 model ))
+                |> List.map (\loc_x -> ( loc_x, locsToSvgCoordinates { x = loc_x, y = 0 } model.mapCalibration ))
                 |> List.map
-                    (\( loc, ( x, _ ) ) ->
+                    (\( loc, { x } ) ->
                         [ locLine x 0 x mapYSize
                         , locLabel loc (x + 2) (model.mapOffset.y + 15)
                         ]
@@ -847,9 +839,9 @@ svgView model npcs resources monsters =
 
         horizontalLocs =
             locLineLocsY
-                |> List.map (\loc_y -> ( loc_y, locsToSvgCoordinates 0 loc_y model ))
+                |> List.map (\loc_y -> ( loc_y, locsToSvgCoordinates { x = 0, y = loc_y } model.mapCalibration ))
                 |> List.map
-                    (\( loc, ( _, y ) ) ->
+                    (\( loc, { y } ) ->
                         [ locLine 0 y mapXSize y
                         , locLabel loc (model.mapOffset.x + 5) (y - 2)
                         ]
@@ -864,8 +856,7 @@ svgView model npcs resources monsters =
                 (mouseEvents ++ [ id "svg-container", Svg.Attributes.viewBox viewBox ])
                 ([ [ svgImage ]
                  , svgPois model monsters npcs resources
-                 , verticalLocs
-                 , horizontalLocs
+                 , [ Svg.g [ Svg.Attributes.class "loc-grid" ] (verticalLocs ++ horizontalLocs) ]
                  ]
                     |> List.concat
                 )
@@ -915,38 +906,6 @@ svgPois model monsters npcs resources =
         ]
 
 
-locsToSvgCoordinates : Float -> Float -> Model -> ( Float, Float )
-locsToSvgCoordinates loc_x loc_y model =
-    let
-        offsetLocX x =
-            (x - model.mapCalibration.xLeft) * model.mapCalibration.xScale
-
-        offsetLocY y =
-            (model.mapCalibration.yBottom - y) * model.mapCalibration.yScale
-    in
-    ( offsetLocX loc_x, offsetLocY loc_y )
-
-
-maybeLocsToMaybeSvgAttrs : Maybe Float -> Maybe Float -> Model -> Maybe (List (Svg.Attribute Msg))
-maybeLocsToMaybeSvgAttrs loc_x loc_y model =
-    let
-        offsetLocX x =
-            (x - model.mapCalibration.xLeft) * model.mapCalibration.xScale
-
-        offsetLocY y =
-            (model.mapCalibration.yBottom - y) * model.mapCalibration.yScale
-    in
-    case ( loc_x, loc_y ) of
-        ( Just x, Just y ) ->
-            Just
-                [ Svg.Attributes.cx <| String.fromFloat <| offsetLocX x
-                , Svg.Attributes.cy <| String.fromFloat <| offsetLocY y
-                ]
-
-        _ ->
-            Nothing
-
-
 poiCircle : Bool -> Model -> Poi -> Svg Msg
 poiCircle enableRadar model poi =
     let
@@ -973,32 +932,31 @@ poiCircle enableRadar model poi =
                     "resource resource__" ++ Api.Enum.ResourceResource.toString resource.resource
 
         circleAttrs =
-            [ Svg.Attributes.class <| cssClass
+            [ Svg.Attributes.class cssClass
             , Svg.Attributes.r (String.fromFloat (13 - model.zoom))
             , onClick <| ClickedPoi poi
             , Mouse.onOver <| PoiHoverEnter poi
             , Mouse.onLeave <| PoiHoverLeave
             ]
 
-        radarAttrs =
-            [ Svg.Attributes.class <| cssClass, Svg.Attributes.style "pointer-events: none" ]
-
         radarAnimCommonAttrs =
             [ Svg.Attributes.dur "2s", Svg.Attributes.keyTimes "0; 0.2; 1", Svg.Attributes.repeatCount "indefinite" ]
 
-        radarAnimElements =
-            [ Svg.animate ([ Svg.Attributes.attributeName "r", Svg.Attributes.from "0", Svg.Attributes.to "400", Svg.Attributes.values "0; 400; 400" ] ++ radarAnimCommonAttrs) []
-            , Svg.animate ([ Svg.Attributes.attributeName "opacity", Svg.Attributes.from "0.7", Svg.Attributes.to "0", Svg.Attributes.values "0.7; 0; 0" ] ++ radarAnimCommonAttrs) []
-            ]
+        radarAnimElement locAttrs =
+            Svg.circle (locAttrs ++ [ Svg.Attributes.class <| cssClass ++ " radar" ])
+                [ Svg.animate ([ Svg.Attributes.attributeName "r", Svg.Attributes.from "0", Svg.Attributes.to "400", Svg.Attributes.values "0; 400; 400" ] ++ radarAnimCommonAttrs) []
+                , Svg.animate ([ Svg.Attributes.attributeName "opacity", Svg.Attributes.from "0.7", Svg.Attributes.to "0", Svg.Attributes.values "0.7; 0; 0" ] ++ radarAnimCommonAttrs) []
+                ]
 
-        svgG locAttrs =
+        svgPoiG locAttrs =
             Svg.g []
                 [ Svg.circle (circleAttrs ++ locAttrs) []
-                , Helpers.htmlIf (enableRadar == True) <| Svg.circle (radarAttrs ++ locAttrs) radarAnimElements
+                , Helpers.htmlIf (enableRadar == True) <| radarAnimElement locAttrs
                 ]
     in
-    maybeLocsToMaybeSvgAttrs loc_x loc_y model
-        |> Maybe.map svgG
+    Helpers.unwrapMaybeLocTuple ( loc_x, loc_y )
+        |> Maybe.map (\( x, y ) -> locsToSvgAttrs { x = x, y = y } model.mapCalibration)
+        |> Maybe.map svgPoiG
         |> Maybe.withDefault (text "")
 
 
@@ -1013,6 +971,31 @@ npcDisplayLabel npc =
 
         Nothing ->
             text npc.name
+
+
+locsToSvgCoordinates : Offset -> MapCalibration -> Offset
+locsToSvgCoordinates loc mapCalibration =
+    { x = (loc.x - mapCalibration.xLeft) * mapCalibration.xScale
+    , y = (mapCalibration.yBottom - loc.y) * mapCalibration.yScale
+    }
+
+
+locsToSvgAttrs : Offset -> MapCalibration -> List (Svg.Attribute Msg)
+locsToSvgAttrs loc mapCalibration =
+    locsToSvgCoordinates { x = loc.x, y = loc.y } mapCalibration
+        |> (\{ x, y } ->
+                [ Svg.Attributes.cx <| String.fromFloat <| x
+                , Svg.Attributes.cy <| String.fromFloat <| y
+                ]
+           )
+
+mouseEventToOffset : Mouse.Event -> Offset
+mouseEventToOffset event =
+    let
+        ( x, y ) =
+            event.offsetPos
+    in
+    { x = x, y = y }
 
 
 subscriptions : Model -> Sub Msg
