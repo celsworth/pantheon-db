@@ -48,7 +48,6 @@ $body-background-color: #9a9;
 }
 
 .overlay-container {
-  pointer-events: none;
   z-index: 1;
   position: absolute;
   display: flex;
@@ -64,6 +63,7 @@ $body-background-color: #9a9;
   }
 
   &.poi {
+    pointer-events: none;
     background: #fff;
     opacity: 0.9;
     border: 1px solid #999;

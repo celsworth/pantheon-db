@@ -802,9 +802,6 @@ svgView model npcs resources monsters =
                 ]
                 []
 
-        svgUse =
-            Svg.use [ VirtualDom.attribute "href" "" ] []
-
         svgImage =
             Svg.image
                 [ VirtualDom.attribute "href" "https://cdn.discordapp.com/attachments/1175493372430000218/1210710301767507998/Thronefast_2024-02-14.png?ex=65eb8cd5&is=65d917d5&hm=b5991cb0c52746a90fe644314bd2fdc7d1c4eb85edd96e9339b1c5c31385e9d5&"
