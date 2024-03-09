@@ -204,6 +204,10 @@ svg {
       }
     }
 
+    &.monster{
+      @include hoverable-circle($fill: #F40);
+    }
+
     &.npc {
       @include hoverable-circle($fill: #BB0);
     }

@@ -6,6 +6,7 @@ import Browser
 import Browser.Dom
 import Browser.Events
 import Helpers
+import Helpers.StringFilter
 import Html exposing (..)
 import Html.Attributes exposing (class, id, placeholder, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
@@ -103,7 +104,7 @@ type alias Model =
 
 type ObjectType
     = Npc
-    | Mob
+    | Monster
     | Resource
     | Location
 
@@ -111,6 +112,7 @@ type ObjectType
 type Poi
     = PoiNpc Npc
     | PoiResource Resource
+    | PoiMonster Monster
 
 
 type DragData
@@ -521,52 +523,54 @@ clampMapOffset zoom mapOffset =
 view : Model -> Html Msg
 view model =
     let
+        monsters =
+            if model.sidePanelTabSelected == Monster then
+                filterMonsters model.monsters model.searchText
+
+            else
+                []
+
         npcs =
-            npcsForTabSelection model.npcs model.searchText model.sidePanelTabSelected
+            if model.sidePanelTabSelected == Npc then
+                filterNpcs model.npcs model.searchText
+
+            else
+                []
 
         resources =
-            resourcesForTabSelection model.resources model.sidePanelTabSelected
-                |> List.filter (\r -> List.member r.resource model.poiVisibility.resources)
+            if model.sidePanelTabSelected == Resource then
+                model.resources
+                    |> List.filter (\r -> List.member r.resource model.poiVisibility.resources)
+
+            else
+                []
     in
     div [ class "columns" ]
-        [ div [ class "column" ] [ svgView model npcs resources ]
-        , div [ class "column is-one-fifth" ] [ sidePanel model npcs ]
+        [ div [ class "column" ] [ svgView model npcs resources monsters ]
+        , div [ class "column is-one-fifth" ] [ sidePanel model npcs monsters ]
         ]
 
 
-npcsForTabSelection : List Npc -> Maybe String -> ObjectType -> List Npc
-npcsForTabSelection npcs searchText selection =
+filterMonsters : List Monster -> Maybe String -> List Monster
+filterMonsters monsters searchText =
+    searchText
+        |> Maybe.map (\t -> Helpers.StringFilter.filter .name t monsters)
+        |> Maybe.withDefault monsters
+
+
+filterNpcs : List Npc -> Maybe String -> List Npc
+filterNpcs npcs searchText =
     let
-        npcToSearchString npc =
+        toSearchString npc =
             String.join " " [ npc.name, Maybe.withDefault "" npc.subtitle ]
-                |> String.toLower
-
-        filter text =
-            npcs |> List.filter (\npc -> String.contains text (npcToSearchString npc))
     in
-    if selection == Npc then
-        case searchText of
-            Just t ->
-                filter (String.toLower t)
-
-            Nothing ->
-                npcs
-
-    else
-        []
+    searchText
+        |> Maybe.map (\t -> Helpers.StringFilter.filter toSearchString t npcs)
+        |> Maybe.withDefault npcs
 
 
-resourcesForTabSelection : List Resource -> ObjectType -> List Resource
-resourcesForTabSelection resources selection =
-    if selection == Resource then
-        resources
-
-    else
-        []
-
-
-sidePanel : Model -> List Npc -> Html Msg
-sidePanel model npcs =
+sidePanel : Model -> List Npc -> List Monster -> Html Msg
+sidePanel model npcs monsters =
     -- TODO: mouseover should highlight the dot?
     -- TODO: click should put the name into searchbox, hence filtering to that one only
     -- TODO: when one npc showing, use radar effect?
@@ -606,8 +610,8 @@ sidePanel model npcs =
                 Npc ->
                     ( searchBlock, Html.Lazy.lazy npcsPanel npcs )
 
-                Mob ->
-                    ( searchBlock, text "" )
+                Monster ->
+                    ( searchBlock, Html.Lazy.lazy monstersPanel monsters )
 
                 Resource ->
                     ( allOrNoneBlock Resource, Html.Lazy.lazy resourcesPanel model )
@@ -624,8 +628,8 @@ sidePanel model npcs =
                     ]
                     [ text "NPCs" ]
                 , a
-                    [ class "has-text-grey-light"
-                    , class (activeIf <| model.sidePanelTabSelected == Mob)
+                    [ onClick <| ChangeSidePanelTab Monster
+                    , class (activeIf <| model.sidePanelTabSelected == Monster)
                     ]
                     [ text "Mobs" ]
                 , a
@@ -645,17 +649,13 @@ sidePanel model npcs =
         ]
 
 
-npcDisplayLabel : Npc -> Html Msg
-npcDisplayLabel npc =
-    case npc.subtitle of
-        Just subtitle ->
-            span []
-                [ text npc.name
-                , span [ class "has-text-grey" ] [ text <| " (" ++ subtitle ++ ")" ]
-                ]
-
-        Nothing ->
-            text npc.name
+monstersPanel : List Monster -> Html Msg
+monstersPanel monsters =
+    let
+        panelBlock monster =
+            a [ class "panel-block" ] [ text monster.name ]
+    in
+    div [] <| List.map panelBlock monsters
 
 
 npcsPanel : List Npc -> Html Msg
@@ -765,8 +765,8 @@ otherPanel model =
         ]
 
 
-svgView : Model -> List Npc -> List Resource -> Html Msg
-svgView model npcs resources =
+svgView : Model -> List Npc -> List Resource -> List Monster -> Html Msg
+svgView model npcs resources monsters =
     let
         mouseEvents =
             case model.dragData of
@@ -815,7 +815,7 @@ svgView model npcs resources =
             [ div [ class "overlay-container zoom" ] [ zoomSlider ]
             , svg
                 (mouseEvents ++ [ id "svg-container", Svg.Attributes.viewBox viewBox ])
-                (svgImage :: pois model npcs resources)
+                (svgImage :: svgPois model monsters npcs resources)
             ]
         ]
 
@@ -839,6 +839,9 @@ poiHoverContainer model =
         Just ( PoiNpc npc, _ ) ->
             div [ topStyle, leftStyle, class classes ] [ npcDisplayLabel npc ]
 
+        Just ( PoiMonster monster, _ ) ->
+            div [ topStyle, leftStyle, class classes ] [ text monster.name ]
+
         Just ( PoiResource resource, _ ) ->
             div [ topStyle, leftStyle, class classes ] [ text resource.name ]
 
@@ -846,14 +849,15 @@ poiHoverContainer model =
             text ""
 
 
-pois : Model -> List Npc -> List Resource -> List (Svg Msg)
-pois model npcs resources =
+svgPois : Model -> List Monster -> List Npc -> List Resource -> List (Svg Msg)
+svgPois model monsters npcs resources =
     let
         npcRadar =
             List.length npcs == 1
     in
     List.concat
-        [ resources |> List.map PoiResource |> List.map (poiCircle False model)
+        [ monsters |> List.map PoiMonster |> List.map (poiCircle False model)
+        , resources |> List.map PoiResource |> List.map (poiCircle False model)
         , npcs |> List.map PoiNpc |> List.map (poiCircle npcRadar model)
         ]
 
@@ -886,6 +890,9 @@ poiCircle enableRadar model poi =
                 PoiResource r ->
                     ( Just r.loc_x, Just r.loc_y )
 
+                PoiMonster m ->
+                    ( m.loc_x, m.loc_y )
+
                 PoiNpc n ->
                     ( n.loc_x, n.loc_y )
 
@@ -893,6 +900,9 @@ poiCircle enableRadar model poi =
             case poi of
                 PoiNpc _ ->
                     "npc"
+
+                PoiMonster _ ->
+                    "monster"
 
                 PoiResource resource ->
                     "resource resource__" ++ Api.Enum.ResourceResource.toString resource.resource
@@ -927,25 +937,17 @@ poiCircle enableRadar model poi =
         |> Maybe.withDefault (text "")
 
 
-poiText : Npc -> Model -> Svg Msg
-poiText npc model =
-    case ( npc.loc_x, npc.loc_y ) of
-        ( Just x, Just y ) ->
-            let
-                offsetLocX =
-                    10 + x - 2500
-
-                offsetLocY =
-                    5 + 4450 - y
-            in
-            Svg.text_
-                [ Svg.Attributes.x <| String.fromFloat offsetLocX
-                , Svg.Attributes.y <| String.fromFloat offsetLocY
+npcDisplayLabel : Npc -> Html Msg
+npcDisplayLabel npc =
+    case npc.subtitle of
+        Just subtitle ->
+            span []
+                [ text npc.name
+                , span [ class "has-text-grey" ] [ text <| " (" ++ subtitle ++ ")" ]
                 ]
-                [ text npc.name ]
 
-        _ ->
-            text ""
+        Nothing ->
+            text npc.name
 
 
 subscriptions : Model -> Sub Msg
