@@ -136,7 +136,7 @@ type Msg
     | PoiHoverEnter Poi Mouse.Event
     | PoiHoverLeave Mouse.Event
     | ChangeSidePanelTab ObjectType
-    | SearchBoxChanged String
+    | SetSearchText String
     | ChangePoiResourceVisibility (List Api.Enum.ResourceResource.ResourceResource)
     | ChangePoiLocationVisibility (List Api.Enum.LocationCategory.LocationCategory)
     | SetPoiVisibility ObjectType Bool
@@ -220,7 +220,7 @@ update msg model =
             )
 
         MouseMove event ->
-            ( model |> calculateNewMapOffset event |> storeMousePosition event, Cmd.none )
+            ( model |> calculateNewMapOffset event |> setMousePosition event, Cmd.none )
 
         MouseDown event ->
             let
@@ -266,7 +266,7 @@ update msg model =
             in
             ( model, Cmd.none )
 
-        SearchBoxChanged searchText ->
+        SetSearchText searchText ->
             let
                 maybeSearchText =
                     Helpers.maybeIf (not <| String.isEmpty searchText) searchText
@@ -390,9 +390,9 @@ clickPositionToSvgCoordinates ( x, y ) model =
 --- }}}
 
 
-viewportWidth : Model -> ( Float, Float )
-viewportWidth model =
-    ( mapXSize / model.zoom, mapYSize / model.zoom )
+viewportWidth : Float -> ( Float, Float )
+viewportWidth zoom =
+    ( mapXSize / zoom, mapYSize / zoom )
 
 
 applyMouseWheelZoom : Wheel.Event -> Model -> Model
@@ -426,7 +426,7 @@ changeZoom : { xProp : Float, yProp : Float } -> Float -> Model -> Model
 changeZoom proportions newZoom model =
     let
         ( viewportWidthX, viewportWidthY ) =
-            viewportWidth model
+            viewportWidth model.zoom
 
         centreOfViewX =
             model.mapOffset.x + (viewportWidthX * proportions.xProp)
@@ -455,8 +455,8 @@ changeZoom proportions newZoom model =
     { model | zoom = newZoom, mapOffset = newMapOffset }
 
 
-storeMousePosition : Mouse.Event -> Model -> Model
-storeMousePosition event model =
+setMousePosition : Mouse.Event -> Model -> Model
+setMousePosition event model =
     { model | mousePosition = mouseEventToOffset event }
 
 
@@ -567,8 +567,6 @@ filterNpcs npcs searchText =
 sidePanel : Maybe String -> ObjectType -> PoiVisibility -> Offset -> List Npc -> List Monster -> Html Msg
 sidePanel searchText sidePanelTabSelected poiVisibility mapPageSize npcs monsters =
     -- TODO: mouseover should highlight the dot?
-    -- TODO: click should put the name into searchbox, hence filtering to that one only
-    -- TODO: when one npc showing, use radar effect?
     let
         activeIf b =
             Helpers.strIf b "is-active"
@@ -581,7 +579,7 @@ sidePanel searchText sidePanelTabSelected poiVisibility mapPageSize npcs monster
                         , type_ "text"
                         , placeholder "Search"
                         , value (searchText |> Maybe.withDefault "")
-                        , onInput SearchBoxChanged
+                        , onInput SetSearchText
                         ]
                         []
                     , span [ class "icon is-left" ] [ i [ class "fas fa-search" ] [] ]
@@ -648,7 +646,7 @@ monstersPanel : List Monster -> Html Msg
 monstersPanel monsters =
     let
         panelBlock monster =
-            a [ class "panel-block" ] [ text monster.name ]
+            a [ onClick <| SetSearchText monster.name, class "panel-block" ] [ text monster.name ]
     in
     div [] <| List.map panelBlock monsters
 
@@ -657,7 +655,7 @@ npcsPanel : List Npc -> Html Msg
 npcsPanel npcs =
     let
         panelBlock npc =
-            a [ class "panel-block" ] [ npcDisplayLabel npc ]
+            a [ onClick <| SetSearchText npc.name, class "panel-block" ] [ npcDisplayLabel npc ]
     in
     div [] <| List.map panelBlock npcs
 
@@ -772,7 +770,7 @@ svgView model npcs resources monsters =
                     [ Mouse.onDown MouseDown, Mouse.onMove MouseMove, Wheel.onWheel MouseWheel ]
 
         ( viewportWidthX, viewportWidthY ) =
-            viewportWidth model
+            viewportWidth model.zoom
 
         viewBox =
             String.join " "
@@ -910,14 +908,15 @@ svgPois mapCalibration zoom monsters npcs resources =
         poi enableRadar =
             poiCircle enableRadar mapCalibration zoom
 
-        npcRadar =
-            List.length npcs == 1
+        onePoi =
+            -- assumes that lists on other tabs are empty, which is ok
+            List.length npcs == 1 || List.length monsters == 1
     in
     Svg.g [] <|
         List.concat
-            [ monsters |> List.map PoiMonster |> List.map (poi False)
+            [ monsters |> List.map PoiMonster |> List.map (poi onePoi)
             , resources |> List.map PoiResource |> List.map (poi False)
-            , npcs |> List.map PoiNpc |> List.map (poi npcRadar)
+            , npcs |> List.map PoiNpc |> List.map (poi onePoi)
             ]
 
 
