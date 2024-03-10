@@ -12,9 +12,19 @@ z = Zone.create(name: 'Thronefast')
 availia = Location.create(zone: z, name: 'Availia', category: 'settlement')
 Location.create(zone: avp, name: 'Demith', category: 'settlement')
 tf = Location.create(zone: z, name: 'Thronefast', category: 'zone')
+Location.create(zone: avp, name: "Avendyr's Pass", category: 'zone')
 
 Location.create(zone: z, name: 'Oceanside Portal', category: 'portal',
                 loc_x: 4746.07, loc_y: 2856.59, loc_z: 608.27)
+
+z = Zone.find_by(name: 'Thronefast')
+avp = Zone.find_by(name: "Avendyr's Pass")
+Location.create(zone: avp, name: 'Lower Bridge Bindstone', category: 'bindstone',
+                loc_x: 4092, loc_y: 3002, loc_z: 470)
+Location.create(zone: avp, name: 'AvP Gate Bindstone', category: 'bindstone',
+                loc_x: 3546, loc_y: 2940, loc_z: 591)
+Location.create(zone: avp, name: 'Demith Bindstone', category: 'bindstone',
+                loc_x: 3396.18, loc_y: 2030.74, loc_z: 595.06)
 
 huntress = Npc.create(location: availia, name: 'The Huntress')
 scavenger = Npc.create(location: availia, name: 'The Scavenger')

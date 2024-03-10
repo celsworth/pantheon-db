@@ -6,7 +6,7 @@ class LocationSearch
   InvalidOperator = Class.new(StandardError)
 
   FILTERS = %i[
-    filter_id filter_name filter_category filter_zone
+    filter_id filter_name filter_category filter_zone filter_has_loc_coords
   ].freeze
 
   def initialize(**params)
@@ -37,6 +37,18 @@ class LocationSearch
 
   def filter_zone
     where(zone_id: @params[:zone_id]) unless @params[:zone_id].nil?
+  end
+
+  def filter_has_loc_coords
+    return unless defined?(@params[:has_loc_coords])
+
+    tbl = Location.arel_table
+    ids = ids = if @params[:has_loc_coords]
+                  Location.where(tbl[:loc_x].not_eq(nil)).where(tbl[:loc_y].not_eq(nil))
+                else
+                  Location.where(tbl[:loc_x].eq(nil)).where(tbl[:loc_y].eq(nil))
+                end
+    where(id: ids)
   end
 
   def where(...)

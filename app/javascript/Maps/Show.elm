@@ -15,6 +15,7 @@ import Html.Events.Extra.Wheel as Wheel
 import Html.Lazy
 import List.Extra
 import Query.Common
+import Query.Locations
 import Query.Monsters
 import Query.Npcs
 import Query.Resources
@@ -22,7 +23,7 @@ import Svg exposing (Svg, svg)
 import Svg.Attributes
 import Svg.Lazy
 import Task
-import Types exposing (Monster, Npc, Resource)
+import Types exposing (Location, Monster, Npc, Resource)
 import VirtualDom
 
 
@@ -71,7 +72,7 @@ type alias MapCalibration =
 
 
 type alias PoiVisibility =
-    { -- a list of ResourceResource that are selected as visible in sidebar
+    { -- contents of lists are selected as visible in sidebar
       resources : List Api.Enum.ResourceResource.ResourceResource
     , locations : List Api.Enum.LocationCategory.LocationCategory
     }
@@ -85,6 +86,14 @@ defaultPoiVisibility =
     }
 
 
+type alias MapPoiData =
+    { locations : List Location
+    , monsters : List Monster
+    , npcs : List Npc
+    , resources : List Resource
+    }
+
+
 type alias Model =
     { flags : Flags
     , zoom : Float
@@ -95,9 +104,8 @@ type alias Model =
     , dragData : DragData
     , poiVisibility : PoiVisibility
     , poiHover : Maybe ( Poi, Mouse.Event )
-    , npcs : List Npc
-    , monsters : List Monster
-    , resources : List Resource
+    , mapPoiData : MapPoiData
+    , filteredMapPoiData : MapPoiData
     , searchText : Maybe String
     , sidePanelTabSelected : ObjectType
     }
@@ -114,6 +122,7 @@ type Poi
     = PoiNpc Npc
     | PoiResource Resource
     | PoiMonster Monster
+    | PoiLocation Location
 
 
 type DragData
@@ -130,6 +139,7 @@ type Msg
     | GotNpcs (Query.Common.Msg Npc)
     | GotMonsters (Query.Common.Msg Monster)
     | GotResources (Query.Common.Msg Resource)
+    | GotLocations (Query.Common.Msg Location)
     | BrowserResized
     | GotSvgElement (Result Browser.Dom.Error Browser.Dom.Element)
     | ClickedPoi Poi
@@ -156,6 +166,9 @@ init flags =
             { loc = { x = 4746.07, y = 2856.59 }
             , map = { x = 3087.02, y = 2316.98 }
             }
+
+        mapPoiData =
+            { locations = [], monsters = [], npcs = [], resources = [] }
     in
     ( { flags = flags
       , zoom = 1
@@ -166,9 +179,8 @@ init flags =
       , dragData = NotDragging
       , poiVisibility = defaultPoiVisibility
       , poiHover = Nothing
-      , npcs = []
-      , monsters = []
-      , resources = []
+      , mapPoiData = mapPoiData
+      , filteredMapPoiData = mapPoiData
       , searchText = Nothing
       , sidePanelTabSelected = Resource
       }
@@ -176,6 +188,7 @@ init flags =
         [ Query.Npcs.makeRequest { url = flags.graphqlBaseUrl, toMsg = GotNpcs }
         , Query.Monsters.makeRequest { url = flags.graphqlBaseUrl, toMsg = GotMonsters }
         , Query.Resources.makeRequest { url = flags.graphqlBaseUrl, toMsg = GotResources }
+        , Query.Locations.makeRequest { hasLocCoords = Just True } { url = flags.graphqlBaseUrl, toMsg = GotLocations }
         , Browser.Dom.getElement "svg-container" |> Task.attempt GotSvgElement
         ]
     )
@@ -203,13 +216,44 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         GotNpcs response ->
-            ( { model | npcs = Query.Common.parseList response }, Cmd.none )
+            let
+                mapPoiData =
+                    model.mapPoiData
+
+                newMapPoiData =
+                    { mapPoiData | npcs = Query.Common.parseList response }
+            in
+            ( { model | mapPoiData = newMapPoiData } |> updateMapPoiData, Cmd.none )
 
         GotMonsters response ->
-            ( { model | monsters = Query.Common.parseList response }, Cmd.none )
+            let
+                mapPoiData =
+                    model.mapPoiData
+
+                newMapPoiData =
+                    { mapPoiData | monsters = Query.Common.parseList response }
+            in
+            ( { model | mapPoiData = newMapPoiData } |> updateMapPoiData, Cmd.none )
 
         GotResources response ->
-            ( { model | resources = Query.Common.parseList response }, Cmd.none )
+            let
+                mapPoiData =
+                    model.mapPoiData
+
+                newMapPoiData =
+                    { mapPoiData | resources = Query.Common.parseList response }
+            in
+            ( { model | mapPoiData = newMapPoiData } |> updateMapPoiData, Cmd.none )
+
+        GotLocations response ->
+            let
+                mapPoiData =
+                    model.mapPoiData
+
+                newMapPoiData =
+                    { mapPoiData | locations = Query.Common.parseList response }
+            in
+            ( { model | mapPoiData = newMapPoiData } |> updateMapPoiData, Cmd.none )
 
         MouseWheel event ->
             ( model |> applyMouseWheelZoom event, Cmd.none )
@@ -271,19 +315,19 @@ update msg model =
                 maybeSearchText =
                     Helpers.maybeIf (not <| String.isEmpty searchText) searchText
             in
-            ( { model | searchText = maybeSearchText }, Cmd.none )
+            ( { model | searchText = maybeSearchText } |> updateMapPoiData, Cmd.none )
 
         ChangeSidePanelTab toTab ->
-            ( { model | sidePanelTabSelected = toTab }, Cmd.none )
+            ( { model | sidePanelTabSelected = toTab } |> updateMapPoiData, Cmd.none )
 
         ChangePoiResourceVisibility listOfResources ->
-            ( model |> changePoiResourceVisibility listOfResources, Cmd.none )
+            ( model |> changePoiResourceVisibility listOfResources |> updateMapPoiData, Cmd.none )
 
         ChangePoiLocationVisibility listOfLocations ->
-            ( model |> changePoiLocationVisibility listOfLocations, Cmd.none )
+            ( model |> changePoiLocationVisibility listOfLocations |> updateMapPoiData, Cmd.none )
 
         SetPoiVisibility objectType toVisible ->
-            ( model |> setPoiVisibility objectType toVisible, Cmd.none )
+            ( model |> setPoiVisibility objectType toVisible |> updateMapPoiData, Cmd.none )
 
 
 setPoiVisibility : ObjectType -> Bool -> Model -> Model
@@ -516,34 +560,45 @@ clampMapOffset zoom mapOffset =
 --- }}}
 
 
-view : Model -> Html Msg
-view model =
+updateMapPoiData : Model -> Model
+updateMapPoiData model =
     let
         monsters =
             if model.sidePanelTabSelected == Monster then
-                filterMonsters model.monsters model.searchText
+                filterMonsters model.mapPoiData.monsters model.searchText
 
             else
                 []
 
         npcs =
             if model.sidePanelTabSelected == Npc then
-                filterNpcs model.npcs model.searchText
+                filterNpcs model.mapPoiData.npcs model.searchText
 
             else
                 []
 
         resources =
             if model.sidePanelTabSelected == Resource then
-                List.filter (\r -> List.member r.resource model.poiVisibility.resources) model.resources
+                List.filter (\r -> List.member r.resource model.poiVisibility.resources) model.mapPoiData.resources
 
             else
                 []
+
+        locations =
+            if model.sidePanelTabSelected == Location then
+                List.filter (\l -> List.member l.category model.poiVisibility.locations) model.mapPoiData.locations
+
+            else
+                []
+
+        newMapPoiData =
+            { locations = locations
+            , monsters = monsters
+            , npcs = npcs
+            , resources = resources
+            }
     in
-    div [ class "columns" ]
-        [ div [ class "column" ] [ svgView model npcs resources monsters ]
-        , div [ class "column is-one-fifth" ] [ Html.Lazy.lazy6 sidePanel model.searchText model.sidePanelTabSelected model.poiVisibility model.mapPageSize npcs monsters ]
-        ]
+    { model | filteredMapPoiData = newMapPoiData }
 
 
 filterMonsters : List Monster -> Maybe String -> List Monster
@@ -564,8 +619,16 @@ filterNpcs npcs searchText =
         |> Maybe.withDefault npcs
 
 
-sidePanel : Maybe String -> ObjectType -> PoiVisibility -> Offset -> List Npc -> List Monster -> Html Msg
-sidePanel searchText sidePanelTabSelected poiVisibility mapPageSize npcs monsters =
+view : Model -> Html Msg
+view model =
+    div [ class "columns" ]
+        [ div [ class "column" ] [ svgView model ]
+        , div [ class "column is-one-fifth" ] [ Html.Lazy.lazy5 sidePanel model.searchText model.sidePanelTabSelected model.poiVisibility model.mapPageSize model.filteredMapPoiData ]
+        ]
+
+
+sidePanel : Maybe String -> ObjectType -> PoiVisibility -> Offset -> MapPoiData -> Html Msg
+sidePanel searchText sidePanelTabSelected poiVisibility mapPageSize mapPoiData =
     -- TODO: mouseover should highlight the dot?
     let
         activeIf b =
@@ -601,10 +664,10 @@ sidePanel searchText sidePanelTabSelected poiVisibility mapPageSize npcs monster
         ( stickyContent, content ) =
             case sidePanelTabSelected of
                 Npc ->
-                    ( searchBlock, npcsPanel npcs )
+                    ( searchBlock, npcsPanel mapPoiData.npcs )
 
                 Monster ->
-                    ( searchBlock, monstersPanel monsters )
+                    ( searchBlock, monstersPanel mapPoiData.monsters )
 
                 Resource ->
                     ( allOrNoneBlock Resource, resourcesPanel poiVisibility )
@@ -758,8 +821,8 @@ otherPanel poiVisibility =
         ]
 
 
-svgView : Model -> List Npc -> List Resource -> List Monster -> Html Msg
-svgView model npcs resources monsters =
+svgView : Model -> Html Msg
+svgView model =
     let
         mouseEvents =
             case model.dragData of
@@ -806,7 +869,7 @@ svgView model npcs resources monsters =
             , svg
                 (mouseEvents ++ [ id "svg-container", Svg.Attributes.viewBox viewBox ])
                 [ svgImage
-                , Svg.Lazy.lazy5 svgPois model.mapCalibration model.zoom monsters npcs resources
+                , Svg.Lazy.lazy3 svgPois model.mapCalibration model.zoom model.filteredMapPoiData
                 , Svg.g [ Svg.Attributes.class "loc-grid" ] [ locLineGrid model ]
                 ]
             ]
@@ -820,17 +883,17 @@ locLineGrid model =
             if model.zoom < 3 then
                 500
 
-            else if model.zoom < 6 then
+            else if model.zoom < 7 then
                 250
 
             else
-                100
+                50
 
         locLineLocsX =
-            rangeFromTo 3000 5000 locLineInterval |> List.map toFloat
+            rangeFromTo 2000 5000 locLineInterval |> List.map toFloat
 
         locLineLocsY =
-            rangeFromTo 3000 5000 locLineInterval |> List.map toFloat
+            rangeFromTo 2000 5000 locLineInterval |> List.map toFloat
 
         locLine x1 y1 x2 y2 =
             Svg.line
@@ -898,25 +961,29 @@ poiHoverContainer model =
         Just ( PoiResource resource, _ ) ->
             div [ topStyle, leftStyle, class classes ] [ text resource.name ]
 
+        Just ( PoiLocation location, _ ) ->
+            div [ topStyle, leftStyle, class classes ] [ text location.name ]
+
         Nothing ->
             text ""
 
 
-svgPois : MapCalibration -> Float -> List Monster -> List Npc -> List Resource -> Svg Msg
-svgPois mapCalibration zoom monsters npcs resources =
+svgPois : MapCalibration -> Float -> MapPoiData -> Svg Msg
+svgPois mapCalibration zoom mapPoiData =
     let
         poi enableRadar =
             poiCircle enableRadar mapCalibration zoom
 
         onePoi =
             -- assumes that lists on other tabs are empty, which is ok
-            List.length npcs == 1 || List.length monsters == 1
+            List.length mapPoiData.npcs == 1 || List.length mapPoiData.monsters == 1
     in
     Svg.g [] <|
         List.concat
-            [ monsters |> List.map PoiMonster |> List.map (poi onePoi)
-            , resources |> List.map PoiResource |> List.map (poi False)
-            , npcs |> List.map PoiNpc |> List.map (poi onePoi)
+            [ mapPoiData.locations |> List.map PoiLocation |> List.map (poi False)
+            , mapPoiData.monsters |> List.map PoiMonster |> List.map (poi onePoi)
+            , mapPoiData.npcs |> List.map PoiNpc |> List.map (poi onePoi)
+            , mapPoiData.resources |> List.map PoiResource |> List.map (poi False)
             ]
 
 
@@ -934,6 +1001,9 @@ poiCircle enableRadar mapCalibration zoom poi =
                 PoiNpc n ->
                     ( n.loc_x, n.loc_y )
 
+                PoiLocation l ->
+                    ( l.loc_x, l.loc_y )
+
         cssClass =
             case poi of
                 PoiNpc _ ->
@@ -944,6 +1014,9 @@ poiCircle enableRadar mapCalibration zoom poi =
 
                 PoiResource resource ->
                     "resource resource__" ++ Api.Enum.ResourceResource.toString resource.resource
+
+                PoiLocation location ->
+                    "location location__" ++ Api.Enum.LocationCategory.toString location.category
 
         circleAttrs =
             [ Svg.Attributes.class cssClass

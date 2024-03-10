@@ -58,12 +58,17 @@ type alias LocationsOptionalArguments =
     , zoneId : OptionalArgument Api.ScalarCodecs.Id
     , name : OptionalArgument String
     , category : OptionalArgument Api.Enum.LocationCategory.LocationCategory
+    , hasLocCoords : OptionalArgument Bool
     }
 
 
 {-|
 
   - zoneId - Zone ID the Location must be in
+  - hasLocCoords - Set to true if you only want locations that have loc\_x/loc\_y coordinates.
+
+This is useful to filter to locations that will be visible on a map, and will exclude
+things like Locations that only represent an entire Zone.
 
 -}
 locations :
@@ -73,10 +78,10 @@ locations :
 locations fillInOptionals____ object____ =
     let
         filledInOptionals____ =
-            fillInOptionals____ { id = Absent, zoneId = Absent, name = Absent, category = Absent }
+            fillInOptionals____ { id = Absent, zoneId = Absent, name = Absent, category = Absent, hasLocCoords = Absent }
 
         optionalArgs____ =
-            [ Argument.optional "id" filledInOptionals____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "zoneId" filledInOptionals____.zoneId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "name" filledInOptionals____.name Encode.string, Argument.optional "category" filledInOptionals____.category (Encode.enum Api.Enum.LocationCategory.toString) ]
+            [ Argument.optional "id" filledInOptionals____.id (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "zoneId" filledInOptionals____.zoneId (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapEncoder .codecId), Argument.optional "name" filledInOptionals____.name Encode.string, Argument.optional "category" filledInOptionals____.category (Encode.enum Api.Enum.LocationCategory.toString), Argument.optional "hasLocCoords" filledInOptionals____.hasLocCoords Encode.bool ]
                 |> List.filterMap Basics.identity
     in
     Object.selectionForCompositeField "locations" optionalArgs____ object____ (Basics.identity >> Decode.list)
