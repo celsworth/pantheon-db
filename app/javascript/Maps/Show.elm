@@ -20,6 +20,7 @@ import Query.Npcs
 import Query.Resources
 import Svg exposing (Svg, svg)
 import Svg.Attributes
+import Svg.Lazy
 import Task
 import Types exposing (Monster, Npc, Resource)
 import VirtualDom
@@ -196,7 +197,6 @@ calcMapCalibration input1 input2 =
             input1.loc.y - (input1.map.y / yScale)
     in
     { xLeft = xLeft, yBottom = yBottom, xScale = abs xScale, yScale = abs yScale }
-
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -535,15 +535,14 @@ view model =
 
         resources =
             if model.sidePanelTabSelected == Resource then
-                model.resources
-                    |> List.filter (\r -> List.member r.resource model.poiVisibility.resources)
+                List.filter (\r -> List.member r.resource model.poiVisibility.resources) model.resources
 
             else
                 []
     in
     div [ class "columns" ]
         [ div [ class "column" ] [ svgView model npcs resources monsters ]
-        , div [ class "column is-one-fifth" ] [ sidePanel model npcs monsters ]
+        , div [ class "column is-one-fifth" ] [ Html.Lazy.lazy6 sidePanel model.searchText model.sidePanelTabSelected model.poiVisibility model.mapPageSize npcs monsters ]
         ]
 
 
@@ -565,8 +564,8 @@ filterNpcs npcs searchText =
         |> Maybe.withDefault npcs
 
 
-sidePanel : Model -> List Npc -> List Monster -> Html Msg
-sidePanel model npcs monsters =
+sidePanel : Maybe String -> ObjectType -> PoiVisibility -> Offset -> List Npc -> List Monster -> Html Msg
+sidePanel searchText sidePanelTabSelected poiVisibility mapPageSize npcs monsters =
     -- TODO: mouseover should highlight the dot?
     -- TODO: click should put the name into searchbox, hence filtering to that one only
     -- TODO: when one npc showing, use radar effect?
@@ -581,7 +580,7 @@ sidePanel model npcs monsters =
                         [ class "input is-primary"
                         , type_ "text"
                         , placeholder "Search"
-                        , value (model.searchText |> Maybe.withDefault "")
+                        , value (searchText |> Maybe.withDefault "")
                         , onInput SearchBoxChanged
                         ]
                         []
@@ -602,40 +601,40 @@ sidePanel model npcs monsters =
                 ]
 
         ( stickyContent, content ) =
-            case model.sidePanelTabSelected of
+            case sidePanelTabSelected of
                 Npc ->
-                    ( searchBlock, Html.Lazy.lazy npcsPanel npcs )
+                    ( searchBlock, npcsPanel npcs )
 
                 Monster ->
-                    ( searchBlock, Html.Lazy.lazy monstersPanel monsters )
+                    ( searchBlock, monstersPanel monsters )
 
                 Resource ->
-                    ( allOrNoneBlock Resource, Html.Lazy.lazy resourcesPanel model )
+                    ( allOrNoneBlock Resource, resourcesPanel poiVisibility )
 
                 Location ->
-                    ( allOrNoneBlock Location, Html.Lazy.lazy otherPanel model )
+                    ( allOrNoneBlock Location, otherPanel poiVisibility )
     in
-    nav [ style "height" (String.fromFloat model.mapPageSize.y ++ "px"), class "panel is-danger poi-list" ]
+    nav [ style "height" (String.fromFloat mapPageSize.y ++ "px"), class "panel is-danger poi-list" ]
         [ div [ class "sticky-top" ]
             [ div [ class "panel-tabs" ]
                 [ a
                     [ onClick <| ChangeSidePanelTab Npc
-                    , class (activeIf <| model.sidePanelTabSelected == Npc)
+                    , class (activeIf <| sidePanelTabSelected == Npc)
                     ]
                     [ text "NPCs" ]
                 , a
                     [ onClick <| ChangeSidePanelTab Monster
-                    , class (activeIf <| model.sidePanelTabSelected == Monster)
+                    , class (activeIf <| sidePanelTabSelected == Monster)
                     ]
                     [ text "Mobs" ]
                 , a
                     [ onClick <| ChangeSidePanelTab Resource
-                    , class (activeIf <| model.sidePanelTabSelected == Resource)
+                    , class (activeIf <| sidePanelTabSelected == Resource)
                     ]
                     [ text "Nodes" ]
                 , a
                     [ onClick <| ChangeSidePanelTab Location
-                    , class (activeIf <| model.sidePanelTabSelected == Location)
+                    , class (activeIf <| sidePanelTabSelected == Location)
                     ]
                     [ text "Other" ]
                 ]
@@ -657,14 +656,14 @@ monstersPanel monsters =
 npcsPanel : List Npc -> Html Msg
 npcsPanel npcs =
     let
-        npcPanelBlock npc =
+        panelBlock npc =
             a [ class "panel-block" ] [ npcDisplayLabel npc ]
     in
-    div [] <| List.map npcPanelBlock npcs
+    div [] <| List.map panelBlock npcs
 
 
-resourcesPanel : Model -> Html Msg
-resourcesPanel model =
+resourcesPanel : PoiVisibility -> Html Msg
+resourcesPanel poiVisibility =
     let
         miningNodes =
             [ Api.Enum.ResourceResource.Asherite
@@ -691,7 +690,7 @@ resourcesPanel model =
             ]
 
         labelIsVisible resources =
-            List.any (\r -> List.member r model.poiVisibility.resources) resources
+            List.any (\r -> List.member r poiVisibility.resources) resources
 
         panelBlockClass resources =
             Helpers.strIf (not <| labelIsVisible resources) "has-text-grey-lighter"
@@ -738,11 +737,11 @@ resourcesPanel model =
         ]
 
 
-otherPanel : Model -> Html Msg
-otherPanel model =
+otherPanel : PoiVisibility -> Html Msg
+otherPanel poiVisibility =
     let
         labelIsVisible locations =
-            List.any (\r -> List.member r model.poiVisibility.locations) locations
+            List.any (\r -> List.member r poiVisibility.locations) locations
 
         panelBlockClass locations =
             Helpers.strIf (not <| labelIsVisible locations) "has-text-grey-lighter"
@@ -801,12 +800,39 @@ svgView model npcs resources monsters =
                 , Svg.Attributes.height <| String.fromInt mapYSize
                 ]
                 []
+    in
+    div []
+        [ poiHoverContainer model
+        , div [ class "map-container" ]
+            [ div [ class "overlay-container zoom" ] [ zoomSlider ]
+            , svg
+                (mouseEvents ++ [ id "svg-container", Svg.Attributes.viewBox viewBox ])
+                [ svgImage
+                , Svg.Lazy.lazy5 svgPois model.mapCalibration model.zoom monsters npcs resources
+                , Svg.g [ Svg.Attributes.class "loc-grid" ] [ locLineGrid model ]
+                ]
+            ]
+        ]
+
+
+locLineGrid : Model -> Svg Msg
+locLineGrid model =
+    let
+        locLineInterval =
+            if model.zoom < 3 then
+                500
+
+            else if model.zoom < 6 then
+                250
+
+            else
+                100
 
         locLineLocsX =
-            [ 3000, 3500, 4000, 4500, 5000, 5500 ]
+            rangeFromTo 3000 5000 locLineInterval |> List.map toFloat
 
         locLineLocsY =
-            [ 3000, 3500, 4000, 4500, 5000, 5500 ]
+            rangeFromTo 3000 5000 locLineInterval |> List.map toFloat
 
         locLine x1 y1 x2 y2 =
             Svg.line
@@ -814,7 +840,7 @@ svgView model npcs resources monsters =
                 , Svg.Attributes.y1 <| String.fromFloat y1
                 , Svg.Attributes.x2 <| String.fromFloat x2
                 , Svg.Attributes.y2 <| String.fromFloat y2
-                , Svg.Attributes.class "loc-grid"
+                , Svg.Attributes.class "loc-line"
                 ]
                 []
 
@@ -829,39 +855,24 @@ svgView model npcs resources monsters =
         verticalLocs =
             locLineLocsX
                 |> List.map (\loc_x -> ( loc_x, locsToSvgCoordinates { x = loc_x, y = 0 } model.mapCalibration ))
-                |> List.map
+                |> List.concatMap
                     (\( loc, { x } ) ->
                         [ locLine x 0 x mapYSize
                         , locLabel loc (x + 2) (model.mapOffset.y + 15)
                         ]
                     )
-                |> List.concat
 
         horizontalLocs =
             locLineLocsY
                 |> List.map (\loc_y -> ( loc_y, locsToSvgCoordinates { x = 0, y = loc_y } model.mapCalibration ))
-                |> List.map
+                |> List.concatMap
                     (\( loc, { y } ) ->
                         [ locLine 0 y mapXSize y
                         , locLabel loc (model.mapOffset.x + 5) (y - 2)
                         ]
                     )
-                |> List.concat
     in
-    div []
-        [ poiHoverContainer model
-        , div [ class "map-container" ]
-            [ div [ class "overlay-container zoom" ] [ zoomSlider ]
-            , svg
-                (mouseEvents ++ [ id "svg-container", Svg.Attributes.viewBox viewBox ])
-                ([ [ svgImage ]
-                 , svgPois model monsters npcs resources
-                 , [ Svg.g [ Svg.Attributes.class "loc-grid" ] (verticalLocs ++ horizontalLocs) ]
-                 ]
-                    |> List.concat
-                )
-            ]
-        ]
+    Svg.g [ Svg.Attributes.class "loc-grid" ] (verticalLocs ++ horizontalLocs)
 
 
 poiHoverContainer : Model -> Html Msg
@@ -893,21 +904,25 @@ poiHoverContainer model =
             text ""
 
 
-svgPois : Model -> List Monster -> List Npc -> List Resource -> List (Svg Msg)
-svgPois model monsters npcs resources =
+svgPois : MapCalibration -> Float -> List Monster -> List Npc -> List Resource -> Svg Msg
+svgPois mapCalibration zoom monsters npcs resources =
     let
+        poi enableRadar =
+            poiCircle enableRadar mapCalibration zoom
+
         npcRadar =
             List.length npcs == 1
     in
-    List.concat
-        [ monsters |> List.map PoiMonster |> List.map (poiCircle False model)
-        , resources |> List.map PoiResource |> List.map (poiCircle False model)
-        , npcs |> List.map PoiNpc |> List.map (poiCircle npcRadar model)
-        ]
+    Svg.g [] <|
+        List.concat
+            [ monsters |> List.map PoiMonster |> List.map (poi False)
+            , resources |> List.map PoiResource |> List.map (poi False)
+            , npcs |> List.map PoiNpc |> List.map (poi npcRadar)
+            ]
 
 
-poiCircle : Bool -> Model -> Poi -> Svg Msg
-poiCircle enableRadar model poi =
+poiCircle : Bool -> MapCalibration -> Float -> Poi -> Svg Msg
+poiCircle enableRadar mapCalibration zoom poi =
     let
         ( loc_x, loc_y ) =
             case poi of
@@ -933,7 +948,7 @@ poiCircle enableRadar model poi =
 
         circleAttrs =
             [ Svg.Attributes.class cssClass
-            , Svg.Attributes.r (String.fromFloat (13 - model.zoom))
+            , Svg.Attributes.r (String.fromFloat (13 - zoom))
             , onClick <| ClickedPoi poi
             , Mouse.onOver <| PoiHoverEnter poi
             , Mouse.onLeave <| PoiHoverLeave
@@ -955,7 +970,7 @@ poiCircle enableRadar model poi =
                 ]
     in
     Helpers.unwrapMaybeLocTuple ( loc_x, loc_y )
-        |> Maybe.map (\( x, y ) -> locsToSvgAttrs { x = x, y = y } model.mapCalibration)
+        |> Maybe.map (\( x, y ) -> locsToSvgAttrs { x = x, y = y } mapCalibration)
         |> Maybe.map svgPoiG
         |> Maybe.withDefault (text "")
 
@@ -989,6 +1004,7 @@ locsToSvgAttrs loc mapCalibration =
                 ]
            )
 
+
 mouseEventToOffset : Mouse.Event -> Offset
 mouseEventToOffset event =
     let
@@ -996,6 +1012,11 @@ mouseEventToOffset event =
             event.offsetPos
     in
     { x = x, y = y }
+
+
+rangeFromTo : Int -> Int -> Int -> List Int
+rangeFromTo from to step =
+    List.range 0 ((to - from) // step) |> List.map (\n -> from + (n * step))
 
 
 subscriptions : Model -> Sub Msg
