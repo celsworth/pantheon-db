@@ -1,7 +1,8 @@
-module Maps.Show exposing (main)
+port module Maps.Show exposing (main)
 
 import Api.Enum.LocationCategory exposing (LocationCategory(..))
 import Api.Enum.ResourceResource exposing (ResourceResource(..))
+import Round
 import Browser
 import Browser.Dom
 import Browser.Events
@@ -27,8 +28,15 @@ import Types exposing (Location, Monster, Npc, Resource)
 import VirtualDom
 
 
+type alias ViewFlags =
+    { x : Maybe String
+    , y : Maybe String
+    , zoom : Maybe String
+    }
+
+
 type alias Flags =
-    { graphqlBaseUrl : String }
+    { graphqlBaseUrl : String, view : ViewFlags }
 
 
 main : Program Flags Model Msg
@@ -171,10 +179,13 @@ init flags =
             { locations = [], monsters = [], npcs = [], resources = [] }
     in
     ( { flags = flags
-      , zoom = 1
+      , zoom = flags.view.zoom |> Maybe.withDefault "1" |> String.toFloat |> Maybe.withDefault 1
       , mapCalibration = calcMapCalibration calibrationInput1 calibrationInput2
       , mapPageSize = { x = 0, y = 0 }
-      , mapOffset = { x = 0, y = 0 }
+      , mapOffset =
+            { x = flags.view.x |> Maybe.withDefault "0" |> String.toFloat |> Maybe.withDefault 0
+            , y = flags.view.y |> Maybe.withDefault "0" |> String.toFloat |> Maybe.withDefault 0
+            }
       , mousePosition = { x = 0, y = 0 }
       , dragData = NotDragging
       , poiVisibility = defaultPoiVisibility
@@ -256,12 +267,12 @@ update msg model =
             ( { model | mapPoiData = newMapPoiData } |> updateMapPoiData, Cmd.none )
 
         MouseWheel event ->
-            ( model |> applyMouseWheelZoom event, Cmd.none )
+            model |> applyMouseWheelZoom event |> updateUrl
 
         ZoomChanged value ->
-            ( model |> changeZoom { xProp = 0.5, yProp = 0.5 } (value |> String.toFloat |> Maybe.withDefault 1)
-            , Cmd.none
-            )
+            model
+                |> changeZoom { xProp = 0.5, yProp = 0.5 } (value |> String.toFloat |> Maybe.withDefault 1)
+                |> updateUrl
 
         MouseMove event ->
             ( model |> calculateNewMapOffset event |> setMousePosition event, Cmd.none )
@@ -282,7 +293,7 @@ update msg model =
             )
 
         MouseUp _ ->
-            ( { model | dragData = NotDragging }, Cmd.none )
+            { model | dragData = NotDragging } |> updateUrl
 
         BrowserResized ->
             ( model, Browser.Dom.getElement "svg-container" |> Task.attempt GotSvgElement )
@@ -328,6 +339,24 @@ update msg model =
 
         SetPoiVisibility objectType toVisible ->
             ( model |> setPoiVisibility objectType toVisible |> updateMapPoiData, Cmd.none )
+
+
+updateUrl : Model -> ( Model, Cmd Msg )
+updateUrl model =
+    let
+        x =
+            String.join "=" [ "x", Round.round 1 model.mapOffset.x ]
+
+        y =
+            String.join "=" [ "y", Round.round 1 model.mapOffset.y ]
+
+        zoom =
+            String.join "=" [ "zoom", Round.round 1 model.zoom ]
+
+        newUrl =
+            "?" ++ String.join "&" [ x, y, zoom ]
+    in
+    ( model, pushUrl newUrl )
 
 
 setPoiVisibility : ObjectType -> Bool -> Model -> Model
@@ -1094,3 +1123,6 @@ rangeFromTo from to step =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Browser.Events.onResize (\_ _ -> BrowserResized)
+
+
+port pushUrl : String -> Cmd msg

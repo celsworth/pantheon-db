@@ -2,7 +2,8 @@
   <div class="container">
     <div data-controller="elm-maps-show" data-elm-maps-show-flags="<%=
     {
-      graphqlBaseUrl: ENV.fetch('GRAPHQL_BASE_URL', 'http://localhost:3000/graphql')
+      graphqlBaseUrl: ENV.fetch('GRAPHQL_BASE_URL', 'http://localhost:3000/graphql'),
+      view: { x: params[:x], y: params[:y], zoom: params[:zoom] }
     }.to_json %>">
     </div>
   </div>

@@ -9,6 +9,11 @@ export default class extends Controller {
         node: this.element,
         flags: JSON.parse(this.data.get("flags"))
       });
+
+      this.init.ports.pushUrl.subscribe(function(url) {
+        history.replaceState({}, '', url);
+      });
+
     }
   }
 
