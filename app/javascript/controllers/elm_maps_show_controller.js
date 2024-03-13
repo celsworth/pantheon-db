@@ -1,8 +1,9 @@
 import { Elm } from '../Maps/Show.elm';
 import { Controller } from "@hotwired/stimulus"
 
-// Connects to data-controller="elm-resource-create"
 export default class extends Controller {
+  replaceStateTimeoutId = null;
+
   connect() {
     if (this.init === undefined) {
       this.init = Elm.Maps.Show.init({
@@ -11,7 +12,10 @@ export default class extends Controller {
       });
 
       this.init.ports.pushUrl.subscribe(function(url) {
-        history.replaceState({}, '', url);
+        clearTimeout(this.replaceStateTimeoutId);
+        this.replaceStateTimeoutId = setTimeout(function() {
+          history.replaceState({}, '', url);
+        }, 200);
       });
 
     }

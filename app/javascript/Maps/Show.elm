@@ -2,7 +2,6 @@ port module Maps.Show exposing (main)
 
 import Api.Enum.LocationCategory exposing (LocationCategory(..))
 import Api.Enum.ResourceResource exposing (ResourceResource(..))
-import Round
 import Browser
 import Browser.Dom
 import Browser.Events
@@ -20,6 +19,7 @@ import Query.Locations
 import Query.Monsters
 import Query.Npcs
 import Query.Resources
+import Round
 import Svg exposing (Svg, svg)
 import Svg.Attributes
 import Svg.Lazy
@@ -104,10 +104,10 @@ type alias MapPoiData =
 
 type alias Model =
     { flags : Flags
-    , zoom : Float
     , mapCalibration : MapCalibration
-    , mapPageSize : Offset
+    , zoom : Float
     , mapOffset : Offset
+    , svgElementSize : Offset
     , mousePosition : Offset
     , dragData : DragData
     , poiVisibility : PoiVisibility
@@ -177,16 +177,16 @@ init flags =
 
         mapPoiData =
             { locations = [], monsters = [], npcs = [], resources = [] }
+
+        flagDefault default input =
+            input |> Maybe.withDefault (String.fromFloat default) |> String.toFloat |> Maybe.withDefault default
     in
     ( { flags = flags
-      , zoom = flags.view.zoom |> Maybe.withDefault "1" |> String.toFloat |> Maybe.withDefault 1
       , mapCalibration = calcMapCalibration calibrationInput1 calibrationInput2
-      , mapPageSize = { x = 0, y = 0 }
-      , mapOffset =
-            { x = flags.view.x |> Maybe.withDefault "0" |> String.toFloat |> Maybe.withDefault 0
-            , y = flags.view.y |> Maybe.withDefault "0" |> String.toFloat |> Maybe.withDefault 0
-            }
+      , zoom = flagDefault 1 flags.view.zoom
+      , mapOffset = { x = flagDefault 0 flags.view.x, y = flagDefault 0 flags.view.y }
       , mousePosition = { x = 0, y = 0 }
+      , svgElementSize = { x = 0, y = 0 }
       , dragData = NotDragging
       , poiVisibility = defaultPoiVisibility
       , poiHover = Nothing
@@ -303,7 +303,7 @@ update msg model =
                 newMapPageSize =
                     { x = element.element.width, y = element.element.height }
             in
-            ( { model | mapPageSize = newMapPageSize }, Cmd.none )
+            ( { model | svgElementSize = newMapPageSize }, Cmd.none )
 
         GotSvgElement (Err _) ->
             ( model, Cmd.none )
@@ -432,42 +432,6 @@ changePoiLocationVisibility listOfLocations model =
     { model | poiVisibility = newPoiVisibility }
 
 
-
---- clickPositionToSvgCoordinates (unused) {{{
-
-
-clickPositionToSvgCoordinates : ( Float, Float ) -> Model -> Offset
-clickPositionToSvgCoordinates ( x, y ) model =
-    let
-        -- this is 0 - model.mapPageSize.x (position in viewbox, not adjusted for offset or zoom)
-        -- scale that to a proportion of mapPageSize
-        ( x2, y2 ) =
-            ( x / model.mapPageSize.x, y / model.mapPageSize.y )
-
-        -- adjust that for zoom
-        ( x3, y3 ) =
-            ( x2 / model.zoom, y2 / model.zoom )
-
-        -- multiply that out to actual mapSize (2800 x 2080)
-        ( x4, y4 ) =
-            ( x3 * mapXSize, y3 * mapYSize )
-
-        -- add on mapOffset if any
-        ( x5, y5 ) =
-            ( x4 + model.mapOffset.x, y4 + model.mapOffset.y )
-    in
-    { x = x5, y = y5 }
-
-
-
---- }}}
-
-
-viewportWidth : Float -> ( Float, Float )
-viewportWidth zoom =
-    ( mapXSize / zoom, mapYSize / zoom )
-
-
 applyMouseWheelZoom : Wheel.Event -> Model -> Model
 applyMouseWheelZoom event model =
     let
@@ -475,10 +439,10 @@ applyMouseWheelZoom event model =
             mouseEventToOffset event.mouseEvent
 
         newCentrepointX =
-            (model.mapPageSize.x / 2) - (((model.mapPageSize.x / 2) - offset.x) / 10)
+            (model.svgElementSize.x / 2) - (((model.svgElementSize.x / 2) - offset.x) / 10)
 
         newCentrepointY =
-            (model.mapPageSize.y / 2) - (((model.mapPageSize.y / 2) - offset.y) / 10)
+            (model.svgElementSize.y / 2) - (((model.svgElementSize.y / 2) - offset.y) / 10)
 
         ( xProp, yProp, newZoom ) =
             if event.deltaY > 0 then
@@ -487,8 +451,8 @@ applyMouseWheelZoom event model =
 
             else
                 -- zooming in tries to aim at where the mouse is
-                ( newCentrepointX / model.mapPageSize.x
-                , newCentrepointY / model.mapPageSize.y
+                ( newCentrepointX / model.svgElementSize.x
+                , newCentrepointY / model.svgElementSize.y
                 , model.zoom + 0.2 |> clampZoom
                 )
     in
@@ -549,8 +513,8 @@ calculateNewMapOffset event model =
                     ( dragData.startingMousePos.x - pos.x, dragData.startingMousePos.y - pos.y )
 
                 ( zoomCorrectionX, zoomCorrectionY ) =
-                    ( (mapXSize / model.mapPageSize.x) / model.zoom
-                    , (mapYSize / model.mapPageSize.y) / model.zoom
+                    ( (mapXSize / model.svgElementSize.x) / model.zoom
+                    , (mapYSize / model.svgElementSize.y) / model.zoom
                     )
 
                 newMapOffset =
@@ -650,14 +614,16 @@ filterNpcs npcs searchText =
 
 view : Model -> Html Msg
 view model =
-    div [ class "columns" ]
-        [ div [ class "column" ] [ svgView model ]
-        , div [ class "column is-one-fifth" ] [ Html.Lazy.lazy5 sidePanel model.searchText model.sidePanelTabSelected model.poiVisibility model.mapPageSize model.filteredMapPoiData ]
+    div []
+        [ div [ class "columns" ]
+            [ div [ class "column" ] [ svgView model ]
+            , div [ class "column is-one-fifth" ] [ Html.Lazy.lazy5 sidePanel model.searchText model.sidePanelTabSelected model.poiVisibility model.svgElementSize model.filteredMapPoiData ]
+            ]
         ]
 
 
 sidePanel : Maybe String -> ObjectType -> PoiVisibility -> Offset -> MapPoiData -> Html Msg
-sidePanel searchText sidePanelTabSelected poiVisibility mapPageSize mapPoiData =
+sidePanel searchText sidePanelTabSelected poiVisibility svgElementSize mapPoiData =
     -- TODO: mouseover should highlight the dot?
     let
         activeIf b =
@@ -704,7 +670,7 @@ sidePanel searchText sidePanelTabSelected poiVisibility mapPageSize mapPoiData =
                 Location ->
                     ( allOrNoneBlock Location, otherPanel poiVisibility )
     in
-    nav [ style "height" (String.fromFloat mapPageSize.y ++ "px"), class "panel is-danger poi-list" ]
+    nav [ style "height" (String.fromFloat svgElementSize.y ++ "px"), class "panel is-danger poi-list" ]
         [ div [ class "sticky-top" ]
             [ div [ class "panel-tabs" ]
                 [ a
@@ -1087,6 +1053,11 @@ npcDisplayLabel npc =
 
         Nothing ->
             text npc.name
+
+
+viewportWidth : Float -> ( Float, Float )
+viewportWidth zoom =
+    ( mapXSize / zoom, mapYSize / zoom )
 
 
 locsToSvgCoordinates : Offset -> MapCalibration -> Offset

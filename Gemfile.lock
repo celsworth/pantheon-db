@@ -91,8 +91,6 @@ GEM
     base64 (0.2.0)
     bigdecimal (3.1.6)
     blueprinter (1.0.2)
-    bootsnap (1.18.3)
-      msgpack (~> 1.2)
     builder (3.2.4)
     cancancan (3.5.0)
     concurrent-ruby (1.2.3)
@@ -112,7 +110,7 @@ GEM
       activesupport (>= 6.1)
     graphiql-rails (1.10.0)
       railties
-    graphql (2.2.12)
+    graphql (2.2.13)
       base64
     graphql-fragment_cache (1.20.0)
       graphql (>= 1.12.0)
@@ -155,7 +153,6 @@ GEM
     marcel (1.0.4)
     mini_mime (1.1.5)
     minitest (5.22.2)
-    msgpack (1.7.2)
     mutex_m (0.2.0)
     net-imap (0.4.10)
       date
@@ -235,7 +232,7 @@ GEM
       rack (>= 1.4)
     require-hooks (0.2.2)
     rexml (3.2.6)
-    rubocop (1.62.0)
+    rubocop (1.62.1)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
@@ -302,7 +299,6 @@ DEPENDENCIES
   administrate-field-jsonb
   ar_lazy_preload
   blueprinter
-  bootsnap
   cancancan
   cssbundling-rails
   discard
@@ -318,7 +314,6 @@ DEPENDENCIES
   rack-cors
   rails
   rubocop
-  sprockets-rails
   stimulus-rails
 
 BUNDLED WITH

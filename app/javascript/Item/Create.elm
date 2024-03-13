@@ -158,12 +158,11 @@ view : Model -> Html Msg
 view model =
     let
         locClass =
-            case model.parsedLoc /= Nothing of
-                True ->
-                    "is-success"
+            if model.parsedLoc /= Nothing then
+                "is-success"
 
-                False ->
-                    "is-danger"
+            else
+                "is-danger"
 
         select =
             Select.view model.resourceSelectConfig
