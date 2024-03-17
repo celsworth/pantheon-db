@@ -61,6 +61,10 @@ maxZoom : number
 maxZoom =
     20
 
+zoomStep : Float
+zoomStep =
+    0.5
+
 
 mapXSize : number
 mapXSize =
@@ -469,13 +473,13 @@ applyMouseWheelZoom event model =
         ( xProp, yProp, newZoom ) =
             if event.deltaY > 0 then
                 -- zooming out keeps centre of map as-is
-                ( 0.5, 0.5, model.zoom - 0.2 |> clampZoom )
+                ( 0.5, 0.5, model.zoom - zoomStep |> clampZoom )
 
             else
                 -- zooming in tries to aim at where the mouse is
                 ( newCentrepointX / model.svgElementSize.x
                 , newCentrepointY / model.svgElementSize.y
-                , model.zoom + 0.2 |> clampZoom
+                , model.zoom + zoomStep |> clampZoom
                 )
     in
     model |> changeZoom { xProp = xProp, yProp = yProp } newZoom
@@ -865,7 +869,7 @@ svgView model =
                 [ type_ "range"
                 , Html.Attributes.min "1"
                 , Html.Attributes.max <| String.fromInt maxZoom
-                , step "0.2"
+                , step <| String.fromFloat zoomStep
                 , onInput ZoomChanged
                 , value <| String.fromFloat model.zoom
                 ]
