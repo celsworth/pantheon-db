@@ -15,7 +15,7 @@ module Resolvers
     argument :level, [Types::Inputs::FloatOperatorInputFilterType], required: false
 
     def resolve(**params)
-      MonsterSearch.new(**params).search.all
+      MonsterSearch.new(**params).search.order(:name).all
     end
   end
 end
