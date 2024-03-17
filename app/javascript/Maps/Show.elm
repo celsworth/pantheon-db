@@ -9,7 +9,7 @@ import Helpers
 import Helpers.StringFilter
 import Html exposing (..)
 import Html.Attributes exposing (class, id, placeholder, step, style, type_, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onCheck, onClick, onInput)
 import Html.Events.Extra.Mouse as Mouse
 import Html.Events.Extra.Wheel as Wheel
 import Html.Lazy
@@ -114,6 +114,12 @@ type alias MapPoiData =
     }
 
 
+type alias PoiFilter =
+    { searchText : Maybe String
+    , namedOnly : Bool
+    }
+
+
 type alias Model =
     { flags : Flags
     , mapCalibration : MapCalibration
@@ -123,12 +129,17 @@ type alias Model =
     , mousePosition : Offset
     , dragData : DragData
     , poiVisibility : PoiVisibility
-    , poiHover : Maybe ( Poi, Mouse.Event )
+    , poiHover : Maybe ( HoverType, Poi )
+    , poiFilter : PoiFilter
     , mapPoiData : MapPoiData
     , filteredMapPoiData : MapPoiData
-    , searchText : Maybe String
     , sidePanelTabSelected : ObjectType
     }
+
+
+type HoverType
+    = MapHover
+    | SidebarHover
 
 
 type ObjectType
@@ -150,6 +161,10 @@ type DragData
     | Dragging { startingMapOffset : Offset, startingMousePos : Offset }
 
 
+type FilterType
+    = NamedOnly Bool
+
+
 type Msg
     = MouseMove Mouse.Event
     | MouseDown Mouse.Event
@@ -163,13 +178,14 @@ type Msg
     | BrowserResized
     | GotSvgElement (Result Browser.Dom.Error Browser.Dom.Element)
     | ClickedPoi Poi
-    | PoiHoverEnter Poi Mouse.Event
+    | PoiHoverEnter HoverType Poi Mouse.Event
     | PoiHoverLeave Mouse.Event
     | ChangeSidePanelTab ObjectType
     | SetSearchText String
     | ChangePoiResourceVisibility (List Api.Enum.ResourceResource.ResourceResource)
     | ChangePoiLocationVisibility (List Api.Enum.LocationCategory.LocationCategory)
     | SetPoiVisibility ObjectType Bool
+    | SetFilter FilterType
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -214,10 +230,10 @@ init flags =
       , dragData = NotDragging
       , poiVisibility = defaultPoiVisibility
       , poiHover = Nothing
+      , poiFilter = { searchText = Nothing, namedOnly = False }
       , mapPoiData = mapPoiData
       , filteredMapPoiData = mapPoiData
-      , searchText = Nothing
-      , sidePanelTabSelected = Resource
+      , sidePanelTabSelected = Monster
       }
     , Cmd.batch
         [ Query.Npcs.makeRequest { url = flags.graphqlBaseUrl, toMsg = GotNpcs }
@@ -335,8 +351,8 @@ update msg model =
         GotSvgElement (Err _) ->
             ( model, Cmd.none )
 
-        PoiHoverEnter poi event ->
-            ( { model | poiHover = Just ( poi, event ) }, Cmd.none )
+        PoiHoverEnter hoverType poi _ ->
+            ( { model | poiHover = Just ( hoverType, poi ) }, Cmd.none )
 
         PoiHoverLeave _ ->
             ( { model | poiHover = Nothing }, Cmd.none )
@@ -352,8 +368,14 @@ update msg model =
             let
                 maybeSearchText =
                     Helpers.maybeIf (not <| String.isEmpty searchText) searchText
+
+                poiFilter =
+                    model.poiFilter
+
+                newPoiFilter =
+                    { poiFilter | searchText = maybeSearchText }
             in
-            ( { model | searchText = maybeSearchText } |> updateMapPoiData, Cmd.none )
+            ( { model | poiFilter = newPoiFilter } |> updateMapPoiData, Cmd.none )
 
         ChangeSidePanelTab toTab ->
             ( { model | sidePanelTabSelected = toTab } |> updateMapPoiData, Cmd.none )
@@ -366,6 +388,18 @@ update msg model =
 
         SetPoiVisibility objectType toVisible ->
             ( model |> setPoiVisibility objectType toVisible |> updateMapPoiData, Cmd.none )
+
+        SetFilter filterType ->
+            case filterType of
+                NamedOnly namedOnly ->
+                    let
+                        poiFilter =
+                            model.poiFilter
+
+                        newPoiFilter =
+                            { poiFilter | namedOnly = namedOnly }
+                    in
+                    ( { model | poiFilter = newPoiFilter } |> updateMapPoiData, Cmd.none )
 
 
 updateUrl : Model -> ( Model, Cmd Msg )
@@ -585,14 +619,14 @@ updateMapPoiData model =
     let
         monsters =
             if model.sidePanelTabSelected == Monster then
-                filterMonsters model.mapPoiData.monsters model.searchText
+                filterMonsters model.mapPoiData.monsters model.poiFilter
 
             else
                 []
 
         npcs =
             if model.sidePanelTabSelected == Npc then
-                filterNpcs model.mapPoiData.npcs model.searchText
+                filterNpcs model.mapPoiData.npcs model.poiFilter
 
             else
                 []
@@ -621,20 +655,28 @@ updateMapPoiData model =
     { model | filteredMapPoiData = newMapPoiData }
 
 
-filterMonsters : List Monster -> Maybe String -> List Monster
-filterMonsters monsters searchText =
-    searchText
-        |> Maybe.map (\t -> Helpers.StringFilter.filter .name t monsters)
-        |> Maybe.withDefault monsters
+filterMonsters : List Monster -> PoiFilter -> List Monster
+filterMonsters monsters poiFilter =
+    let
+        maybeNamedOnlyMonsters =
+            if poiFilter.namedOnly == True then
+                monsters |> List.filter .named
+
+            else
+                monsters
+    in
+    poiFilter.searchText
+        |> Maybe.map (\t -> Helpers.StringFilter.filter .name t maybeNamedOnlyMonsters)
+        |> Maybe.withDefault maybeNamedOnlyMonsters
 
 
-filterNpcs : List Npc -> Maybe String -> List Npc
-filterNpcs npcs searchText =
+filterNpcs : List Npc -> PoiFilter -> List Npc
+filterNpcs npcs poiFilter =
     let
         toSearchString npc =
             String.join " " [ npc.name, Maybe.withDefault "" npc.subtitle ]
     in
-    searchText
+    poiFilter.searchText
         |> Maybe.map (\t -> Helpers.StringFilter.filter toSearchString t npcs)
         |> Maybe.withDefault npcs
 
@@ -644,38 +686,16 @@ view model =
     div []
         [ div [ class "columns" ]
             [ div [ class "column" ] [ svgView model ]
-            , div [ class "column is-one-fifth" ] [ Html.Lazy.lazy5 sidePanel model.searchText model.sidePanelTabSelected model.poiVisibility model.svgElementSize model.filteredMapPoiData ]
+            , div [ class "column is-one-fifth" ] [ Html.Lazy.lazy5 sidePanel model.poiFilter model.sidePanelTabSelected model.poiVisibility model.svgElementSize model.filteredMapPoiData ]
             ]
         ]
 
 
-sidePanel : Maybe String -> ObjectType -> PoiVisibility -> Offset -> MapPoiData -> Html Msg
-sidePanel searchText sidePanelTabSelected poiVisibility svgElementSize mapPoiData =
-    -- TODO: mouseover should highlight the dot?
+sidePanel : PoiFilter -> ObjectType -> PoiVisibility -> Offset -> MapPoiData -> Html Msg
+sidePanel poiFilter sidePanelTabSelected poiVisibility svgElementSize mapPoiData =
     let
         activeIf b =
             Helpers.strIf b "is-active"
-
-        searchBlock =
-            div [ class "search-block panel-block" ]
-                [ div [ class "control has-icons-left has-icons-right" ]
-                    [ input
-                        [ class "input is-primary"
-                        , type_ "text"
-                        , placeholder "Search"
-                        , value (searchText |> Maybe.withDefault "")
-                        , onInput SetSearchText
-                        ]
-                        []
-                    , span [ class "icon is-left" ] [ i [ class "fas fa-search" ] [] ]
-                    , case searchText of
-                        Just _ ->
-                            span [ id "clear-search-text", onClick <| SetSearchText "", class "icon is-right" ] [ i [ class "fas fa-circle-xmark" ] [] ]
-
-                        Nothing ->
-                            text ""
-                    ]
-                ]
 
         allOrNoneBlock objectType =
             div [ class "panel-block buttons is-flex is-justify-content-center mb-0" ]
@@ -689,33 +709,36 @@ sidePanel searchText sidePanelTabSelected poiVisibility svgElementSize mapPoiDat
                     [ text "None" ]
                 ]
 
+        searchBlock =
+            sidePanelSearchBox poiFilter.searchText
+
         ( stickyContent, content ) =
             case sidePanelTabSelected of
                 Npc ->
-                    ( searchBlock, npcsPanel mapPoiData.npcs )
+                    ( [ searchBlock ], npcsPanel mapPoiData.npcs )
 
                 Monster ->
-                    ( searchBlock, monstersPanel mapPoiData.monsters )
+                    ( [ searchBlock, monstersFilter ], monstersPanel mapPoiData.monsters )
 
                 Resource ->
-                    ( allOrNoneBlock Resource, resourcesPanel poiVisibility )
+                    ( [ allOrNoneBlock Resource ], resourcesPanel poiVisibility )
 
                 Location ->
-                    ( allOrNoneBlock Location, otherPanel poiVisibility )
+                    ( [ allOrNoneBlock Location ], otherPanel poiVisibility )
     in
     nav [ style "height" (String.fromFloat svgElementSize.y ++ "px"), class "panel is-danger poi-list" ]
         [ div [ class "sticky-top" ]
             [ div [ class "panel-tabs" ]
                 [ a
-                    [ onClick <| ChangeSidePanelTab Npc
-                    , class (activeIf <| sidePanelTabSelected == Npc)
-                    ]
-                    [ text "NPCs" ]
-                , a
                     [ onClick <| ChangeSidePanelTab Monster
                     , class (activeIf <| sidePanelTabSelected == Monster)
                     ]
                     [ text "Mobs" ]
+                , a
+                    [ onClick <| ChangeSidePanelTab Npc
+                    , class (activeIf <| sidePanelTabSelected == Npc)
+                    ]
+                    [ text "NPCs" ]
                 , a
                     [ onClick <| ChangeSidePanelTab Resource
                     , class (activeIf <| sidePanelTabSelected == Resource)
@@ -727,9 +750,44 @@ sidePanel searchText sidePanelTabSelected poiVisibility svgElementSize mapPoiDat
                     ]
                     [ text "Other" ]
                 ]
-            , stickyContent
+            , div [] stickyContent
             ]
         , content
+        ]
+
+
+sidePanelSearchBox : Maybe String -> Html Msg
+sidePanelSearchBox searchText =
+    div [ class "search-block panel-block" ]
+        [ div [ class "control has-icons-left has-icons-right" ]
+            [ input
+                [ class "input is-primary"
+                , type_ "text"
+                , placeholder "Search"
+                , value (searchText |> Maybe.withDefault "")
+                , onInput SetSearchText
+                ]
+                []
+            , span [ class "icon is-left" ] [ i [ class "fas fa-search" ] [] ]
+            , case searchText of
+                Just _ ->
+                    span [ id "clear-search-text", onClick <| SetSearchText "", class "icon is-right" ] [ i [ class "fas fa-circle-xmark" ] [] ]
+
+                Nothing ->
+                    text ""
+            ]
+        ]
+
+
+monstersFilter : Html Msg
+monstersFilter =
+    div [ class "panel-block" ]
+        [ div [ class "field" ]
+            [ label [ class "checkbox" ]
+                [ input [ onCheck <| \b -> SetFilter (NamedOnly b), type_ "checkbox" ] []
+                , text "Named only"
+                ]
+            ]
         ]
 
 
@@ -737,7 +795,13 @@ monstersPanel : List Monster -> Html Msg
 monstersPanel monsters =
     let
         panelBlock monster =
-            a [ onClick <| SetSearchText monster.name, class "panel-block" ] [ text monster.name ]
+            a
+                [ Mouse.onOver <| PoiHoverEnter SidebarHover (PoiMonster monster)
+                , Mouse.onLeave <| PoiHoverLeave
+                , onClick <| SetSearchText monster.name
+                , class "panel-block"
+                ]
+                [ text monster.name ]
     in
     div [] <| List.map panelBlock monsters
 
@@ -746,7 +810,13 @@ npcsPanel : List Npc -> Html Msg
 npcsPanel npcs =
     let
         panelBlock npc =
-            a [ onClick <| SetSearchText npc.name, class "panel-block" ] [ npcDisplayLabel npc ]
+            a
+                [ Mouse.onOver <| PoiHoverEnter SidebarHover (PoiNpc npc)
+                , Mouse.onLeave <| PoiHoverLeave
+                , onClick <| SetSearchText npc.name
+                , class "panel-block"
+                ]
+                [ npcDisplayLabel npc ]
     in
     div [] <| List.map panelBlock npcs
 
@@ -891,13 +961,13 @@ svgView model =
                 []
     in
     div []
-        [ poiHoverContainer model
+        [ poiHoverTooltip model
         , div [ class "map-container" ]
             [ div [ class "overlay-container zoom" ] [ zoomSlider ]
             , svg
                 (mouseEvents ++ [ id "svg-container", Svg.Attributes.viewBox viewBox ])
                 [ Maps.Test.test
-                , Svg.Lazy.lazy3 svgPois model.mapCalibration model.zoom model.filteredMapPoiData
+                , Svg.Lazy.lazy4 svgPois model.poiHover model.mapCalibration model.zoom model.filteredMapPoiData
                 , Svg.g [ Svg.Attributes.class "loc-grid" ] [ locLineGrid model ]
                 ]
             ]
@@ -961,8 +1031,8 @@ locLineGrid model =
     Svg.g [ Svg.Attributes.class "loc-grid" ] (verticalLocs ++ horizontalLocs)
 
 
-poiHoverContainer : Model -> Html Msg
-poiHoverContainer model =
+poiHoverTooltip : Model -> Html Msg
+poiHoverTooltip model =
     let
         { x, y } =
             model.mousePosition
@@ -977,43 +1047,59 @@ poiHoverContainer model =
             style "left" <| String.join "" [ String.fromFloat (x + 5), "px" ]
     in
     case model.poiHover of
-        Just ( PoiNpc npc, _ ) ->
+        Just ( MapHover, PoiNpc npc ) ->
             div [ topStyle, leftStyle, class classes ] [ npcDisplayLabel npc ]
 
-        Just ( PoiMonster monster, _ ) ->
+        Just ( MapHover, PoiMonster monster ) ->
             div [ topStyle, leftStyle, class classes ] [ text monster.name ]
 
-        Just ( PoiResource resource, _ ) ->
+        Just ( MapHover, PoiResource resource ) ->
             div [ topStyle, leftStyle, class classes ] [ text resource.name ]
 
-        Just ( PoiLocation location, _ ) ->
+        Just ( MapHover, PoiLocation location ) ->
             div [ topStyle, leftStyle, class classes ] [ text location.name ]
+
+        Just ( SidebarHover, _ ) ->
+            text ""
 
         Nothing ->
             text ""
 
 
-svgPois : MapCalibration -> Float -> MapPoiData -> Svg Msg
-svgPois mapCalibration zoom mapPoiData =
+svgPois : Maybe ( HoverType, Poi ) -> MapCalibration -> Float -> MapPoiData -> Svg Msg
+svgPois poiHover mapCalibration zoom mapPoiData =
     let
-        poi enableRadar =
-            poiCircle enableRadar mapCalibration zoom
-
-        onePoi =
+        enableRadar =
             -- assumes that lists on other tabs are empty, which is ok
             List.length mapPoiData.npcs == 1 || List.length mapPoiData.monsters == 1
+
+        enablePulseFor this =
+            case poiHover of
+                Just ( SidebarHover, p ) ->
+                    p == this
+
+                _ ->
+                    False
     in
     Svg.g [] <|
         List.concat
-            [ mapPoiData.locations |> List.map PoiLocation |> List.map (poi False)
-            , mapPoiData.monsters |> List.map PoiMonster |> List.map (poi onePoi)
-            , mapPoiData.npcs |> List.map PoiNpc |> List.map (poi onePoi)
-            , mapPoiData.resources |> List.map PoiResource |> List.map (poi False)
+            [ mapPoiData.locations
+                |> List.map PoiLocation
+                |> List.map (poiMapMarker False enableRadar mapCalibration zoom)
+            , mapPoiData.monsters
+                |> List.map PoiMonster
+                |> List.map (\p -> poiMapMarker (enablePulseFor p) enableRadar mapCalibration zoom p)
+            , mapPoiData.npcs
+                |> List.map PoiNpc
+                |> List.map (\p -> poiMapMarker (enablePulseFor p) enableRadar mapCalibration zoom p)
+            , mapPoiData.resources
+                |> List.map PoiResource
+                |> List.map (poiMapMarker False enableRadar mapCalibration zoom)
             ]
 
 
-poiCircle : Bool -> MapCalibration -> Float -> Poi -> Svg Msg
-poiCircle enableRadar mapCalibration zoom poi =
+poiMapMarker : Bool -> Bool -> MapCalibration -> Float -> Poi -> Svg Msg
+poiMapMarker enablePulse enableRadar mapCalibration zoom poi =
     let
         ( loc_x, loc_y ) =
             case poi of
@@ -1029,55 +1115,61 @@ poiCircle enableRadar mapCalibration zoom poi =
                 PoiLocation l ->
                     ( l.loc_x, l.loc_y )
 
-        monsterCssClass monster =
-            case ( monster.elite, monster.named ) of
-                -- clean this up later :)
-                ( True, True ) ->
-                    "monster monster__elite monster__named"
-
-                ( True, False ) ->
-                    "monster monster__elite"
-
-                ( False, True ) ->
-                    "monster monster__named"
-
-                _ ->
-                    "monster"
-
-        cssClass =
-            case poi of
+        mapMarkerClasses =
+            [ case poi of
                 PoiNpc _ ->
                     "npc"
 
                 PoiMonster monster ->
-                    monsterCssClass monster
+                    case ( monster.elite, monster.named ) of
+                        -- clean this up later :)
+                        ( True, True ) ->
+                            "monster monster__elite monster__named"
+
+                        ( True, False ) ->
+                            "monster monster__elite"
+
+                        ( False, True ) ->
+                            "monster monster__named"
+
+                        _ ->
+                            "monster"
 
                 PoiResource resource ->
                     "resource resource__" ++ Api.Enum.ResourceResource.toString resource.resource
 
                 PoiLocation location ->
                     "location location__" ++ Api.Enum.LocationCategory.toString location.category
+            , if enablePulse && not enableRadar then
+                "pulsing"
 
-        circleAttrs =
-            [ Svg.Attributes.class cssClass
+              else
+                ""
+            ]
+
+        mapMarkerClass =
+            String.join " " mapMarkerClasses
+
+        mapMarkerAttrs =
+            [ Svg.Attributes.class mapMarkerClass
             , Svg.Attributes.r (String.fromFloat 4)
             , onClick <| ClickedPoi poi
-            , Mouse.onOver <| PoiHoverEnter poi
+            , Mouse.onOver <| PoiHoverEnter MapHover poi
             , Mouse.onLeave <| PoiHoverLeave
             ]
 
-        radarAnimCommonAttrs =
+        radarAnimAttrs =
             [ Svg.Attributes.dur "2s", Svg.Attributes.keyTimes "0; 0.2; 1", Svg.Attributes.repeatCount "indefinite" ]
 
         radarAnimElement locAttrs =
-            Svg.circle (locAttrs ++ [ Svg.Attributes.class <| cssClass ++ " radar" ])
-                [ Svg.animate ([ Svg.Attributes.attributeName "r", Svg.Attributes.from "0", Svg.Attributes.to "400", Svg.Attributes.values "0; 400; 400" ] ++ radarAnimCommonAttrs) []
-                , Svg.animate ([ Svg.Attributes.attributeName "opacity", Svg.Attributes.from "0.7", Svg.Attributes.to "0", Svg.Attributes.values "0.7; 0; 0" ] ++ radarAnimCommonAttrs) []
+            Svg.circle (locAttrs ++ [ Svg.Attributes.class <| mapMarkerClass ++ " radar" ])
+                [ Svg.animate ([ Svg.Attributes.attributeName "r", Svg.Attributes.from "0", Svg.Attributes.to "400", Svg.Attributes.values "0; 300; 300" ] ++ radarAnimAttrs) []
+                , Svg.animate ([ Svg.Attributes.attributeName "opacity", Svg.Attributes.from "0.7", Svg.Attributes.to "0", Svg.Attributes.values "0.7; 0; 0" ] ++ radarAnimAttrs) []
                 ]
 
         svgPoiG locAttrs =
             Svg.g []
-                [ Svg.circle (circleAttrs ++ locAttrs) []
+                [ Svg.circle (mapMarkerAttrs ++ locAttrs) []
                 , Helpers.htmlIf (enableRadar == True) <| radarAnimElement locAttrs
                 ]
     in
