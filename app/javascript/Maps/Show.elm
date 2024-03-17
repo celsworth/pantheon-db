@@ -14,6 +14,7 @@ import Html.Events.Extra.Mouse as Mouse
 import Html.Events.Extra.Wheel as Wheel
 import Html.Lazy
 import List.Extra
+import Maps.CoordTranslations
 import Maps.Test
 import Query.Common
 import Query.Locations
@@ -58,7 +59,7 @@ type alias Offset =
 
 maxZoom : number
 maxZoom =
-    50
+    20
 
 
 mapXSize : number
@@ -172,10 +173,22 @@ init flags =
         calibrationInput1 =
             -- tavern keeper
             { loc = { x = 3454.23, y = 3729 }
-            , map = { x = 1308.2, y = 1112.1 }
+            , map = { x = 1802, y = 1361 }
             }
 
         calibrationInput2 =
+            -- oceanside portal
+            { loc = { x = 4746.07, y = 2856.59 }
+            , map = { x = 2278.33, y = 1683.81 }
+            }
+
+        pngcalibrationInput1 =
+            -- tavern keeper
+            { loc = { x = 3454.23, y = 3729 }
+            , map = { x = 1308.2, y = 1112.1 }
+            }
+
+        pngcalibrationInput2 =
             -- oceanside portal
             { loc = { x = 4746.07, y = 2856.59 }
             , map = { x = 3087.02, y = 2316.98 }
@@ -287,6 +300,9 @@ update msg model =
             let
                 _ =
                     Debug.log "MouseDown" event
+
+                _ =
+                    Debug.log "svgCoords" <| Maps.CoordTranslations.clickPositionToSvgCoordinates event.offsetPos mapXSize mapYSize model.svgElementSize model.mapOffset model.zoom
             in
             ( { model
                 | dragData =
@@ -884,17 +900,14 @@ locLineGrid model =
             if model.zoom < 3 then
                 500
 
-            else if model.zoom < 7 then
+            else
                 250
 
-            else
-                50
-
         locLineLocsX =
-            rangeFromTo 2000 5000 locLineInterval |> List.map toFloat
+            rangeFromTo 1000 6000 locLineInterval |> List.map toFloat
 
         locLineLocsY =
-            rangeFromTo 2000 5000 locLineInterval |> List.map toFloat
+            rangeFromTo 1000 6000 locLineInterval |> List.map toFloat
 
         locLine x1 y1 x2 y2 =
             Svg.line
@@ -1021,7 +1034,7 @@ poiCircle enableRadar mapCalibration zoom poi =
 
         circleAttrs =
             [ Svg.Attributes.class cssClass
-            , Svg.Attributes.r (String.fromFloat (13 - zoom))
+            , Svg.Attributes.r (String.fromFloat 4)
             , onClick <| ClickedPoi poi
             , Mouse.onOver <| PoiHoverEnter poi
             , Mouse.onLeave <| PoiHoverLeave
