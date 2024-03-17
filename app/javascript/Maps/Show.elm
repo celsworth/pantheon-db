@@ -658,7 +658,7 @@ sidePanel searchText sidePanelTabSelected poiVisibility svgElementSize mapPoiDat
 
         searchBlock =
             div [ class "search-block panel-block" ]
-                [ div [ class "control has-icons-left" ]
+                [ div [ class "control has-icons-left has-icons-right" ]
                     [ input
                         [ class "input is-primary"
                         , type_ "text"
@@ -668,6 +668,12 @@ sidePanel searchText sidePanelTabSelected poiVisibility svgElementSize mapPoiDat
                         ]
                         []
                     , span [ class "icon is-left" ] [ i [ class "fas fa-search" ] [] ]
+                    , case searchText of
+                        Just _ ->
+                            span [ id "clear-search-text", onClick <| SetSearchText "", class "icon is-right" ] [ i [ class "fas fa-circle-xmark" ] [] ]
+
+                        Nothing ->
+                            text ""
                     ]
                 ]
 

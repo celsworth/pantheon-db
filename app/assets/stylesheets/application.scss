@@ -253,3 +253,9 @@ svg {
     background: inherit;
   }
 }
+
+#clear-search-text {
+  pointer-events: auto;
+  cursor: pointer;
+  color: $grey-dark;
+}
