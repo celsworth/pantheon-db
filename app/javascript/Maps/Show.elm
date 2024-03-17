@@ -718,7 +718,7 @@ sidePanel poiFilter sidePanelTabSelected poiVisibility svgElementSize mapPoiData
                     ( [ searchBlock ], npcsPanel mapPoiData.npcs )
 
                 Monster ->
-                    ( [ searchBlock, monstersFilter ], monstersPanel mapPoiData.monsters )
+                    ( [ searchBlock, monstersFilterView ], monstersPanel mapPoiData.monsters )
 
                 Resource ->
                     ( [ allOrNoneBlock Resource ], resourcesPanel poiVisibility )
@@ -779,10 +779,10 @@ sidePanelSearchBox searchText =
         ]
 
 
-monstersFilter : Html Msg
-monstersFilter =
+monstersFilterView : Html Msg
+monstersFilterView =
     div [ class "panel-block" ]
-        [ div [ class "field" ]
+        [ div [ class "control" ]
             [ label [ class "checkbox" ]
                 [ input [ onCheck <| \b -> SetFilter (NamedOnly b), type_ "checkbox" ] []
                 , text "Named only"
