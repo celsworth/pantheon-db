@@ -14,6 +14,8 @@ query =
         (SelectionSet.succeed Monster
             |> with Monster.id
             |> with Monster.name
+            |> with Monster.elite
+            |> with Monster.named
             |> with Monster.locX
             |> with Monster.locY
         )

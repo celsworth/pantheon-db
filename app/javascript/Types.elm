@@ -25,6 +25,8 @@ type alias Item =
 type alias Monster =
     { id : Api.ScalarCodecs.Id
     , name : String
+    , elite: Bool
+    , named: Bool
     , loc_x : Maybe Float
     , loc_y : Maybe Float
     }

@@ -61,6 +61,7 @@ maxZoom : number
 maxZoom =
     20
 
+
 zoomStep : Float
 zoomStep =
     0.5
@@ -1022,13 +1023,28 @@ poiCircle enableRadar mapCalibration zoom poi =
                 PoiLocation l ->
                     ( l.loc_x, l.loc_y )
 
+        monsterCssClass monster =
+            case ( monster.elite, monster.named ) of
+                -- clean this up later :)
+                ( True, True ) ->
+                    "monster monster__elite monster__named"
+
+                ( True, False ) ->
+                    "monster monster__elite"
+
+                ( False, True ) ->
+                    "monster monster__named"
+
+                _ ->
+                    "monster"
+
         cssClass =
             case poi of
                 PoiNpc _ ->
                     "npc"
 
-                PoiMonster _ ->
-                    "monster"
+                PoiMonster monster ->
+                    monsterCssClass monster
 
                 PoiResource resource ->
                     "resource resource__" ++ Api.Enum.ResourceResource.toString resource.resource

@@ -221,7 +221,15 @@ svg {
     }
 
     &.monster {
-      @include hoverable-circle($fill: #F40);
+      @include hoverable-circle($fill: #B20);
+
+      &__named {
+        @include hoverable-circle($fill: color.adjust(#B20, $lightness: 10%));
+      }
+
+      &__elite {
+        @include hoverable-circle($fill: color.adjust(#B20, $lightness: 30%));
+      }
     }
 
     &.npc {
