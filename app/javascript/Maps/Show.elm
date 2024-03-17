@@ -14,6 +14,7 @@ import Html.Events.Extra.Mouse as Mouse
 import Html.Events.Extra.Wheel as Wheel
 import Html.Lazy
 import List.Extra
+import Maps.Test
 import Query.Common
 import Query.Locations
 import Query.Monsters
@@ -53,6 +54,11 @@ type alias Offset =
     { x : Float
     , y : Float
     }
+
+
+maxZoom : number
+maxZoom =
+    50
 
 
 mapXSize : number
@@ -532,7 +538,7 @@ calculateNewMapOffset event model =
 
 clampZoom : Float -> Float
 clampZoom zoom =
-    clamp 1 10 zoom
+    clamp 1 maxZoom zoom
 
 
 clampMapOffset : Float -> Offset -> Offset
@@ -842,7 +848,7 @@ svgView model =
             input
                 [ type_ "range"
                 , Html.Attributes.min "1"
-                , Html.Attributes.max "10"
+                , Html.Attributes.max <| String.fromInt maxZoom
                 , step "0.2"
                 , onInput ZoomChanged
                 , value <| String.fromFloat model.zoom
@@ -863,7 +869,7 @@ svgView model =
             [ div [ class "overlay-container zoom" ] [ zoomSlider ]
             , svg
                 (mouseEvents ++ [ id "svg-container", Svg.Attributes.viewBox viewBox ])
-                [ svgImage
+                [ Maps.Test.test
                 , Svg.Lazy.lazy3 svgPois model.mapCalibration model.zoom model.filteredMapPoiData
                 , Svg.g [ Svg.Attributes.class "loc-grid" ] [ locLineGrid model ]
                 ]

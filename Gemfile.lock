@@ -309,6 +309,7 @@ DEPENDENCIES
   iodine
   jsbundling-rails
   marcel
+  nokogiri
   paper_trail
   pg
   rack-cors
