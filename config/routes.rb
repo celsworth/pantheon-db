@@ -32,7 +32,7 @@ Rails.application.routes.draw do
 
   get '/login', to: 'users#login'
   post '/login', to: 'users#login'
-  get '/logout', to: 'users#logout'
+  post '/logout', to: 'users#logout'
 
   # root to: proc { [404, {}, ['Not found.']] }
   root to: redirect('/maps/1')

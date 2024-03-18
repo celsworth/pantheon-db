@@ -49,9 +49,11 @@
           </div>
           <% if current_user %>
             <div class="navbar-item">
-              <a href="<%= logout_path %>" class="button">
+              <form method="post" action="<%= logout_path %>">
+              <button type="submit" class="button">
                 <span class="icon"> <i class="fa fa-lg fa-right-from-bracket"></i> </span>
-              </a>
+              </button>
+              </form>
             </div>
             <div class="navbar-item">
               <a href="/admin" class="button">

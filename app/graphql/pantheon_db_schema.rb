@@ -15,6 +15,8 @@ class PantheonDbSchema < GraphQL::Schema
 
   use GraphQL::FragmentCache
 
+  trace_with GraphQL::Tracing::SentryTrace
+
   # GraphQL-Ruby calls this when something goes wrong while running a query:
 
   # Union and Interface Resolution
