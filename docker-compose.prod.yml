@@ -3,6 +3,8 @@ version: "3.8"
 x-app: &app
   build:
     context: .
+  volumes:
+    - .env:/rails/.env:ro
 
 services:
   postgres:
