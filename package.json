@@ -4,7 +4,7 @@
   "scripts": {
     "api": "elm-graphql http://localhost:3000/graphql --base Api --output app/javascript",
     "build": "node ./esbuild.config.js",
-    "build:watch": "node ./esbuild.config.js -- --watch",
+    "build:watch": "node ./esbuild.config.js -- --watch --debug",
     "build:css": "sass ./app/assets/stylesheets:./app/assets/builds --no-source-map --load-path=node_modules",
     "build:css:watch": "sass -w ./app/assets/stylesheets:./app/assets/builds --no-source-map --load-path=node_modules",
     "lint:css": "stylelint app/assets/stylesheets"

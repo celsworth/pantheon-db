@@ -25,10 +25,15 @@ Rails.application.routes.draw do
   post '/npcs/:npc_id/image', controller: 'images', action: 'create'
   resources :images, only: %i[show]
 
-  get '/test', to: 'test#index'
+  # get '/test', to: 'test#index'
+  # resources :items, only: %i[new]
 
-  resources :items, only: %i[new]
   resources :maps, only: %i[show]
 
-  root to: proc { [404, {}, ['Not found.']] }
+  get '/login', to: 'users#login'
+  post '/login', to: 'users#login'
+  get '/logout', to: 'users#logout'
+
+  # root to: proc { [404, {}, ['Not found.']] }
+  root to: redirect('/maps/1')
 end

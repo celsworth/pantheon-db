@@ -3,9 +3,9 @@
 class ApplicationController < ActionController::Base
   wrap_parameters false
 
-  attr_reader :current_user
+  helper_method :current_user
 
-  before_action do
-    @current_user = User.new(username: 'chris')
+  def current_user
+    @current_user ||= session[:current_user]
   end
 end

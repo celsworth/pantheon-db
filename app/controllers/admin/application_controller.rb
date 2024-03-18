@@ -11,7 +11,7 @@ module Admin
     before_action :authenticate_admin
 
     def authenticate_admin
-      # TODO: Add authentication logic here.
+      redirect_to login_path unless current_user
     end
 
     # Override this value to specify the number of elements to display at a time
@@ -19,5 +19,9 @@ module Admin
     # def records_per_page
     #   params[:per_page] || 20
     # end
+
+    def current_user
+      @current_user ||= session[:current_user]
+    end
   end
 end
