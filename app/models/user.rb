@@ -9,11 +9,13 @@ ADMINS = %w[
 
 # not yet an ActiveRecord model
 class User
+  attr_reader :username
+
   def initialize(username:)
     @username = username
   end
 
   def admin?
-    @username.in?(ADMINS)
+    username.in?(ADMINS)
   end
 end
