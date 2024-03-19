@@ -3,8 +3,10 @@ require 'nokogiri'
 # cat ~/Downloads/test2.svg | rails svg2elm | elm-format --stdin >Test.elm
 
 # these attributes are removed, the svg has no fonts in it anyway
+# base-profile and version are deprecated
 REMOVE_KEYS = %w[
   font-size font-style font-family font-weight
+  base-profile version
 ]
 
 # these are removed if the value matches

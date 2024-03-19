@@ -3,6 +3,13 @@
 class GraphqlController < ApplicationController
   DEFAULT_PARAMS = {}.freeze
 
+  before_action do
+    if (token = request.headers['Authorization'])
+      user = VerifyToken.call(token)
+      @current_user = user if user
+    end
+  end
+
   # If accessing from outside this domain, nullify the session
   # This allows for outside API access while preventing CSRF attacks,
   # but you'll have to authenticate your user separately
@@ -14,10 +21,7 @@ class GraphqlController < ApplicationController
     variables = prepare_variables(params[:variables])
     query = params[:query]
     operation_name = params[:operationName]
-    context = {
-      # Query context goes here, for example:
-      # current_user: current_user,
-    }
+    context = { current_user: }
     result = PantheonDbSchema.execute(query, variables:, context:, operation_name:)
     render json: result
   rescue StandardError => e
