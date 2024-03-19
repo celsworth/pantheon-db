@@ -4,8 +4,8 @@ class GraphqlController < ApplicationController
   DEFAULT_PARAMS = {}.freeze
 
   before_action do
-    if (token = request.headers['Authorization'])
-      username = VerifyToken.call(token)
+    if (auth = request.headers['Authorization']&.match(/Bearer (.*)/))
+      username = VerifyToken.call(auth[1])
       @current_user = User.new(username:) if username
     end
   end
