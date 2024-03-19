@@ -4,7 +4,8 @@ class UsersController < ApplicationController
   def login
     return unless current_user || params[:password] == ENV.fetch('PASSWORD')
 
-    session[:current_user] = true
+    # pretend everyone is admin who logs in here..
+    session[:current_user] = User.new(username: 'chris')
 
     redirect_to root_path
   end

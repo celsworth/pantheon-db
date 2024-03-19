@@ -5,8 +5,8 @@ class GraphqlController < ApplicationController
 
   before_action do
     if (token = request.headers['Authorization'])
-      user = VerifyToken.call(token)
-      @current_user = user if user
+      username = VerifyToken.call(token)
+      @current_user = User.new(username:) if username
     end
   end
 
