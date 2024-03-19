@@ -12,9 +12,9 @@ module Types
     field :resources, resolver: Resolvers::ResourcesResolver
     field :zones, resolver: Resolvers::ZonesResolver
 
-    field :me, String
+    field :me, String, null: true
     def me
-      context[:current_user].username
+      context[:current_user]&.username
     end
   end
 end
