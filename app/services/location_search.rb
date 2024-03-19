@@ -43,12 +43,15 @@ class LocationSearch
     return unless defined?(@params[:has_loc_coords])
 
     tbl = Location.arel_table
-    ids = ids = if @params[:has_loc_coords]
-                  Location.where(tbl[:loc_x].not_eq(nil)).where(tbl[:loc_y].not_eq(nil))
-                else
-                  Location.where(tbl[:loc_x].eq(nil)).where(tbl[:loc_y].eq(nil))
-                end
-    where(id: ids)
+    tbl_x = tbl[:loc_x]
+    tbl_y = tbl[:loc_y]
+    conditions = if @params[:has_loc_coords]
+                   tbl_x.not_eq(nil).and(tbl_y.not_eq(nil))
+                 else
+                   tbl_x.eq(nil).and(tbl_y.eq(nil))
+                 end
+
+    where(tbl.grouping(conditions))
   end
 
   def where(...)
