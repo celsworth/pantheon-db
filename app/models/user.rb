@@ -1,21 +1,25 @@
 # frozen_string_literal: true
 
-ADMINS = %w[
-  caesium6181
-  iamsemper
-  oukbok
-  password-login
-].freeze
-
 # not yet an ActiveRecord model
-class User
-  attr_reader :username
+class User < ApplicationRecord
+  delegate :can?, :cannot?, to: :ability
 
-  def initialize(username:)
-    @username = username
-  end
+  ROLES = %w[admin contributor member].freeze
+
+  ADMINS = %w[password-login].freeze
+
+  validates :username, presence: true, uniqueness: true
+  validates :role, presence: true, inclusion: { in: ROLES }
 
   def admin?
-    username.in?(ADMINS)
+    role == 'admin' || username.in?(ADMINS)
+  end
+
+  def contributor?
+    role == 'contributor' || admin?
+  end
+
+  def ability
+    @ability ||= Ability.new(self)
   end
 end

@@ -10,6 +10,8 @@ module Mutations
       def resolve(id:)
         npc = ::Npc.find(id)
 
+        raise GraphQL::ExecutionError, 'permission denied' unless current_user&.can? :delete, npc
+
         if npc.discard
           { npc:, errors: [] }
         else

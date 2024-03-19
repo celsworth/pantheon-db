@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_19_204951) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -20,9 +20,29 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.string "mime", null: false
   end
 
+  create_table "images_items", id: false, force: :cascade do |t|
+    t.bigint "image_id", null: false
+    t.bigint "item_id", null: false
+    t.index ["image_id", "item_id"], name: "index_images_items_on_image_id_and_item_id", unique: true
+    t.index ["item_id", "image_id"], name: "index_images_items_on_item_id_and_image_id"
+  end
+
+  create_table "images_monsters", id: false, force: :cascade do |t|
+    t.bigint "image_id", null: false
+    t.bigint "monster_id", null: false
+    t.index ["image_id", "monster_id"], name: "index_images_monsters_on_image_id_and_monster_id", unique: true
+    t.index ["monster_id", "image_id"], name: "index_images_monsters_on_monster_id_and_image_id"
+  end
+
+  create_table "images_npcs", id: false, force: :cascade do |t|
+    t.bigint "image_id", null: false
+    t.bigint "npc_id", null: false
+    t.index ["image_id", "npc_id"], name: "index_images_npcs_on_image_id_and_npc_id", unique: true
+    t.index ["npc_id", "image_id"], name: "index_images_npcs_on_npc_id_and_image_id"
+  end
+
   create_table "items", force: :cascade do |t|
     t.bigint "patch_id", null: false
-    t.bigint "screenshot_id"
     t.string "name", null: false
     t.integer "buy_price"
     t.integer "sell_price"
@@ -41,7 +61,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.index ["discarded_at"], name: "index_items_on_discarded_at"
     t.index ["name"], name: "index_items_on_name", unique: true
     t.index ["patch_id"], name: "index_items_on_patch_id"
-    t.index ["screenshot_id"], name: "index_items_on_screenshot_id"
     t.index ["stats"], name: "index_items_on_stats"
   end
 
@@ -78,7 +97,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
 
   create_table "monsters", force: :cascade do |t|
     t.bigint "patch_id", null: false
-    t.bigint "screenshot_id"
     t.bigint "location_id", null: false
     t.string "name", null: false
     t.integer "level"
@@ -96,12 +114,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.index ["location_id"], name: "index_monsters_on_location_id"
     t.index ["name"], name: "index_monsters_on_name", unique: true
     t.index ["patch_id"], name: "index_monsters_on_patch_id"
-    t.index ["screenshot_id"], name: "index_monsters_on_screenshot_id"
   end
 
   create_table "npcs", force: :cascade do |t|
     t.bigint "patch_id", null: false
-    t.bigint "screenshot_id"
     t.bigint "location_id", null: false
     t.string "name", null: false
     t.string "subtitle"
@@ -118,7 +134,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.index ["location_id"], name: "index_npcs_on_location_id"
     t.index ["name"], name: "index_npcs_on_name", unique: true
     t.index ["patch_id"], name: "index_npcs_on_patch_id"
-    t.index ["screenshot_id"], name: "index_npcs_on_screenshot_id"
     t.index ["subtitle"], name: "index_npcs_on_subtitle"
   end
 
@@ -211,6 +226,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.index ["subresource"], name: "index_resources_on_subresource"
   end
 
+  create_table "users", force: :cascade do |t|
+    t.string "username", null: false
+    t.string "role", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["username"], name: "index_users_on_username", unique: true
+  end
+
   create_table "versions", force: :cascade do |t|
     t.string "item_type", null: false
     t.bigint "item_id", null: false
@@ -233,9 +256,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_09_084439) do
     t.index ["patch_id"], name: "index_zones_on_patch_id"
   end
 
-  add_foreign_key "items", "images", column: "screenshot_id"
-  add_foreign_key "monsters", "images", column: "screenshot_id"
-  add_foreign_key "npcs", "images", column: "screenshot_id"
   add_foreign_key "quests", "items", column: "dropped_as_id"
   add_foreign_key "quests", "npcs", column: "giver_id"
   add_foreign_key "quests", "npcs", column: "receiver_id"

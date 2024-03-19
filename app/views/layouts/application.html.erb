@@ -55,11 +55,13 @@
                 </button>
               </form>
             </div>
-            <div class="navbar-item">
-              <a href="/admin" class="button">
-                <span class="icon"> <i class="fa fa-lg fa-hammer"></i> </span>
-              </a>
-            </div>
+            <% if current_user.admin? %>
+              <div class="navbar-item">
+                <a href="/admin" class="button">
+                  <span class="icon"> <i class="fa fa-lg fa-hammer"></i> </span>
+                </a>
+              </div>
+            <% end %>
           <% else %>
             <div class="navbar-item">
               <a href="<%= login_path %>" class="button">

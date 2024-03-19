@@ -7,5 +7,9 @@ module Types
     def initialize(*args, cache_fragment: { context_key: :current_user }, **kwargs, &block)
       super
     end
+
+    def current_user
+      context[:current_user]
+    end
   end
 end

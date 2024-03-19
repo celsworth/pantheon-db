@@ -10,6 +10,8 @@ module Mutations
       def resolve(attributes:)
         monster = ::Monster.new(**attributes)
 
+        raise GraphQL::ExecutionError, 'permission denied' unless current_user&.can? :create, monster
+
         if monster.save
           { monster:, errors: [] }
         else

@@ -11,6 +11,8 @@ module Mutations
       def resolve(id:, attributes:)
         item = ::Item.find(id)
 
+        raise GraphQL::ExecutionError, 'permission denied' unless current_user&.can? :manage, item
+
         if item.update(**attributes)
           { item:, errors: [] }
         else

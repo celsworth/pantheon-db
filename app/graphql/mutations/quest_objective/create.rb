@@ -10,6 +10,8 @@ module Mutations
       def resolve(attributes:)
         quest_objective = ::QuestObjective.new(**attributes)
 
+        raise GraphQL::ExecutionError, 'permission denied' unless current_user&.can? :create, quest_objective
+
         if quest_objective.save
           { quest_objective:, errors: [] }
         else

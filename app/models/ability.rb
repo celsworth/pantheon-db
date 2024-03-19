@@ -9,9 +9,23 @@ class Ability
     # not really bothering with read perms yet, everything is public
     can :read, :all
 
-    # blanket admin access, could do roles later
-    return unless user.admin?
+    if user.admin?
+      admin_abilities
+    elsif user.contributor?
+      contributor_abilities(user)
+    end
+  end
 
+  def contributor_abilities(user)
+    # can :create, :all
+
+    can :manage, :all
+    cannot :manage, User
+
+    can :read, User, id: user.id
+  end
+
+  def admin_abilities
     can :manage, :all
   end
 end

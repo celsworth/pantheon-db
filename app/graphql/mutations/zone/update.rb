@@ -11,6 +11,8 @@ module Mutations
       def resolve(id:, attributes:)
         zone = ::Zone.find(id)
 
+        raise GraphQL::ExecutionError, 'permission denied' unless current_user&.can? :manage, zone
+
         if zone.update(**attributes)
           { zone:, errors: [] }
         else

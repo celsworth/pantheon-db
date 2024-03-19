@@ -10,6 +10,8 @@ module Mutations
       def resolve(attributes:)
         npc = ::Npc.new(**attributes)
 
+        raise GraphQL::ExecutionError, 'permission denied' unless current_user&.can? :create, npc
+
         if npc.save
           { npc:, errors: [] }
         else

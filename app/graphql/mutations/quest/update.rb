@@ -11,6 +11,8 @@ module Mutations
       def resolve(id:, attributes:)
         quest = ::Quest.find(id)
 
+        raise GraphQL::ExecutionError, 'permission denied' unless current_user&.can? :manage, quest
+
         if quest.update(**attributes)
           { quest:, errors: [] }
         else

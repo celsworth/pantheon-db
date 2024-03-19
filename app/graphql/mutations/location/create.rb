@@ -10,6 +10,8 @@ module Mutations
       def resolve(attributes:)
         location = ::Location.new(**attributes)
 
+        raise GraphQL::ExecutionError, 'permission denied' unless current_user&.can? :create, location
+
         if location.save
           { location:, errors: [] }
         else

@@ -11,7 +11,7 @@ module Admin
     before_action :authenticate_admin
 
     def authenticate_admin
-      redirect_to login_path unless current_user
+      redirect_to login_path unless current_user&.admin?
     end
 
     # Override this value to specify the number of elements to display at a time
@@ -21,7 +21,9 @@ module Admin
     # end
 
     def current_user
-      @current_user ||= session[:current_user]
+      return unless session[:current_user]
+
+      @current_user ||= User.find_by(username: session[:current_user])
     end
   end
 end

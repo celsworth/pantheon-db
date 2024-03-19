@@ -10,6 +10,8 @@ module Mutations
       def resolve(id:)
         monster = ::Monster.find(id)
 
+        raise GraphQL::ExecutionError, 'permission denied' unless current_user&.can? :delete, monster
+
         if monster.discard
           { monster:, errors: [] }
         else

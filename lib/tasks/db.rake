@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 def models
-  [Patch, Zone, Location, Monster, Npc, Item,
+  [User, Patch, Zone, Location, Monster, Npc, Item,
    Quest, QuestObjective, QuestReward, Resource]
 end
 

@@ -13,6 +13,9 @@ module Mutations
       monster = ::Monster.find(monster_id)
       item = ::Item.find(item_id)
 
+      raise GraphQL::ExecutionError, 'permission denied' unless current_user&.can? :manage, monster
+      raise GraphQL::ExecutionError, 'permission denied' unless current_user&.can? :manage, item
+
       monster.drops << item
 
       if monster.errors.empty?

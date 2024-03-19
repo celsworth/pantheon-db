@@ -10,6 +10,8 @@ module Mutations
       def resolve(attributes:)
         quest_reward = ::QuestReward.new(**attributes)
 
+        raise GraphQL::ExecutionError, 'permission denied' unless current_user&.can? :create, quest_reward
+
         if quest_reward.save
           { quest_reward:, errors: [] }
         else

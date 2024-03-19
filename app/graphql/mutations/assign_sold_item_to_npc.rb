@@ -13,6 +13,9 @@ module Mutations
       npc = ::Npc.find(npc_id)
       item = ::Item.find(item_id)
 
+      raise GraphQL::ExecutionError, 'permission denied' unless current_user&.can? :manage, npc
+      raise GraphQL::ExecutionError, 'permission denied' unless current_user&.can? :manage, item
+
       npc.sells_items << item
 
       if npc.errors.empty?
