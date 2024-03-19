@@ -115,6 +115,7 @@ svg {
     }
 
     stroke: #000;
+    stroke-width: 0.3;
 
     &.radar {
       pointer-events: none;
@@ -262,7 +263,7 @@ svg {
 
 .stamp {
   font-weight: 900;
-  background: #d23;
+  background-image: linear-gradient(to right top, #f00, #e4191a, #c92626, #ac2e2e, #8f3333, #8d3333, #8c3434, #8a3434, #a43131, #bd2b2c, #d62324, #ee1818);
   padding: 2px 6px;
   border-radius: 10px;
   color: #ddd;

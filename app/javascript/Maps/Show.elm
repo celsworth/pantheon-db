@@ -1150,9 +1150,12 @@ poiMapMarker enablePulse enableRadar mapCalibration zoom poi =
         mapMarkerClass =
             String.join " " mapMarkerClasses
 
+        mapMarkerRadius =
+            clamp 1.5 6 <| 8 - zoom
+
         mapMarkerAttrs =
             [ Svg.Attributes.class mapMarkerClass
-            , Svg.Attributes.r (String.fromFloat 4)
+            , Svg.Attributes.r (String.fromFloat mapMarkerRadius)
             , onClick <| ClickedPoi poi
             , Mouse.onOver <| PoiHoverEnter MapHover poi
             , Mouse.onLeave <| PoiHoverLeave

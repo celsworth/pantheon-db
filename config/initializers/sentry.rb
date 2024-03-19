@@ -6,4 +6,8 @@ Sentry.init do |config|
 
   # get breadcrumbs from logs
   config.breadcrumbs_logger = %i[active_support_logger http_logger]
+
+  config.enabled_environments = %w[production staging]
+
+  config.send_default_pii = true
 end
