@@ -32,8 +32,8 @@ Rails.application.routes.draw do
   resources :maps, only: %i[show]
 
   get '/login', to: 'users#login'
-  post '/login', to: 'users#login'
   post '/logout', to: 'users#logout'
+  get '/oauth2/callback', to: 'users#oauth2_callback'
 
   # root to: proc { [404, {}, ['Not found.']] }
   root to: redirect('/maps/1')

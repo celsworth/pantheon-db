@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 class GraphqlController < ApplicationController
+  include Discord
+
   DEFAULT_PARAMS = {}.freeze
 
   before_action do
     if (auth = request.headers['Authorization']&.match(/Bearer (.*)/))
-      username = VerifyToken.call(auth[1])
-      @current_user = User.new(username:) if username
+      username = verify_discord_access_token(auth[1])
+      @current_user = User.find_by(username:) if username
     end
   end
 

@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
   helper_method :current_user
 
   def current_user
+    return @current_user if @current_user
     return unless session[:current_user]
 
     @current_user ||= User.find_by(username: session[:current_user])
