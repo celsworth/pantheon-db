@@ -967,10 +967,31 @@ svgView model =
             , svg
                 (mouseEvents ++ [ id "svg-container", Svg.Attributes.viewBox viewBox ])
                 [ Maps.Test.test
-                , Svg.Lazy.lazy4 svgPois model.poiHover model.mapCalibration model.zoom model.filteredMapPoiData
                 , Svg.g [ Svg.Attributes.class "loc-grid" ] [ locLineGrid model ]
+                , Svg.Lazy.lazy4 svgPois model.poiHover model.mapCalibration model.zoom model.filteredMapPoiData
+
+                --, testLabel
                 ]
             ]
+        ]
+
+
+testLabel : Svg Msg
+testLabel =
+    Svg.g [ Svg.Attributes.transform "translate(1500, 1500)", Svg.Attributes.class "poi-static-label" ]
+        [ Svg.filter
+            [ Svg.Attributes.id "poi-static-label-filter"
+            , Svg.Attributes.x "-0.1"
+            , Svg.Attributes.y "-0.2"
+            , Svg.Attributes.width "1.2"
+            , Svg.Attributes.height "1.4"
+            ]
+            [ Svg.feFlood [] []
+            , Svg.feComposite [ Svg.Attributes.in_ "SourceGraphic" ] []
+            ]
+        , Svg.text_
+            [ Svg.Attributes.class "poi-static-label-text" ]
+            [ text "Shaman Starting Area" ]
         ]
 
 

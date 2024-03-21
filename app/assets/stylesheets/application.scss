@@ -76,7 +76,7 @@ svg {
   border: 1px solid black;
 
   line.loc-line {
-    stroke: #222;
+    stroke: #333;
     stroke-width: 1;
     stroke-opacity: 0.9;
     stroke-dasharray: 1, 3;
@@ -95,6 +95,22 @@ svg {
     // fill: black;
     // paint-order: stroke;
     // stroke-linejoin: round;
+  }
+
+  .poi-static-label {
+    pointer-events: none;
+
+    &-text {
+      font-size: 10px;
+      fill: #222;
+      filter: url("#poi-static-label-filter");
+    }
+
+    feFlood {
+      // todo : copy variables from poi?
+      flood-opacity: 0.95;
+      flood-color: #fff;
+    }
   }
 
   circle {

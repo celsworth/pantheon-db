@@ -8,8 +8,6 @@ test : Svg.Svg msg
 test =
     Svg.node "svg"
         [ attribute "viewBox" "0 0 9933 14043"
-        , attribute "baseProfile" "tiny"
-        , attribute "version" "1.2"
         , attribute "height" "2880"
         , attribute "width" "3840"
         ]
