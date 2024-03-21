@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class GraphqlController < ApplicationController
-  include Discord
-
   DEFAULT_PARAMS = {}.freeze
 
   before_action do

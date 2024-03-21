@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
 class UsersController < ApplicationController
-  include Discord
-
   def login
     return if current_user
 
+    oauth_client = Discord.oauth_client
     redirect_to oauth_client.auth_code.authorize_url(redirect_uri: callback_url,
-                                                     scope: 'identify guilds'),
+                                                     scope: 'identify guilds guilds.members.read'),
                 allow_other_host: true
   end
 
@@ -18,11 +17,18 @@ class UsersController < ApplicationController
   end
 
   def oauth2_callback
+    oauth_client = Discord.oauth_client
     tokens = oauth_client.auth_code.get_token(params[:code],
                                               redirect_uri: callback_url).response.parsed
     session[:discord] = tokens
-    session[:current_user] = verify_discord_access_token(tokens['access_token'])
+    session[:current_user] = Discord.verify_discord_access_token(tokens['access_token'])
 
     redirect_to root_path
+  end
+
+  private
+
+  def callback_url
+    URI.join(ENV.fetch('BASE_URL'), '/oauth2/callback')
   end
 end

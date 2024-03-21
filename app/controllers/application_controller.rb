@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::Base
-  include Discord
-
   wrap_parameters false
 
   helper_method :current_user, :guild_member?
@@ -15,8 +13,8 @@ class ApplicationController < ActionController::Base
   end
 
   def guild_member?
-    # euww.. clean me up!
     access_token = session.dig(:discord, 'access_token')
-    access_token ? petrichor_member?(access_token) : false
+    discord = Discord.new(access_token:)
+    access_token ? discord.petrichor_member? : false
   end
 end
