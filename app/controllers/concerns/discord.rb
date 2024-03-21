@@ -21,6 +21,8 @@ module Discord
       body = JSON.parse(response.body)
       body.map { _1['name'] }.include?('PETRICHOR [EU]-GUILD')
     end
+  rescue StandardError
+    false
   end
 
   def oauth_client
