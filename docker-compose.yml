@@ -18,6 +18,13 @@ services:
     <<: *app
     command: yarn run build:css:watch
 
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - redis:/data
+
   postgres:
     image: postgres:15
     environment:
@@ -31,11 +38,13 @@ services:
     <<: *app
     depends_on:
       - postgres
+      - redis
     environment:
       - POSTGRES_HOST=postgres
       - POSTGRES_DB=pantheon
       - POSTGRES_USER=pantheon
       - POSTGRES_PASSWORD=pantheon
+      - REDIS_URL=redis://redis:6379/0
       - RAILS_ENV=development
     stdin_open: true
     tty: true
@@ -44,3 +53,4 @@ services:
 
 volumes:
   postgres-data:
+  redis:
