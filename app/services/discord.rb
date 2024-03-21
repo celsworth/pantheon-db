@@ -24,6 +24,7 @@ class Discord
   def verify_discord_access_token
     return nil unless access_token
 
+    key = "discord-user-for-#{access_token}"
     Rails.cache.fetch(key, expires_in: 1.hour) do
       response = access.get('/api/v10/users/@me')
       body = JSON.parse(response.body)
