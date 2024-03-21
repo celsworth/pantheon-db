@@ -22,6 +22,8 @@ class Discord
   end
 
   def verify_discord_access_token
+    return nil unless access_token
+
     Rails.cache.fetch("discord-token-#{access_token}", expires_in: 1.day) do
       response = access.get('/api/v10/users/@me')
       body = JSON.parse(response.body)
@@ -32,10 +34,13 @@ class Discord
   end
 
   def petrichor_member?
-    Rails.cache.fetch("discord-is-petrichor-member-#{access_token}", expires_in: 1.day) do
+    return false unless access_token
+
+    Rails.cache.fetch("discord-is-petrichor-member-#{access_token}", expires_in: 10.minutes) do
       petrichor_user_roles.include?(PETRICHOR_MEMBER_ROLE_ID)
     end
-  rescue StandardError
+  rescue StandardError => e
+    Sentry.capture_exception(e)
     false
   end
 
