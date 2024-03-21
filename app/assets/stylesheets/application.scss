@@ -56,10 +56,12 @@ $body-background-color: #9a9;
   padding: 6px;
 
   &.zoom {
+    transform: translate(0%, -100%) rotate(-90deg);
+    transform-origin: bottom right;
     top: 1px;
     right: 1px;
-    background: #aaa;
-    opacity: 0.6;
+    background: #ccc;
+    opacity: 0.9;
   }
 
   &.poi {

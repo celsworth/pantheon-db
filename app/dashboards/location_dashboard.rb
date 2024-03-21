@@ -15,8 +15,8 @@ class LocationDashboard < Administrate::BaseDashboard
     name: Field::String,
     category: Field::Select.with_options(collection: Location::CATEGORIES),
     loc_x: Field::Number,
-    loc_y: Field::Number,
     loc_z: Field::Number,
+    loc_y: Field::Number,
     monsters: Field::HasMany,
     npcs: Field::HasMany
   }.freeze
@@ -40,8 +40,8 @@ class LocationDashboard < Administrate::BaseDashboard
     zone
     name
     loc_x
-    loc_y
     loc_z
+    loc_y
     category
     monsters
     npcs
@@ -55,8 +55,8 @@ class LocationDashboard < Administrate::BaseDashboard
     name
     category
     loc_x
-    loc_y
     loc_z
+    loc_y
   ].freeze
 
   # COLLECTION_FILTERS
@@ -74,7 +74,7 @@ class LocationDashboard < Administrate::BaseDashboard
   # Overwrite this method to customize how zones are displayed
   # across all pages of the admin dashboard.
   #
-  def display_resource(l)
-    l.name
+  def display_resource(resource)
+    resource.name
   end
 end
