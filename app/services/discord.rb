@@ -16,21 +16,19 @@ class Discord
                                            authorize_url: '/oauth2/authorize',
                                            token_url: '/api/v10/oauth2/token')
     end
-
-    def verify_discord_access_token(access_token)
-      Rails.cache.fetch("discord-token-#{access_token}", expires_in: 1.day) do
-        access = OAuth2::AccessToken.from_hash(oauth_client, access_token:)
-        response = access.get('/api/v10/users/@me')
-        body = JSON.parse(response.body)
-        body['username']
-      end
-    rescue StandardError
-      nil
-    end
   end
-
   def initialize(access_token:)
     @access_token = access_token
+  end
+
+  def verify_discord_access_token
+    Rails.cache.fetch("discord-token-#{access_token}", expires_in: 1.day) do
+      response = access.get('/api/v10/users/@me')
+      body = JSON.parse(response.body)
+      body['username']
+    end
+  rescue StandardError
+    nil
   end
 
   def petrichor_member?

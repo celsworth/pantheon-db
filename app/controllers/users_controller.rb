@@ -21,7 +21,8 @@ class UsersController < ApplicationController
     tokens = oauth_client.auth_code.get_token(params[:code],
                                               redirect_uri: callback_url).response.parsed
     session[:discord] = tokens
-    session[:current_user] = Discord.verify_discord_access_token(tokens['access_token'])
+    discord = Discord.new(access_token: tokens['access_token'])
+    session[:current_user] = discord.verify_discord_access_token
 
     redirect_to root_path
   end

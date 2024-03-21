@@ -5,7 +5,8 @@ class GraphqlController < ApplicationController
 
   before_action do
     if (auth = request.headers['Authorization']&.match(/Bearer (.*)/))
-      username = verify_discord_access_token(auth[1])
+      @discord = Discord.new(access_token: auth[1])
+      username = @discord.verify_discord_access_token
       @current_user = User.find_by(username:) if username
     end
   end
@@ -21,7 +22,7 @@ class GraphqlController < ApplicationController
     variables = prepare_variables(params[:variables])
     query = params[:query]
     operation_name = params[:operationName]
-    context = { current_user:, guild_member: guild_member? }
+    context = { current_user:, guild_member: @discord.petrichor_member? }
     result = PantheonDbSchema.execute(query, variables:, context:, operation_name:)
     render json: result
   rescue StandardError => e
