@@ -6,7 +6,8 @@ class UsersController < ApplicationController
   def login
     return if current_user
 
-    redirect_to oauth_client.auth_code.authorize_url(redirect_uri: callback_url, scope: 'identify'),
+    redirect_to oauth_client.auth_code.authorize_url(redirect_uri: callback_url,
+                                                     scope: 'identify guilds'),
                 allow_other_host: true
   end
 

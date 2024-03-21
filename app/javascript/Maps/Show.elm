@@ -38,7 +38,7 @@ type alias ViewFlags =
 
 
 type alias Flags =
-    { graphqlBaseUrl : String, view : ViewFlags }
+    { graphqlBaseUrl : String, view : ViewFlags, guildMember : Bool }
 
 
 main : Program Flags Model Msg
@@ -686,13 +686,13 @@ view model =
     div []
         [ div [ class "columns" ]
             [ div [ class "column" ] [ svgView model ]
-            , div [ class "column is-one-fifth" ] [ Html.Lazy.lazy5 sidePanel model.poiFilter model.sidePanelTabSelected model.poiVisibility model.svgElementSize model.filteredMapPoiData ]
+            , div [ class "column is-one-fifth" ] [ Html.Lazy.lazy6 sidePanel model.flags.guildMember model.poiFilter model.sidePanelTabSelected model.poiVisibility model.svgElementSize model.filteredMapPoiData ]
             ]
         ]
 
 
-sidePanel : PoiFilter -> ObjectType -> PoiVisibility -> Offset -> MapPoiData -> Html Msg
-sidePanel poiFilter sidePanelTabSelected poiVisibility svgElementSize mapPoiData =
+sidePanel : Bool -> PoiFilter -> ObjectType -> PoiVisibility -> Offset -> MapPoiData -> Html Msg
+sidePanel guildMember poiFilter sidePanelTabSelected poiVisibility svgElementSize mapPoiData =
     let
         activeIf b =
             Helpers.strIf b "is-active"
@@ -739,11 +739,15 @@ sidePanel poiFilter sidePanelTabSelected poiVisibility svgElementSize mapPoiData
                     , class (activeIf <| sidePanelTabSelected == Npc)
                     ]
                     [ text "NPCs" ]
-                , a
-                    [ onClick <| ChangeSidePanelTab Resource
-                    , class (activeIf <| sidePanelTabSelected == Resource)
-                    ]
-                    [ text "Nodes" ]
+                , if guildMember then
+                    a
+                        [ onClick <| ChangeSidePanelTab Resource
+                        , class (activeIf <| sidePanelTabSelected == Resource)
+                        ]
+                        [ text "Nodes" ]
+
+                  else
+                    text ""
                 , a
                     [ onClick <| ChangeSidePanelTab Location
                     , class (activeIf <| sidePanelTabSelected == Location)

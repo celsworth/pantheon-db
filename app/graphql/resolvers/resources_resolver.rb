@@ -16,6 +16,8 @@ module Resolvers
     DESC
 
     def resolve(id: nil, name: nil, resource: nil, size: nil)
+      return Resource.none unless context[:guild_member]
+
       dataset = Resource
       dataset = dataset.where(id:) if id
       dataset = dataset.where('name ILIKE ?', "%#{sanitize_sql_like(name)}%") if name

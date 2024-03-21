@@ -48,6 +48,11 @@
               <span> <%= current_user.username %> </span>
             </div>
             <div class="navbar-item">
+              <% if guild_member? %>
+                <span class="icon"> <i class="fa fa-lg fa-key"></i> </span>
+              <% end%>
+            </div>
+            <div class="navbar-item">
               <form method="post" action="<%= logout_path %>">
                 <button title="Log out" type="submit" class="button">
                   <span class="icon"> <i class="fa fa-lg fa-right-from-bracket"></i> </span>
