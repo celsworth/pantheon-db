@@ -22,7 +22,7 @@ class GraphqlController < ApplicationController
     variables = prepare_variables(params[:variables])
     query = params[:query]
     operation_name = params[:operationName]
-    context = { current_user:, guild_member: @discord.petrichor_member? }
+    context = { current_user:, guild_member: @discord&.petrichor_member? }
     result = PantheonDbSchema.execute(query, variables:, context:, operation_name:)
     render json: result
   rescue StandardError => e
