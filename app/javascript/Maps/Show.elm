@@ -11,6 +11,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, id, placeholder, step, style, type_, value)
 import Html.Events exposing (onCheck, onClick, onInput)
 import Html.Events.Extra.Mouse as Mouse
+import Html.Events.Extra.Pointer as Pointer
 import Html.Events.Extra.Wheel as Wheel
 import Html.Lazy
 import List.Extra
@@ -166,10 +167,10 @@ type FilterType
 
 
 type Msg
-    = MouseMove Mouse.Event
-    | MouseDown Mouse.Event
-    | MouseUp Mouse.Event
-    | MouseWheel Wheel.Event
+    = MouseWheel Wheel.Event
+    | PointerDown Pointer.Event
+    | PointerMove Pointer.Event
+    | PointerUp Pointer.Event
     | ZoomChanged String
     | GotNpcs (Query.Common.Msg Npc)
     | GotMonsters (Query.Common.Msg Monster)
@@ -314,29 +315,29 @@ update msg model =
                 |> changeZoom { xProp = 0.5, yProp = 0.5 } (value |> String.toFloat |> Maybe.withDefault 1)
                 |> updateUrl
 
-        MouseMove event ->
-            ( model |> calculateNewMapOffset event |> setMousePosition event, Cmd.none )
-
-        MouseDown event ->
+        PointerDown event ->
             let
                 _ =
-                    Debug.log "MouseDown" event
+                    Debug.log "PointerDown" event.pointer
 
                 _ =
-                    Debug.log "svgCoords" <| Maps.CoordTranslations.clickPositionToSvgCoordinates event.offsetPos mapXSize mapYSize model.svgElementSize model.mapOffset model.zoom
+                    Debug.log "svgCoords" <| Maps.CoordTranslations.clickPositionToSvgCoordinates event.pointer.offsetPos mapXSize mapYSize model.svgElementSize model.mapOffset model.zoom
             in
             ( { model
                 | dragData =
                     Dragging
                         { startingMapOffset = model.mapOffset
-                        , startingMousePos = mouseEventToOffset event
+                        , startingMousePos = mouseEventToOffset event.pointer
                         }
               }
-            , Cmd.none
+            , preventScrolling True
             )
 
-        MouseUp _ ->
-            { model | dragData = NotDragging } |> updateUrl
+        PointerMove event ->
+            ( model |> calculateNewMapOffset event.pointer |> setMousePosition event.pointer, Cmd.none )
+
+        PointerUp _ ->
+            { model | dragData = NotDragging } |> updateUrl |> appendCmd (preventScrolling False)
 
         BrowserResized ->
             ( model, Browser.Dom.getElement "svg-container" |> Task.attempt GotSvgElement )
@@ -400,6 +401,15 @@ update msg model =
                             { poiFilter | namedOnly = namedOnly }
                     in
                     ( { model | poiFilter = newPoiFilter } |> updateMapPoiData, Cmd.none )
+
+
+appendCmd : Cmd Msg -> ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+appendCmd cmd ( model, oldCmd ) =
+    let
+        newCmd =
+            Cmd.batch [ cmd, oldCmd ]
+    in
+    ( model, newCmd )
 
 
 updateUrl : Model -> ( Model, Cmd Msg )
@@ -929,10 +939,10 @@ svgView model =
         mouseEvents =
             case model.dragData of
                 Dragging _ ->
-                    [ Mouse.onUp MouseUp, Mouse.onMove MouseMove, Mouse.onLeave MouseUp ]
+                    [ Pointer.onUp PointerUp, Pointer.onMove PointerMove, Pointer.onLeave PointerUp ]
 
                 NotDragging ->
-                    [ Mouse.onDown MouseDown, Mouse.onMove MouseMove, Wheel.onWheel MouseWheel ]
+                    [ Pointer.onDown PointerDown, Pointer.onMove PointerMove, Wheel.onWheel MouseWheel ]
 
         ( viewportWidthX, viewportWidthY ) =
             viewportWidth model.zoom
@@ -1262,3 +1272,6 @@ subscriptions _ =
 
 
 port pushUrl : String -> Cmd msg
+
+
+port preventScrolling : Bool -> Cmd msg
