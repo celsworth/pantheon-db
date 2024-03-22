@@ -1013,7 +1013,7 @@ locLineGrid : Model -> Svg Msg
 locLineGrid model =
     let
         locLineInterval =
-            if model.zoom < 3 then
+            if model.zoom < 6 then
                 500
 
             else
@@ -1035,13 +1035,16 @@ locLineGrid model =
                 ]
                 []
 
-        locLabel label x y =
+        locLabel label baseline x y =
             Svg.text_
                 [ Svg.Attributes.x <| String.fromFloat x
                 , Svg.Attributes.y <| String.fromFloat y
                 , Svg.Attributes.class "loc-line-label"
+                , Svg.Attributes.alignmentBaseline baseline
+                , Svg.Attributes.style <|
+                    String.join "" [ "font-size: ", String.fromFloat <| 25 - model.zoom, "px" ]
                 ]
-                [ text <| String.fromFloat <| label ]
+                [ text <| String.fromFloat label ]
 
         verticalLocs =
             locLineLocsX
@@ -1049,7 +1052,7 @@ locLineGrid model =
                 |> List.concatMap
                     (\( loc, { x } ) ->
                         [ locLine x 0 x mapYSize
-                        , locLabel loc (x + 2) (model.mapOffset.y + 15)
+                        , locLabel loc "hanging" (x + 2) (model.mapOffset.y + 2)
                         ]
                     )
 
@@ -1059,7 +1062,7 @@ locLineGrid model =
                 |> List.concatMap
                     (\( loc, { y } ) ->
                         [ locLine 0 y mapXSize y
-                        , locLabel loc (model.mapOffset.x + 5) (y - 2)
+                        , locLabel loc "auto" (model.mapOffset.x + 2) (y - 2)
                         ]
                     )
     in
