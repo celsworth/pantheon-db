@@ -262,6 +262,17 @@ svg {
   }
 }
 
+.map-layers-dropdown {
+  .dropdown-item {
+    display: flex;
+    justify-content: space-between;
+
+    &:hover {
+      background: #eee;
+    }
+  }
+}
+
 .panel {
   background: #fff;
   user-select: none;

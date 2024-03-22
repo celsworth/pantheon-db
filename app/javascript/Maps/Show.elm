@@ -107,6 +107,15 @@ defaultPoiVisibility =
     }
 
 
+type alias MapLayer =
+    -- id, visible
+    { id : String, label : String, visible : Bool }
+
+
+type alias MapLayers =
+    List MapLayer
+
+
 type alias MapPoiData =
     { locations : List Location
     , monsters : List Monster
@@ -124,6 +133,7 @@ type alias PoiFilter =
 type alias Model =
     { flags : Flags
     , mapCalibration : MapCalibration
+    , mapLayers : MapLayers
     , zoom : Float
     , mapOffset : Offset
     , svgElementSize : Offset
@@ -187,6 +197,7 @@ type Msg
     | ChangePoiLocationVisibility (List Api.Enum.LocationCategory.LocationCategory)
     | SetPoiVisibility ObjectType Bool
     | SetFilter FilterType
+    | ToggleMapLayer MapLayer
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -224,6 +235,21 @@ init flags =
     in
     ( { flags = flags
       , mapCalibration = calcMapCalibration calibrationInput1 calibrationInput2
+      , mapLayers =
+            [ { id = "Karta 1: Bakgrund", label = "Background", visible = True }
+            , { id = "Karta 1: Island", label = "Island", visible = True }
+            , { id = "Karta 1: Water P", label = "Water", visible = True }
+            , { id = "Karta 1: Portal P", label = "Portal", visible = True }
+            , { id = "Karta 1: House P", label = "House", visible = True }
+            , { id = "Karta 1: Edge L", label = "Edge", visible = True }
+            , { id = "Karta 1: Fence", label = "Fence", visible = True }
+            , { id = "Karta 1: Wood Bridge", label = "Wood Bridge", visible = True }
+            , { id = "Karta 1: Small caves", label = "Small caves", visible = True }
+            , { id = "Karta 1: Castle P", label = "Castle", visible = True }
+            , { id = "Karta 1: Dark Stone Building", label = "Dark Stone Building", visible = True }
+            , { id = "Karta 1: Road L", label = "Road", visible = True }
+            , { id = "Karta 1: Redline", label = "Red line (invisible wall)", visible = True }
+            ]
       , zoom = flagDefault 1 flags.view.zoom
       , mapOffset = { x = flagDefault 0 flags.view.x, y = flagDefault 0 flags.view.y }
       , mousePosition = { x = 0, y = 0 }
@@ -401,6 +427,21 @@ update msg model =
                             { poiFilter | namedOnly = namedOnly }
                     in
                     ( { model | poiFilter = newPoiFilter } |> updateMapPoiData, Cmd.none )
+
+        ToggleMapLayer mapLayer ->
+            let
+                newMapLayers =
+                    model.mapLayers
+                        |> List.map
+                            (\layer ->
+                                if layer.label == mapLayer.label then
+                                    { layer | visible = not layer.visible }
+
+                                else
+                                    layer
+                            )
+            in
+            ( { model | mapLayers = newMapLayers }, Cmd.none )
 
 
 appendCmd : Cmd Msg -> ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
@@ -694,9 +735,69 @@ filterNpcs npcs poiFilter =
 view : Model -> Html Msg
 view model =
     div []
-        [ div [ class "columns" ]
+        [ topFilter model
+        , mapLayersStyle model
+        , div [ class "columns" ]
             [ div [ class "column" ] [ svgView model ]
             , div [ class "column is-one-fifth" ] [ Html.Lazy.lazy6 sidePanel model.flags.guildMember model.poiFilter model.sidePanelTabSelected model.poiVisibility model.svgElementSize model.filteredMapPoiData ]
+            ]
+        ]
+
+
+mapLayersStyle : Model -> Html Msg
+mapLayersStyle model =
+    let
+        blockOrNone visible =
+            if visible then
+                "block"
+
+            else
+                "none"
+
+        rule layer =
+            text <| "[id='" ++ layer.id ++ "'] { display: " ++ blockOrNone layer.visible ++ " }"
+    in
+    VirtualDom.node "style" [] (List.map rule model.mapLayers)
+
+
+topFilter : Model -> Html Msg
+topFilter model =
+    let
+        layerClass mapLayer =
+            if mapLayer.visible then
+                ""
+
+            else
+                "has-text-grey-lighter"
+
+        layer mapLayer =
+            div
+                [ onClick <| ToggleMapLayer mapLayer
+                , class <| layerClass mapLayer ++ " is-clickable is-unselectable dropdown-item"
+                ]
+                [ span [] [ text mapLayer.label ]
+                , if mapLayer.visible then
+                    span [ class "has-text-success" ]
+                        [ i [ class "fas fa-check" ] []
+                        ]
+
+                  else
+                    text ""
+                ]
+    in
+    div [ class "container mb-5" ]
+        [ div [ class "dropdown is-hoverable map-layers-dropdown" ]
+            [ div
+                [ class "dropdown-trigger" ]
+                [ button [ class "button is-info is-light" ]
+                    [ span [] [ text "Layers" ]
+                    , span [ class "icon" ] [ i [ class "fas fa-angle-down" ] [] ]
+                    ]
+                ]
+            , div [ class "dropdown-menu", id "layer-dropdown-menu" ]
+                [ div [ class "dropdown-content" ]
+                    (List.map layer model.mapLayers)
+                ]
             ]
         ]
 
