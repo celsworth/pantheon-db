@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-expires_in = Rails.env.production? ? 10.minutes : 1.second
+expires_in = Rails.env.production? ? 10.minutes : 10.seconds
 
 GraphQL::FragmentCache.configure do |config|
   config.default_options = {
