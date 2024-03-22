@@ -5,13 +5,7 @@
 $body-size: 14px;
 $body-background-color: #9a9;
 
-@use "bulma/bulma";
-
-html {
-  // bodge until I work out how Bulma wants me to set CSS vars properly
-  background-color: $body-background-color;
-  font-size: $body-size;
-}
+@import "bulma/bulma";
 
 .navbar-menu {
   // seems to be white by default
