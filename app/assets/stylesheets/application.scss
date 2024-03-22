@@ -5,7 +5,18 @@
 $body-size: 14px;
 $body-background-color: #9a9;
 
-@import "bulma/bulma";
+@use "bulma/bulma";
+
+html {
+  // bodge until I work out how Bulma wants me to set CSS vars properly
+  background-color: $body-background-color;
+  font-size: $body-size;
+}
+
+.navbar-menu {
+  // seems to be white by default
+  background-color: #000;
+}
 
 /*
 .elm-select {}
@@ -276,7 +287,7 @@ svg {
 #clear-search-text {
   pointer-events: auto;
   cursor: pointer;
-  color: $grey-dark;
+  color: var(--bulma-grey-dark); // $grey-dark;
 }
 
 .stamp {

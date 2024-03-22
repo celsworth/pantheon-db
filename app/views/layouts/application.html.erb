@@ -9,70 +9,87 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+        $navbarBurgers.forEach( e => {
+          e.addEventListener('click', () => {
+            const target = e.dataset.target;
+            const $target = document.getElementById(target);
+            e.classList.toggle('is-active');
+            $target.classList.toggle('is-active');
+          });
+        });
+      });
+    </script>
   </head>
 
   <body>
     <nav class="navbar is-black">
       <div class="container">
-        <div class="navbar-start">
+        <div class="navbar-brand">
           <a class="navbar-item" href="https://petrichorguild.eu">
-            <img style="max-height: 3.5rem" src="http://petrichorguild.eu/wp-content/uploads/2023/01/Petrichor-Logo-und-Schrift-HELL-Kopie.png" />
+            <img style="max-height: 3rem" src="http://petrichorguild.eu/wp-content/uploads/2023/01/Petrichor-Logo-und-Schrift-HELL-Kopie.png" />
           </a>
-          <div class="navbar-item">
-            <p class="has-text-white title is-4"> Pantheon Database </p>
-          </div>
+          <div class="navbar-item is-size-5 is-hidden-desktop"> <span class="stamp">BETA</span> </div>
 
-          <a class="navbar-item" href="/maps/1">Map</a>
-
-          <!--
-            <div class="navbar-item has-dropdown is-hoverable">
-            <a class="navbar-link has-text-white">
-            Resources
-            </a>
-
-            <div class="navbar-dropdown">
-            <a class="navbar-item"> List </a>
-            <a class="navbar-item"> Create </a>
-            <hr class="navbar-divider">
-            <a class="navbar-item"> Report an issue </a>
-            </div>
-            </div>
-          -->
-
+          <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-menu">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
         </div>
 
-        <div class="navbar-end">
-          <div class="navbar-item is-size-3"> <span class="stamp">BETA</span> </div>
-          <% if current_user %>
-            <div class="navbar-item">
-              <span> <%= current_user.username %> </span>
-            </div>
-            <div class="navbar-item">
-              <% if guild_member? %>
-                <span class="icon"> <i class="fa fa-lg fa-key"></i> </span>
-              <% end%>
-            </div>
-            <div class="navbar-item">
-              <form method="post" action="<%= logout_path %>">
-                <button title="Log out" type="submit" class="button">
-                  <span class="icon"> <i class="fa fa-lg fa-right-from-bracket"></i> </span>
-                </button>
-              </form>
-            </div>
-            <% if current_user.admin? %>
+        <div id="navbar-menu" class="navbar-menu">
+          <div class="navbar-start">
+            <a class="navbar-item has-text-white" href="/maps/1">Map</a>
+
+            <!--div class="navbar-item has-dropdown is-hoverable">
+              <a class="navbar-link has-text-white"> Items </a>
+
+              <div class="navbar-dropdown">
+                <a class="navbar-item"> List </a>
+                <a class="navbar-item"> Create </a>
+                <hr class="navbar-divider">
+                <a class="navbar-item"> Report an issue </a>
+              </div>
+            </div-->
+          </div>
+
+          <div class="navbar-end">
+            <div class="navbar-item is-size-3 is-hidden-mobile"> <span class="stamp">BETA</span> </div>
+            <% if current_user %>
               <div class="navbar-item">
-                <a href="/admin" class="button">
-                  <span class="icon"> <i class="fa fa-lg fa-hammer"></i> </span>
+                <span> <%= current_user.username %> </span>
+              </div>
+              <div class="navbar-item">
+                <% if guild_member? %>
+                  <span title="Petrichor Guild Member" class="icon"> <i class="fa fa-lg fa-key"></i> </span>
+                <% end%>
+              </div>
+              <div class="navbar-item">
+                <form method="post" action="<%= logout_path %>">
+                  <button title="Log out" type="submit" class="button">
+                    <span class="icon"> <i class="fa fa-lg fa-right-from-bracket"></i> </span>
+                  </button>
+                </form>
+              </div>
+              <% if current_user.admin? %>
+                <div class="navbar-item">
+                  <a href="/admin" class="button">
+                    <span class="icon"> <i class="fa fa-lg fa-hammer"></i> </span>
+                  </a>
+                </div>
+              <% end %>
+            <% else %>
+              <div class="navbar-item">
+                <a href="<%= login_path %>" class="button">
+                  <span class="icon"> <i class="fa fa-lg fa-right-to-bracket"></i> </span>
                 </a>
               </div>
             <% end %>
-          <% else %>
-            <div class="navbar-item">
-              <a href="<%= login_path %>" class="button">
-                <span class="icon"> <i class="fa fa-lg fa-right-to-bracket"></i> </span>
-              </a>
-            </div>
-          <% end %>
+          </div>
         </div>
       </div>
     </nav>
