@@ -16,7 +16,7 @@ import Ui.ZoneSelect
 
 
 type alias Flags =
-    { graphqlBaseUrl : String }
+    { }
 
 
 main : Program Flags Model Msg
@@ -61,7 +61,7 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
         ( zoneSelectModel, zoneCmd ) =
-            Ui.ZoneSelect.init { url = flags.graphqlBaseUrl, toMsg = ZoneSelectMsg }
+            Ui.ZoneSelect.init { toMsg = ZoneSelectMsg }
     in
     ( { flags = flags
       , resources = resources

@@ -34,15 +34,14 @@ query queryArgs =
 
 
 type alias MakeRequestArgs msg =
-    { url : String
-    , toMsg : Msg -> msg
+    { toMsg : Msg -> msg
     }
 
 
 makeRequest : QueryArgs -> MakeRequestArgs msg -> Cmd msg
 makeRequest queryArgs args =
     query queryArgs
-        |> Graphql.Http.queryRequest args.url
+        |> Graphql.Http.queryRequest "/graphql"
         --|> Graphql.Http.withHeader "authorization" "Bearer dbd4c239b0bbaa40ab0ea291fa811775da8f5b59"
         |> Graphql.Http.send (RemoteData.fromResult >> GotResponse)
         |> Cmd.map args.toMsg

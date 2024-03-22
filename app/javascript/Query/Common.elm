@@ -12,15 +12,14 @@ type Msg t
 
 
 type alias MakeRequestArgs t msg =
-    { url : String
-    , toMsg : Msg t -> msg
+    { toMsg : Msg t -> msg
     }
 
 
 makeRequest : SelectionSet (List t) RootQuery -> MakeRequestArgs t msg -> Cmd msg
 makeRequest query args =
     query
-        |> Graphql.Http.queryRequest args.url
+        |> Graphql.Http.queryRequest "/graphql"
         --|> Graphql.Http.withHeader "authorization" "Bearer dbd4c239b0bbaa40ab0ea291fa811775da8f5b59"
         |> Graphql.Http.send (RemoteData.fromResult >> ListResponse)
         |> Cmd.map args.toMsg

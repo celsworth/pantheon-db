@@ -24,8 +24,7 @@ type Msg
 
 
 type alias InitArgs msg =
-    { url : String
-    , toMsg : Msg -> msg
+    { toMsg : Msg -> msg
     }
 
 
@@ -51,7 +50,7 @@ init args =
       , selectConfig = selectConfig
       }
     , Cmd.map args.toMsg <|
-        Query.Zones.makeRequest { url = args.url, toMsg = GotZonesList }
+        Query.Zones.makeRequest { toMsg = GotZonesList }
     )
 
 

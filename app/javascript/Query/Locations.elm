@@ -34,8 +34,7 @@ query queryArgs =
 
 
 type alias MakeRequestArgs msg =
-    { url : String
-    , toMsg : Msg Location -> msg
+    { toMsg : Msg Location -> msg
     }
 
 

@@ -39,7 +39,7 @@ type alias ViewFlags =
 
 
 type alias Flags =
-    { graphqlBaseUrl : String, view : ViewFlags, guildMember : Bool }
+    { view : ViewFlags, guildMember : Bool }
 
 
 main : Program Flags Model Msg
@@ -263,10 +263,10 @@ init flags =
       , sidePanelTabSelected = Monster
       }
     , Cmd.batch
-        [ Query.Npcs.makeRequest { url = flags.graphqlBaseUrl, toMsg = GotNpcs }
-        , Query.Monsters.makeRequest { url = flags.graphqlBaseUrl, toMsg = GotMonsters }
-        , Query.Resources.makeRequest { url = flags.graphqlBaseUrl, toMsg = GotResources }
-        , Query.Locations.makeRequest { hasLocCoords = Just True } { url = flags.graphqlBaseUrl, toMsg = GotLocations }
+        [ Query.Npcs.makeRequest { toMsg = GotNpcs }
+        , Query.Monsters.makeRequest { toMsg = GotMonsters }
+        , Query.Resources.makeRequest { toMsg = GotResources }
+        , Query.Locations.makeRequest { hasLocCoords = Just True } { toMsg = GotLocations }
         , Browser.Dom.getElement "svg-container" |> Task.attempt GotSvgElement
         ]
     )

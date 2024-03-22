@@ -21,8 +21,7 @@ query =
 
 
 type alias MakeRequestArgs msg =
-    { url : String
-    , toMsg : Msg Npc -> msg
+    { toMsg : Msg Npc -> msg
     }
 
 

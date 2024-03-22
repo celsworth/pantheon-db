@@ -21,11 +21,10 @@ query =
 
 
 type alias MakeRequestArgs msg =
-    { url : String
-    , toMsg : Msg Resource -> msg
+    { toMsg : Msg Resource -> msg
     }
 
 
 makeRequest : MakeRequestArgs msg -> Cmd msg
 makeRequest args =
-  Query.Common.makeRequest query args
+    Query.Common.makeRequest query args
