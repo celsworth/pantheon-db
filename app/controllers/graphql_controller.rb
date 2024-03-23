@@ -14,7 +14,7 @@ class GraphqlController < ApplicationController
     variables = prepare_variables(params[:variables])
     query = params[:query]
     operation_name = params[:operationName]
-    context = { current_user:, guild_member: discord&.petrichor_member? }
+    context = { current_user:, guild_member: guild_member? }
     result = PantheonDbSchema.execute(query, variables:, context:, operation_name:)
     render json: result
   rescue StandardError => e
@@ -28,27 +28,19 @@ class GraphqlController < ApplicationController
   # Handle variables in form data, JSON body, or a blank value
   def prepare_variables(variables_param)
     case variables_param
-    when String
-      if variables_param.present?
-        JSON.parse(variables_param) || {}
-      else
-        DEFAULT_PARAMS
-      end
-    when Hash
-      variables_param
-    when ActionController::Parameters
-      variables_param.to_unsafe_hash # GraphQL-Ruby will validate name and type of incoming variables.
-    when nil
-      DEFAULT_PARAMS
+    when String then variables_param.present? ? (JSON.parse(variables_param) || {}) : DEFAULT_PARAMS
+    when Hash then variables_param
+    when ActionController::Parameters then variables_param.to_unsafe_hash
+    when nil then DEFAULT_PARAMS
     else
       raise ArgumentError, "Unexpected parameter: #{variables_param}"
     end
   end
 
-  def handle_error_in_development(e)
-    logger.error e.message
-    logger.error e.backtrace.join("\n")
+  def handle_error_in_development(err)
+    logger.error err.message
+    logger.error err.backtrace.join("\n")
 
-    render json: { errors: [{ message: e.message, backtrace: e.backtrace }], data: {} }, status: 500
+    render json: { errors: [{ message: err.message, backtrace: err.backtrace }], data: {} }, status: 500
   end
 end

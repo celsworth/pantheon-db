@@ -25,7 +25,9 @@ class ItemDashboard < Administrate::BaseDashboard
     stats: Field::JSONB,
     classes: Field::JSONB,
     attrs: Field::JSONB,
-    images: Field::HasMany,
+    public_notes: Field::Text,
+    private_notes: Field::Text,
+    images: Field::HasMany
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -59,6 +61,8 @@ class ItemDashboard < Administrate::BaseDashboard
     stats
     classes
     attrs
+    public_notes
+    private_notes
     images
   ].freeze
 
@@ -81,6 +85,8 @@ class ItemDashboard < Administrate::BaseDashboard
     stats
     classes
     attrs
+    public_notes
+    private_notes
   ].freeze
 
   # COLLECTION_FILTERS

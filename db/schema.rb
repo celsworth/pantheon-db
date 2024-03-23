@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_19_204951) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_23_164318) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -56,6 +56,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_19_204951) do
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "private_notes"
+    t.text "public_notes"
     t.index ["attrs"], name: "index_items_on_attrs"
     t.index ["classes"], name: "index_items_on_classes"
     t.index ["discarded_at"], name: "index_items_on_discarded_at"
@@ -88,6 +90,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_19_204951) do
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "private_notes"
+    t.text "public_notes"
     t.index ["category"], name: "index_locations_on_category"
     t.index ["discarded_at"], name: "index_locations_on_discarded_at"
     t.index ["loc_x", "loc_y"], name: "index_locations_on_loc_x_and_loc_y"
@@ -109,6 +113,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_19_204951) do
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "private_notes"
+    t.text "public_notes"
     t.index ["discarded_at"], name: "index_monsters_on_discarded_at"
     t.index ["loc_x", "loc_y"], name: "index_monsters_on_loc_x_and_loc_y"
     t.index ["location_id"], name: "index_monsters_on_location_id"
@@ -129,6 +135,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_19_204951) do
     t.datetime "discarded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "private_notes"
+    t.text "public_notes"
     t.index ["discarded_at"], name: "index_npcs_on_discarded_at"
     t.index ["loc_x", "loc_y"], name: "index_npcs_on_loc_x_and_loc_y"
     t.index ["location_id"], name: "index_npcs_on_location_id"

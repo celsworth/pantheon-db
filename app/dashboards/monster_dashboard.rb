@@ -22,6 +22,8 @@ class MonsterDashboard < Administrate::BaseDashboard
     loc_y: Field::Number,
     jumploc: Field::String.with_options(searchable: false),
     roamer: Field::Boolean,
+    public_notes: Field::Text,
+    private_notes: Field::Text,
     images: Field::HasMany
   }.freeze
 
@@ -52,6 +54,8 @@ class MonsterDashboard < Administrate::BaseDashboard
     loc_y
     roamer
     images
+    public_notes
+    private_notes
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -69,6 +73,8 @@ class MonsterDashboard < Administrate::BaseDashboard
     loc_y
     jumploc
     roamer
+    public_notes
+    private_notes
   ].freeze
 
   # COLLECTION_FILTERS

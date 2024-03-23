@@ -18,7 +18,9 @@ class LocationDashboard < Administrate::BaseDashboard
     loc_z: Field::Number,
     loc_y: Field::Number,
     monsters: Field::HasMany,
-    npcs: Field::HasMany
+    npcs: Field::HasMany,
+    public_notes: Field::Text,
+    private_notes: Field::Text
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -45,6 +47,8 @@ class LocationDashboard < Administrate::BaseDashboard
     loc_y
     monsters
     npcs
+    public_notes
+    private_notes
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -57,6 +61,8 @@ class LocationDashboard < Administrate::BaseDashboard
     loc_x
     loc_z
     loc_y
+    public_notes
+    private_notes
   ].freeze
 
   # COLLECTION_FILTERS
