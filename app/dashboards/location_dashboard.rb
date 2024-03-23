@@ -75,6 +75,6 @@ class LocationDashboard < Administrate::BaseDashboard
   # across all pages of the admin dashboard.
   #
   def display_resource(resource)
-    resource.name
+    "#{resource.category.capitalize}: #{resource.name}"
   end
 end

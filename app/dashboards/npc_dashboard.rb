@@ -90,7 +90,7 @@ class NpcDashboard < Administrate::BaseDashboard
   # Overwrite this method to customize how monsters are displayed
   # across all pages of the admin dashboard.
   #
-  def display_resource(i)
-    i.name
+  def display_resource(npc)
+    npc.name
   end
 end
