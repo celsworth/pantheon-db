@@ -36,12 +36,7 @@ class Discord
   end
 
   def petrichor_member?
-    return false unless access_token
-
-    key = "discord-is-petrichor-member-#{access_token}"
-    Rails.cache.fetch(key, expires_in: 1.hour) do
-      petrichor_user_roles.include?(PETRICHOR_MEMBER_ROLE_ID)
-    end
+    petrichor_user_roles.include?(PETRICHOR_MEMBER_ROLE_ID)
   rescue StandardError => e
     Sentry.capture_exception(e)
     false
@@ -53,8 +48,11 @@ class Discord
 
   # return the Petrichor guild object, or nil
   def petrichor_object
+    return nil unless access_token
+
     key = "discord-petrichor_object-#{access_token}"
     Rails.cache.fetch(key, expires_in: 1.hour) do
+      Rails.logger.info 'Get Guilds'
       response = access.get('/api/v10/users/@me/guilds')
       body = JSON.parse(response.body)
       body.find { _1['name'] == 'PETRICHOR [EU]-GUILD' }
@@ -62,11 +60,14 @@ class Discord
   end
 
   def petrichor_user_roles
+    return [] unless access_token
+
     key = "discord-petrichor_user_roles-#{access_token}"
     Rails.cache.fetch(key, expires_in: 1.hour) do
       petrichor = petrichor_object
       return [] unless petrichor
 
+      Rails.logger.info 'Get Guild Roles'
       response = access.get("/api/v10/users/@me/guilds/#{petrichor['id']}/member")
       body = JSON.parse(response.body)
       body['roles']

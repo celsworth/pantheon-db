@@ -3,17 +3,6 @@
 class GraphqlController < ApplicationController
   DEFAULT_PARAMS = {}.freeze
 
-  before_action do
-    @access_token = if (auth = request.headers['Authorization']&.match(/Bearer (.*)/))
-                      auth[1]
-                    else
-                      session.dig(:discord, 'access_token')
-                    end
-    @discord = Discord.new(access_token: @access_token)
-    username = @discord.verify_discord_access_token
-    @current_user = User.find_by(username:) if username
-  end
-
   # If accessing from outside this domain, nullify the session
   # This allows for outside API access while preventing CSRF attacks,
   # but you'll have to authenticate your user separately
