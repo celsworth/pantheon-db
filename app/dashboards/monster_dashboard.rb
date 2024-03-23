@@ -17,10 +17,9 @@ class MonsterDashboard < Administrate::BaseDashboard
     name: Field::String,
     elite: Field::Boolean,
     named: Field::Boolean,
-    patch: Field::BelongsTo,
     loc_x: Field::Number,
-    loc_y: Field::Number,
     loc_z: Field::Number,
+    loc_y: Field::Number,
     roamer: Field::Boolean,
     images: Field::HasMany
   }.freeze
@@ -36,7 +35,6 @@ class MonsterDashboard < Administrate::BaseDashboard
     level
     elite
     named
-    patch
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -49,11 +47,10 @@ class MonsterDashboard < Administrate::BaseDashboard
     named
     drops
     loc_x
-    loc_y
     loc_z
+    loc_y
     roamer
     images
-    patch
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -67,8 +64,8 @@ class MonsterDashboard < Administrate::BaseDashboard
     named
     drops
     loc_x
-    loc_y
     loc_z
+    loc_y
     roamer
   ].freeze
 

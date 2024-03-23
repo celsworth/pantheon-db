@@ -19,7 +19,6 @@ class QuestDashboard < Administrate::BaseDashboard
     text: Field::Text,
     quest_objectives: Field::HasMany,
     quest_rewards: Field::HasMany,
-    patch: Field::BelongsTo
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -33,7 +32,6 @@ class QuestDashboard < Administrate::BaseDashboard
     receiver
     text
     quest_objectives
-    patch
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -47,7 +45,6 @@ class QuestDashboard < Administrate::BaseDashboard
     text
     quest_objectives
     quest_rewards
-    patch
   ].freeze
 
   # FORM_ATTRIBUTES

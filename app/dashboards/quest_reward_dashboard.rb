@@ -21,7 +21,6 @@ class QuestRewardDashboard < Administrate::BaseDashboard
     text: Field::String,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
-    patch: Field::BelongsTo
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -37,7 +36,6 @@ class QuestRewardDashboard < Administrate::BaseDashboard
     standing
     xp
     amount
-    patch
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -51,7 +49,6 @@ class QuestRewardDashboard < Administrate::BaseDashboard
     standing
     xp
     amount
-    patch
   ].freeze
 
   # FORM_ATTRIBUTES

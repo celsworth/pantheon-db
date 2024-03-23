@@ -15,7 +15,6 @@ class ResourceDashboard < Administrate::BaseDashboard
     resource: Field::Select.with_options(collection: Resource::RESOURCES),
     size: Field::Select.with_options(collection: Resource::SIZES),
     location: Field::BelongsTo,
-    patch: Field::BelongsTo,
     loc_x: Field::Number,
     loc_y: Field::Number,
     loc_z: Field::Number
@@ -31,7 +30,6 @@ class ResourceDashboard < Administrate::BaseDashboard
     resource
     size
     location
-    patch
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -42,9 +40,8 @@ class ResourceDashboard < Administrate::BaseDashboard
     size
     location
     loc_x
-    loc_y
     loc_z
-    patch
+    loc_y
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -56,8 +53,8 @@ class ResourceDashboard < Administrate::BaseDashboard
     size
     location
     loc_x
-    loc_y
     loc_z
+    loc_y
   ].freeze
 
   # COLLECTION_FILTERS

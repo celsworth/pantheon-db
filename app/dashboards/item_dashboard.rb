@@ -26,7 +26,6 @@ class ItemDashboard < Administrate::BaseDashboard
     classes: Field::JSONB,
     attrs: Field::JSONB,
     images: Field::HasMany,
-    patch: Field::BelongsTo
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -42,7 +41,6 @@ class ItemDashboard < Administrate::BaseDashboard
     weight
     slot
     starts_quest
-    patch
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -62,7 +60,6 @@ class ItemDashboard < Administrate::BaseDashboard
     classes
     attrs
     images
-    patch
   ].freeze
 
   # FORM_ATTRIBUTES

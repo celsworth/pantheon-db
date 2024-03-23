@@ -18,7 +18,6 @@ class QuestObjectiveDashboard < Administrate::BaseDashboard
     text: Field::String,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
-    patch: Field::BelongsTo
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -31,7 +30,6 @@ class QuestObjectiveDashboard < Administrate::BaseDashboard
     item
     monster
     amount
-    patch
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -42,7 +40,6 @@ class QuestObjectiveDashboard < Administrate::BaseDashboard
     item
     monster
     amount
-    patch
   ].freeze
 
   # FORM_ATTRIBUTES

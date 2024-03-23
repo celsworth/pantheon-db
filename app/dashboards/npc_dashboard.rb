@@ -18,10 +18,9 @@ class NpcDashboard < Administrate::BaseDashboard
     quests_received: Field::HasMany,
     sells_items: Field::HasMany,
     vendor: Field::Boolean,
-    patch: Field::BelongsTo,
     loc_x: Field::Number,
-    loc_y: Field::Number,
     loc_z: Field::Number,
+    loc_y: Field::Number,
     roamer: Field::Boolean,
     images: Field::HasMany
   }.freeze
@@ -37,7 +36,6 @@ class NpcDashboard < Administrate::BaseDashboard
     location
     quests_given
     quests_received
-    patch
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -51,11 +49,10 @@ class NpcDashboard < Administrate::BaseDashboard
     sells_items
     vendor
     loc_x
-    loc_y
     loc_z
+    loc_y
     roamer
     images
-    patch
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -70,8 +67,8 @@ class NpcDashboard < Administrate::BaseDashboard
     sells_items
     vendor
     loc_x
-    loc_y
     loc_z
+    loc_y
     roamer
   ].freeze
 
