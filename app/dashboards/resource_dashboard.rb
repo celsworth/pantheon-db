@@ -18,7 +18,7 @@ class ResourceDashboard < Administrate::BaseDashboard
     loc_x: Field::Number,
     loc_z: Field::Number,
     loc_y: Field::Number,
-    jumploc: Field::String
+    jumploc: Field::String.with_options(searchable: false)
   }.freeze
 
   # COLLECTION_ATTRIBUTES

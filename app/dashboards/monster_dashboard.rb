@@ -20,7 +20,7 @@ class MonsterDashboard < Administrate::BaseDashboard
     loc_x: Field::Number,
     loc_z: Field::Number,
     loc_y: Field::Number,
-    jumploc: Field::String,
+    jumploc: Field::String.with_options(searchable: false),
     roamer: Field::Boolean,
     images: Field::HasMany
   }.freeze
