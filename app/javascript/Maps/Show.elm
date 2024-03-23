@@ -957,10 +957,19 @@ resourcesPanel poiVisibility =
             , Api.Enum.ResourceResource.Walnut
             ]
 
-        fibreNodes =
+        flaxNodes =
             [ Api.Enum.ResourceResource.Jute
             , Api.Enum.ResourceResource.Cotton
             , Api.Enum.ResourceResource.Flax
+            , Api.Enum.ResourceResource.WaterReed
+            ]
+
+        plantNodes =
+            [ Api.Enum.ResourceResource.Vegetable
+            , Api.Enum.ResourceResource.Herb
+            , Api.Enum.ResourceResource.Blackberry
+            , Api.Enum.ResourceResource.Gloomberry
+            , Api.Enum.ResourceResource.Lily
             ]
 
         labelIsVisible resources =
@@ -998,16 +1007,17 @@ resourcesPanel poiVisibility =
         , indentedPanelBlock [ Api.Enum.ResourceResource.Oak ] "Oak Tree"
         , indentedPanelBlock [ Api.Enum.ResourceResource.Maple ] "Maple Tree"
         , indentedPanelBlock [ Api.Enum.ResourceResource.Walnut ] "Walnut Tree"
-        , panelBlock fibreNodes "Plants"
+        , panelBlock flaxNodes "Flax"
         , indentedPanelBlock [ Api.Enum.ResourceResource.Jute ] "Jute Plant"
         , indentedPanelBlock [ Api.Enum.ResourceResource.Cotton ] "Cotton Plant"
         , indentedPanelBlock [ Api.Enum.ResourceResource.Flax ] "Flax Plant"
-        , panelBlock [ Api.Enum.ResourceResource.Vegetable ] "Wild Vegetables"
-        , panelBlock [ Api.Enum.ResourceResource.Herb ] "Wild Herbs"
-        , panelBlock [ Api.Enum.ResourceResource.Blackberry ] "Blackberry Bush"
-        , panelBlock [ Api.Enum.ResourceResource.Gloomberry ] "Gloomberry Bush"
-        , panelBlock [ Api.Enum.ResourceResource.Lily ] "Flame/Moon Lilies"
-        , panelBlock [ Api.Enum.ResourceResource.WaterReed ] "Water Reeds"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.WaterReed ] "Water Reeds"
+        , panelBlock plantNodes "Plants"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Vegetable ] "Wild Vegetables"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Herb ] "Wild Herbs"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Blackberry ] "Blackberry Bush"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Gloomberry ] "Gloomberry Bush"
+        , indentedPanelBlock [ Api.Enum.ResourceResource.Lily ] "Flame/Moon Lilies"
         ]
 
 
