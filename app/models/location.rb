@@ -27,7 +27,7 @@ class Location < ApplicationRecord
 
   def not_a_duplicate
     return if loc_x.nil? || loc_y.nil?
-    return if self.class.where(category:).near(x: loc_x, y: loc_y).none?
+    return if self.class.where.not(id:).where(category:).near(x: loc_x, y: loc_y).none?
 
     errors.add(:base, 'too close to another location of same category, possible duplicate')
   end

@@ -48,7 +48,7 @@ class Resource < ApplicationRecord
   private
 
   def not_near_another_node
-    return if self.class.where(resource:).near(x: loc_x, y: loc_y).none?
+    return if self.class.where.not(id:).where(resource:).near(x: loc_x, y: loc_y).none?
 
     errors.add(:base, 'too close to another resource, possible duplicate')
   end
