@@ -21,6 +21,7 @@ class NpcDashboard < Administrate::BaseDashboard
     loc_x: Field::Number,
     loc_z: Field::Number,
     loc_y: Field::Number,
+    jumploc: Field::String,
     roamer: Field::Boolean,
     images: Field::HasMany
   }.freeze
@@ -69,6 +70,7 @@ class NpcDashboard < Administrate::BaseDashboard
     loc_x
     loc_z
     loc_y
+    jumploc
     roamer
   ].freeze
 

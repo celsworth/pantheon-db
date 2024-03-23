@@ -29,3 +29,11 @@
 
 en:
   hello: "Hello world"
+  administrate:
+    field_hints:
+      monster:
+        jumploc: Paste a /jumploc from game. This will overwrite anything in loc_x/z/y!
+      npc:
+        jumploc: Paste a /jumploc from game. This will overwrite anything in loc_x/z/y!
+      resource:
+        jumploc: Paste a /jumploc from game. This will overwrite anything in loc_x/z/y!

@@ -17,6 +17,7 @@ class MonsterDashboard < Administrate::BaseDashboard
     name: Field::String,
     elite: Field::Boolean,
     named: Field::Boolean,
+    jumploc: Field::String,
     loc_x: Field::Number,
     loc_z: Field::Number,
     loc_y: Field::Number,
@@ -66,6 +67,7 @@ class MonsterDashboard < Administrate::BaseDashboard
     loc_x
     loc_z
     loc_y
+    jumploc
     roamer
   ].freeze
 

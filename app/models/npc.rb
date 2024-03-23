@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Npc < ApplicationRecord
+  include Jumploc
+
   include Discard::Model
   default_scope -> { kept }
 

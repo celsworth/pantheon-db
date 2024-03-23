@@ -16,8 +16,9 @@ class ResourceDashboard < Administrate::BaseDashboard
     size: Field::Select.with_options(collection: Resource::SIZES),
     location: Field::BelongsTo,
     loc_x: Field::Number,
+    loc_z: Field::Number,
     loc_y: Field::Number,
-    loc_z: Field::Number
+    jumploc: Field::String
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -55,6 +56,7 @@ class ResourceDashboard < Administrate::BaseDashboard
     loc_x
     loc_z
     loc_y
+    jumploc
   ].freeze
 
   # COLLECTION_FILTERS
