@@ -17,10 +17,10 @@ class MonsterDashboard < Administrate::BaseDashboard
     name: Field::String,
     elite: Field::Boolean,
     named: Field::Boolean,
-    jumploc: Field::String,
     loc_x: Field::Number,
     loc_z: Field::Number,
     loc_y: Field::Number,
+    jumploc: Field::String,
     roamer: Field::Boolean,
     images: Field::HasMany
   }.freeze
