@@ -157,91 +157,96 @@ svg {
       // default bright red to spot things that aren't overridden
       @include hoverable-circle($fill: #F00);
 
-      $mining-base: #755;
-      $tree-base: #060;
-      $fiber-base: #55e;
-      $vegetable: #953;
-      $herb: #2cc;
-      $water-reed: #fcc;
-      $lily: #f7f;
-      $blackberry: #717;
-      $gloomberry: #a3a;
-
       &__asherite {
-        @include hoverable-circle($fill: color.adjust($mining-base, $lightness: 0%));
+        fill: #88bbd4;
       }
 
       &__caspilrite {
-        @include hoverable-circle($fill: color.adjust($mining-base, $lightness: 10%));
+        fill: #933a3a;
       }
 
       &__padrium {
-        @include hoverable-circle($fill: color.adjust($mining-base, $lightness: 20%));
+        fill: #27e1ff;
       }
 
       &__tascium {
-        @include hoverable-circle($fill: color.adjust($mining-base, $lightness: 30%));
+        fill: #caa8ff;
       }
 
       &__slytheril {
-        @include hoverable-circle($fill: color.adjust($mining-base, $lightness: 40%));
+        fill: #8376ff;
+      }
+
+      &__glittering-slytheril {
+        fill: #f3f454;
+      }
+
+      &__karanite {
+        fill: #40eeee;
+      }
+
+      &__vestium {
+        fill: #cc98ff;
       }
 
       &__apple {
-        @include hoverable-circle($fill: color.adjust($tree-base, $lightness: 0%));
+        fill: #d84132;
       }
 
       &__pine {
-        @include hoverable-circle($fill: color.adjust($tree-base, $lightness: 10%));
+        fill: #873921;
       }
 
       &__maple {
-        @include hoverable-circle($fill: color.adjust($tree-base, $lightness: 20%));
+        fill: #aea17c;
       }
 
       &__ash {
-        @include hoverable-circle($fill: color.adjust($tree-base, $lightness: 30%));
+        fill: #ab8954;
       }
 
       &__oak {
-        @include hoverable-circle($fill: color.adjust($tree-base, $lightness: 40%));
+        fill: #ab8954;
       }
 
       &__walnut {
-        @include hoverable-circle($fill: color.adjust($tree-base, $lightness: 50%));
+        fill: #8f6149;
       }
 
-
       &__jute {
-        @include hoverable-circle($fill: color.adjust($fiber-base, $lightness: 0%));
+        fill: #888e30;
       }
 
       &__cotton {
-        @include hoverable-circle($fill: color.adjust($fiber-base, $lightness: 10%));
+        fill: #f9dd97;
       }
 
       &__flax {
-        @include hoverable-circle($fill: color.adjust($fiber-base, $lightness: 20%));
+        fill: #f9dd97;
       }
 
       &__vegetable {
-        @include hoverable-circle($fill: $vegetable);
+        fill: #acc837;
       }
 
       &__herb {
-        @include hoverable-circle($fill: $herb);
+        fill: #ad5a75;
       }
 
       &__lily {
-        @include hoverable-circle($fill: $lily);
+        fill: #d84132;
       }
 
       &__waterReed {
-        @include hoverable-circle($fill: $water-reed);
+        fill: #d84132;
       }
 
       &__blackberry {
-        @include hoverable-circle($fill: $blackberry);
+        fill: #332925;
+      }
+
+      &__gloomberry {
+        fill: #0a0606;
       }
     }
 
