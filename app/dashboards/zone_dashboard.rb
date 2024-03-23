@@ -12,8 +12,9 @@ class ZoneDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     name: Field::String,
+    locations: Field::HasMany,
     monsters: Field::HasMany,
-    npcs: Field::HasMany,
+    npcs: Field::HasMany
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -23,6 +24,7 @@ class ZoneDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
     name
+    locations
     monsters
     npcs
   ].freeze
@@ -31,6 +33,7 @@ class ZoneDashboard < Administrate::BaseDashboard
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
     name
+    locations
     monsters
     npcs
   ].freeze
