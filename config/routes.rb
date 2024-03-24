@@ -26,10 +26,14 @@ Rails.application.routes.draw do
   post '/npcs/:npc_id/image', controller: 'images', action: 'create'
   resources :images, only: %i[show]
 
+  resources :maps, only: %i[show] # elm
+
+  resources :monsters, only: %i[show edit] do
+    get '/test', to: 'monsters#test'
+  end
+
   # get '/test', to: 'test#index'
   # resources :items, only: %i[new]
-
-  resources :maps, only: %i[show]
 
   get '/login', to: 'users#login'
   post '/logout', to: 'users#logout'

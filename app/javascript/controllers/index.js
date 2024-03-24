@@ -12,3 +12,6 @@ application.register("elm-maps-show", ElmMapsShowController)
 
 import ElmResourceCreateController from "./elm_resource_create_controller"
 application.register("elm-resource-create", ElmResourceCreateController)
+
+import TurboLoaderController from "./turbo_loader_controller.js"
+application.register("turbo-loader", TurboLoaderController)

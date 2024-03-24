@@ -1,0 +1,24 @@
+.section
+  .container
+    = form_for @monster do |f|
+      .field
+        label.label Name
+        .control
+          = f.text_field :name, class: 'input is-large'
+
+
+      .field data-controller="turbo-loader" data-turbo-loader-url-value="/monsters/1/test"
+        input type="hidden" value=@monster.location_id data-turbo-loader-target="selectedId"
+        label.label Location
+        .columns
+          .column.is-2
+            .select.is-fullwidth
+              select[data-turbo-loader-target="locationCategory"
+                     data-action="turbo-loader#load"]
+                - s = @monster.location.category
+                option selected=(s == 'zone') value="zone" Zone
+                option selected=(s == 'dungeon') value="dungeon" Dungeon
+                option selected=(s == 'settlement') value="settlement" Settlement
+
+          .column.is-4
+            = render partial: 'location', locals: { locations: Location.where(category: @monster.location.category).all, selected_id: @monster.location_id }

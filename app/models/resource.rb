@@ -16,11 +16,12 @@ class Resource < ApplicationRecord
   SIZES = %w[normal large huge].freeze
 
   RESOURCES = %w[apple pine ash oak maple walnut
-                 asherite caspilrite padrium tascium slytheril vestium
+
+                 asherite caspilrite hardened-caspilrite padrium tascium
+                 slytheril vestium
+
                  herb vegetable lily
-                 water_reed
-                 jute cotton
-                 flax
+                 jute cotton flax water_reed
                  blackberry gloomberry].freeze
   RESOURCES_CAMEL = RESOURCES.map { |w| w.camelize(:lower) }
 
