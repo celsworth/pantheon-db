@@ -1,5 +1,13 @@
 .section data-controller="jumploc-parser"
   .container
+    = render partial: 'partials/message' if flash.notice
+
+    - if @monster.errors.any?
+      .message.is-danger
+        .message-body
+          - @monster.errors.full_messages.each do |m|
+            p= m
+
     = form_for @monster do |f|
       .columns
         .column
@@ -25,7 +33,9 @@
       .columns
         .column.is-5
           .field data-controller="turbo-loader" data-turbo-loader-url-value="/monsters/1/test"
-            label.label Location
+            label.label
+              span Location
+              span class="has-text-danger" *
             input type="hidden" value=@monster.location_id data-turbo-loader-target="selectedId"
             .columns
               .column.is-4
@@ -41,6 +51,20 @@
                 = render partial: 'location', locals: { locations: Location.where(category: @monster.location.category).all, selected_id: @monster.location_id }
 
         = render partial: 'partials/locs', locals: { f: }
+
+        .column.is-1
+          = render partial: 'partials/boolean_as_button', locals: { label: 'Roamer', name: 'roamer', value: @monster.roamer }
+
+      .columns
+        .column
+          .field
+            label.label Public Notes
+            = f.text_area :public_notes, class: 'textarea'
+
+        .column
+          .field
+            label.label Private Notes
+            = f.text_area :private_notes, class: 'textarea'
 
       .field
         button class="button is-link" type="submit" Save

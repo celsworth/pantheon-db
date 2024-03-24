@@ -4,10 +4,9 @@
   .field
     label.label Jumploc
     .control
-      = f.text_field :jumploc,
-        'data-action': 'input->jumploc-parser#change',
-        'data-jumploc-parser-target': 'jumploc',
-        class: 'input', placeholder: 'Paste /jumploc'
+      input[data-action='input->jumploc-parser#change'
+        data-jumploc-parser-target='jumploc'
+        class='input' placeholder='Paste /jumploc']
 
 .column.is-1
   .field
