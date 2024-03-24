@@ -19,10 +19,10 @@
               = f.text_field :name, class: 'input is-medium'
 
         .column.is-1
-          = render partial: 'partials/boolean_as_button', locals: { label: 'Named', name: 'named', value: @monster.named, button_classes: 'is-medium' }
+          = render partial: 'partials/boolean_as_button', locals: { label: 'Named', name: 'monster[named]', value: @monster.named, button_classes: 'is-medium' }
 
         .column.is-1
-          = render partial: 'partials/boolean_as_button', locals: { label: 'Elite', name: 'elite', value: @monster.elite, button_classes: 'is-medium'}
+          = render partial: 'partials/boolean_as_button', locals: { label: 'Elite', name: 'monster[elite]', value: @monster.elite, button_classes: 'is-medium'}
 
         .column.is-1
           .field
@@ -53,7 +53,7 @@
         = render partial: 'partials/locs', locals: { f: }
 
         .column.is-1
-          = render partial: 'partials/boolean_as_button', locals: { label: 'Roamer', name: 'roamer', value: @monster.roamer }
+          = render partial: 'partials/boolean_as_button', locals: { label: 'Roamer', name: 'monster[roamer]', value: @monster.roamer }
 
       .columns
         .column

@@ -1,5 +1,6 @@
 @charset "utf-8";
 @use "sass:color";
+@use "bulma/sass/utilities/mixins";
 
 // override some Bulma defaults
 $body-size: 14px;
@@ -11,6 +12,27 @@ $footer-background-color: #9a9;
 .navbar-menu {
   // seems to be white by default
   background-color: #000;
+}
+
+.site-logo {
+  $breakpoint: 768px;
+
+  &.desktop,
+  &.mobile {
+    max-height: 3rem
+  }
+
+  @include mixins.until($breakpoint) {
+    &.desktop {
+      display: none;
+    }
+  }
+
+  @include mixins.from($breakpoint) {
+    &.mobile {
+      display: none;
+    }
+  }
 }
 
 /*

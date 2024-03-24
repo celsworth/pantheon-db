@@ -28,7 +28,7 @@ Rails.application.routes.draw do
 
   resources :maps, only: %i[show] # elm
 
-  resources :monsters, only: %i[show edit update] do
+  resources :monsters, only: %i[index show edit update] do
     get '/test', to: 'monsters#test'
   end
 

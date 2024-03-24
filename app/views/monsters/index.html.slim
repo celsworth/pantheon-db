@@ -1,0 +1,29 @@
+.section
+  .container
+    table.table
+      thead
+        tr
+          th Name
+          th Zone
+          th Named
+          th Elite
+
+      tbody
+        - @monsters.each do |monster|
+          tr
+            td
+              - if can? :edit, monster
+                a href=edit_monster_path(monster)
+                  = monster.name
+              - else
+                = monster.name
+            td= monster.zone.name
+            td
+              - if monster.named
+                span.icon
+                  i.has-text-success.fas.fa-check
+            td
+              - if monster.elite
+                span.icon
+                  i.has-text-success.fas.fa-check
+
