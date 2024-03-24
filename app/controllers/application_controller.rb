@@ -26,6 +26,8 @@ class ApplicationController < ActionController::Base
   end
 
   def current_user
+    return unless current_username
+
     @current_user ||= User.find_by(username: current_username).tap do |user|
       Sentry.set_user(username: user&.username)
     end

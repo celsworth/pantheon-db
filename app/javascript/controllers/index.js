@@ -4,6 +4,9 @@
 
 import { application } from "./application"
 
+import CheckboxToButtonController from "./checkbox_to_button_controller"
+application.register("checkbox-to-button", CheckboxToButtonController)
+
 import ElmItemCreateController from "./elm_item_create_controller"
 application.register("elm-item-create", ElmItemCreateController)
 
@@ -13,5 +16,8 @@ application.register("elm-maps-show", ElmMapsShowController)
 import ElmResourceCreateController from "./elm_resource_create_controller"
 application.register("elm-resource-create", ElmResourceCreateController)
 
-import TurboLoaderController from "./turbo_loader_controller.js"
+import JumplocParserController from "./jumploc_parser_controller"
+application.register("jumploc-parser", JumplocParserController)
+
+import TurboLoaderController from "./turbo_loader_controller"
 application.register("turbo-loader", TurboLoaderController)
