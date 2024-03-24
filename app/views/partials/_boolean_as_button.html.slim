@@ -1,0 +1,9 @@
+- button_classes = '' unless defined?(button_classes)
+
+.field data-controller='boolean-as-button'
+  label.label = label
+  .control
+    input type='hidden' data-boolean-as-button-target='input' name=name value=('on' if value)
+    button data-action='boolean-as-button#change' data-boolean-as-button-target='button' class="button is-fullwidth is-loading #{button_classes}" type='button'
+      span class='icon'
+        i class='has-text-success fas fa-check'

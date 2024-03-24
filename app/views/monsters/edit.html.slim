@@ -11,30 +11,16 @@
               = f.text_field :name, class: 'input is-medium'
 
         .column.is-1
-          .field data-controller="checkbox-to-button"
-            label.label Named
-            .control
-              input type="hidden" data-checkbox-to-button-target="checkbox" name="named" checked=@monster.named
-              button data-action="checkbox-to-button#change" data-checkbox-to-button-target="button" class="button is-fullwidth is-medium is-loading" type="button"
-                span class="icon"
-                  i class="has-text-success fas fa-check"
+          = render partial: 'partials/boolean_as_button', locals: { label: 'Named', name: 'named', value: @monster.named, button_classes: 'is-medium' }
 
         .column.is-1
-          .field data-controller="checkbox-to-button"
-            label.label Elite
-            .control
-              input type="hidden" data-checkbox-to-button-target="checkbox" name="elite" checked=@monster.elite
-              button data-action="checkbox-to-button#change" data-checkbox-to-button-target="button" class="button is-fullwidth is-medium is-loading" type="button"
-                span class="icon"
-                  i class="has-text-success fas fa-check"
+          = render partial: 'partials/boolean_as_button', locals: { label: 'Elite', name: 'elite', value: @monster.elite, button_classes: 'is-medium'}
 
         .column.is-1
           .field
             label.label Level
             .control
               = f.number_field :level, min: 1, max: 50, class: 'input is-medium'
-
-
 
       .columns
         .column.is-5
@@ -54,26 +40,7 @@
               .column.is-8
                 = render partial: 'location', locals: { locations: Location.where(category: @monster.location.category).all, selected_id: @monster.location_id }
 
-        .column
-          .field
-            label.label Jumploc
-            .control
-              = f.text_field :jumploc, 'data-action': 'input->jumploc-parser#change', 'data-jumploc-parser-target': 'jumploc', class: 'input', placeholder: 'Paste /jumploc'
+        = render partial: 'partials/locs', locals: { f: }
 
-        .column.is-1
-          .field
-            label.label X
-            .control
-              = f.text_field :loc_x, 'data-jumploc-parser-target': 'x', class: 'input'
-        .column.is-1
-          .field
-            label.label Z
-            .control
-              = f.text_field :loc_z, 'data-jumploc-parser-target': 'z', class: 'input'
-        .column.is-1
-          .field
-            label.label Y
-            .control
-              = f.text_field :loc_y, 'data-jumploc-parser-target': 'y', class: 'input'
-
-
+      .field
+        button class="button is-link" type="submit" Save

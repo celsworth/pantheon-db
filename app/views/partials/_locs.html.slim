@@ -1,0 +1,26 @@
+// call me inside data-controller="jumploc-parser" !!
+
+.column
+  .field
+    label.label Jumploc
+    .control
+      = f.text_field :jumploc,
+        'data-action': 'input->jumploc-parser#change',
+        'data-jumploc-parser-target': 'jumploc',
+        class: 'input', placeholder: 'Paste /jumploc'
+
+.column.is-1
+  .field
+    label.label X
+    .control
+      = f.text_field :loc_x, 'data-jumploc-parser-target': 'x', class: 'input'
+.column.is-1
+  .field
+    label.label Z
+    .control
+      = f.text_field :loc_z, 'data-jumploc-parser-target': 'z', class: 'input'
+.column.is-1
+  .field
+    label.label Y
+    .control
+      = f.text_field :loc_y, 'data-jumploc-parser-target': 'y', class: 'input'

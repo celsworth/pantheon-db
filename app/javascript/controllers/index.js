@@ -4,8 +4,8 @@
 
 import { application } from "./application"
 
-import CheckboxToButtonController from "./checkbox_to_button_controller"
-application.register("checkbox-to-button", CheckboxToButtonController)
+import BooleanAsButtonController from "./boolean_as_button_controller"
+application.register("boolean-as-button", BooleanAsButtonController)
 
 import ElmItemCreateController from "./elm_item_create_controller"
 application.register("elm-item-create", ElmItemCreateController)
