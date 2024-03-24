@@ -17,7 +17,7 @@ class Resource < ApplicationRecord
 
   RESOURCES = %w[apple pine ash oak maple walnut
 
-                 asherite caspilrite hardened-caspilrite padrium tascium
+                 asherite caspilrite hardened_caspilrite padrium tascium
                  slytheril vestium
 
                  herb vegetable lily
