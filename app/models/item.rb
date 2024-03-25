@@ -20,7 +20,8 @@ class Item < ApplicationRecord
 
   META_CATEGORIES = {
     'armor' => %w[cloth_armor leather_armor chain_armor plate_armor].freeze,
-    'weapon' => %w[blade_weapon crushing_weapon dagger_weapon h2h_weapon stave_weapon spear_weapon].freeze
+    'weapon' => %w[club_weapon_1h sword_weapon_1h dagger_weapon_1h fist_weapon_1h
+                   polearm_2h quarter_staff_2h].freeze
   }.freeze
   CATEGORIES = %w[general schematic container clickie scroll
                   potion ingredient food drink
@@ -99,6 +100,31 @@ class Item < ApplicationRecord
   def general_stats
     stats.sort.reject do |k, _v|
       %w[damage delay].include?(k)
+    end
+  end
+
+  def weapon_type
+    case category
+    when 'club_weapon_1h' then 'One-Handed Club'
+    when 'dagger_weapon_1h' then 'One-Handed Dagger'
+    when 'fist_weapon_1h' then 'One-Handed Fist Weapon'
+    when 'sword_weapon_1h' then 'One-Handed Sword'
+    when 'polearm_2h' then 'Two-Handed Polearm'
+    when 'quarter_staff_2h' then 'Two-Handed Quarter Staff'
+    else weapon_type
+    end
+  end
+
+  def subweapon_type
+    # just guessing..
+    case category
+    when 'club_weapon_1h' then 'Curshing Weapon'
+    when 'fist_weapon_1h' then 'Hand-to-Hand Weapon'
+    when 'dagger_weapon_1h' then 'Dagger Weapon'
+    when 'sword_weapon_1h' then 'Blade Weapon'
+    when 'polearm_2h' then 'Spear Weapon'
+    when 'quarter_staff_2h' then 'Stave Weapon'
+    else '? unknown weapon-type ?'
     end
   end
 

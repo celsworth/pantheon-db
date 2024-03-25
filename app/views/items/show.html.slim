@@ -40,15 +40,16 @@
             .column
               .name.is-size-5 = @item.name.titleize
             .column.has-text-right
-              .stats Magic
+              .attrs
+                = @item.attrs.map(&:titleize).join(', ')
           .body
             - if @item.weapon?
               .columns.is-gapless.mb-0
                 .column
-                  div ? ? ?
+                  div= @item.weapon_type
                   div= "#{@item.stats['damage']} Physical damage"
                 .column.has-text-right
-                  div= @item.category.titleize
+                  div= @item.subweapon_type
                   div= "#{@item.stats['delay']} Delay"
 
             - elsif @item.armor?
