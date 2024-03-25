@@ -1,0 +1,41 @@
+.section
+  .container
+
+    .columns
+      .column
+        h1.title = @monster.name
+
+        .field.is-grouped
+          .control
+            .tags.has-addons
+              span class="tag is-dark is-medium" Zone
+              span class="tag is-success is-medium" = @monster.zone.name
+
+          - if @monster.location.category != 'zone'
+            .control
+              .tags.has-addons
+                span class="tag is-dark is-medium" = @monster.location.category.capitalize
+                span class="tag is-success is-medium" = @monster.location.name
+
+
+          .control
+            span class="tag is-info is-medium"
+              span Named
+              span.icon
+                i class="has-text-success fas fa-check"
+
+          .control
+            span class="tag is-info is-medium"
+              span Elite
+              span.icon
+                i class="has-text-success fas fa-check"
+
+
+      .column.is-3
+        - if i = @monster.images.first
+          figure class="image screenshot"
+            img alt="" src=image_path(i)
+        - else
+          .no-screenshot No screenshot, so sad :(
+
+

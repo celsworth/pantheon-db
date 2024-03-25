@@ -2,13 +2,9 @@
   .container
     = render partial: 'partials/message' if flash.notice
 
-    - if @monster.errors.any?
-      .message.is-danger
-        .message-body
-          - @monster.errors.full_messages.each do |m|
-            p= m
+    = render partial: 'partials/form_error_messages', locals: { object: @monster }
 
-    = form_for @monster do |f|
+    = form_for @monster, multipart: true do |f|
       .columns
         .column
           .field
@@ -65,6 +61,18 @@
           .field
             label.label Private Notes
             = f.text_area :private_notes, class: 'textarea'
+
+      .columns
+        .column
+          .file
+            label class="file-label"
+              //= f.file_field  :screenshot
+              = file_field_tag :screenshot, class: 'file-input'
+
+              span class="file-cta"
+                span class="file-icon"
+                  i class="fas fa-upload"
+                span class="file-label" Upload screenshot
 
       .field
         button class="button is-link" type="submit" Save

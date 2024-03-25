@@ -1,0 +1,5 @@
+- if object.errors.any?
+  .message.is-danger
+    .message-body
+      - object.errors.full_messages.each do |m|
+        p= m
