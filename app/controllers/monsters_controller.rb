@@ -24,12 +24,6 @@ class MonstersController < ApplicationController
     end
   end
 
-  def test
-    locations = Location.where(category: params[:category])
-    render partial: 'monsters/location',
-           locals: { selected_id: params[:selected_id], locations: }
-  end
-
   private
 
   def monster

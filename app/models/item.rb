@@ -88,6 +88,20 @@ class Item < ApplicationRecord
     self[:stats] = {} if stats.nil?
   end
 
+  def weapon?
+    category.in?(META_CATEGORIES['weapon'])
+  end
+
+  def armor?
+    category.in?(META_CATEGORIES['armor'])
+  end
+
+  def general_stats
+    stats.sort.reject do |k, _v|
+      %w[damage delay].include?(k)
+    end
+  end
+
   private
 
   def stat_hash_valid

@@ -1,0 +1,79 @@
+.section
+  .container
+    .columns
+      .column
+        h1.title = @item.name
+
+        .field.is-grouped
+          .control
+            .tags.has-addons
+              span.tag.is-dark.is-medium Category
+              span.tag.is-success.is-medium = @item.category.titleize
+
+          - if @item.weight
+            .control
+              .tags.has-addons
+                span.tag.is-dark.is-medium Weight
+                span.tag.is-success.is-medium = "#{@item.weight}kg"
+
+
+          - @item.attrs.sort.each do |attr|
+           .control
+              span.tag.is-info.is-medium = attr.titleize
+
+
+        table.table
+          thead
+            tr
+              th Stat
+              th
+
+          tbody
+            - @item.stats.sort.each do |k, v|
+              tr
+                td = k.titleize
+                td.has-text-right = v
+
+      .column.is-6
+        .item-screenshot
+          .columns.is-gapless.mb-0
+            .column
+              .name.is-size-5 = @item.name.titleize
+            .column.has-text-right
+              .stats Magic
+          .body
+            - if @item.weapon?
+              .columns.is-gapless.mb-0
+                .column
+                  div ? ? ?
+                  div= "#{@item.stats['damage']} Physical damage"
+                .column.has-text-right
+                  div= @item.category.titleize
+                  div= "#{@item.stats['delay']} Delay"
+
+            - elsif @item.armor?
+              .columns.is-gapless.mb-0
+                .column
+                  div TODO Heavy Leather
+                  div= "#{@item.stats['armor']} Armor"
+                .column.has-text-right
+                  div= @item.slot.titleize
+
+            - @item.general_stats.each do |k, v|
+              div
+                = "#{v} #{k.titleize}"
+
+            - if @item.classes.any?
+              div
+                = "Class: "
+                = @item.classes.map(&:titleize).join(', ')
+
+
+            - if @item.required_level
+              div = "Requires Level #{@item.required_level}"
+
+
+            - if false # need description in model!
+              .description A helmet made from the skull of a large bear
+
+            .weight.has-text-right Weight: #{@item.weight}

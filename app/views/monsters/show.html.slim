@@ -37,6 +37,12 @@
                 span.icon
                   i class="has-text-success fas fa-check"
 
+        .box
+          h2.subtitle.has-text-weight-bold Drops
+          .tags.are-medium
+            - @monster.drops.order(:name).each do |item|
+              a.tag.is-link href=item_path(item) = item.name
+
 
       .column.is-3
         - if i = @monster.images.first

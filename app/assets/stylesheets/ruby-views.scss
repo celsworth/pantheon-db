@@ -20,3 +20,42 @@
   align-items: center;
   background: #999;
 }
+
+.item-screenshot {
+  border: 2px solid #ccc;
+  background-color: #111;
+  color: rgb(219 219 219);
+  font-weight: 800;
+  border-radius: 10px;
+  font-size: 18px;
+
+  .name {
+    color: rgb(223 211 167);
+    padding: 8px 16px;
+    font-variant: small-caps;
+  }
+
+  .stats {
+    padding: 8px 16px;
+    font-style: italic;
+    color: rgb(204 79 59);
+  }
+
+  .body {
+    border-top: 4px solid rgb(179 188 199);
+    padding: 10px 16px;
+  }
+
+  .description {
+    padding: 10px 0;
+    margin: 0 20px;
+    text-align: center;
+    font-style: italic;
+    border-top: 2px solid rgb(179 188 199);
+    border-bottom: 2px solid rgb(179 188 199);
+  }
+
+  .weight {
+    color: rgb(131 131 131);
+  }
+}

@@ -28,12 +28,14 @@ Rails.application.routes.draw do
 
   resources :maps, only: %i[show] # elm
 
-  resources :monsters, only: %i[index show edit update] do
-    get '/test', to: 'monsters#test'
+  resources :monsters, only: %i[index show edit update]
+
+  resources :items, only: %i[index show edit update]
+  resources :locations, only: [] do
+    get 'select_for_category', on: :collection, to: 'locations#select_for_category'
   end
 
   # get '/test', to: 'test#index'
-  # resources :items, only: %i[new]
 
   get '/login', to: 'users#login'
   post '/logout', to: 'users#logout'

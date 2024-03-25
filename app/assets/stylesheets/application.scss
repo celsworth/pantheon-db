@@ -6,15 +6,16 @@
 $body-size: 14px;
 $body-background-color: #9a9;
 $footer-background-color: #9a9;
+$box-background-color: #898;
+$navbar-background-color: #000;
 
 @import "bulma/bulma";
 @import "map";
 @import "elm-forms";
 @import "ruby-views";
 
-.navbar-menu {
-  // seems to be white by default
-  background-color: #000;
+a.tag:hover {
+  text-decoration: none;
 }
 
 .site-logo {

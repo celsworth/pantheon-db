@@ -30,7 +30,7 @@
 
       .columns
         .column.is-5
-          .field data-controller="turbo-loader" data-turbo-loader-url-value="/monsters/1/test"
+          .field data-controller="turbo-loader" data-turbo-loader-url-value=select_for_category_locations_path
             label.label
               span Location
               span class="has-text-danger" *
@@ -46,7 +46,7 @@
                     option selected=(s == 'settlement') value="settlement" Settlement
 
               .column.is-8
-                = render partial: 'location', locals: { locations: Location.where(category: @monster.location.category).all, selected_id: @monster.location_id }
+                = render partial: 'locations/select', locals: { locations: Location.where(category: @monster.location.category).order(:name).all, selected_id: @monster.location_id }
 
         = render partial: 'partials/locs', locals: { f: }
 
