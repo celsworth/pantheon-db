@@ -7,16 +7,16 @@
           th Zone
           th Named
           th Elite
+          - if can? :edit, Monster
+            th
 
       tbody
         - @monsters.each do |monster|
           tr
             td
-              - if can? :edit, monster
-                a href=edit_monster_path(monster)
+              - if can? :show, monster
+                a href=monster_path(monster)
                   = monster.name
-              - else
-                = monster.name
             td= monster.zone.name
             td
               - if monster.named
@@ -26,4 +26,9 @@
               - if monster.elite
                 span.icon
                   i.has-text-success.fas.fa-check
+
+            - if can? :edit, monster
+              td
+                a href=edit_monster_path(monster) edit
+
 

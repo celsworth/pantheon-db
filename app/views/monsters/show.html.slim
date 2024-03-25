@@ -1,6 +1,5 @@
 .section
   .container
-
     .columns
       .column
         h1.title = @monster.name
@@ -17,18 +16,26 @@
                 span class="tag is-dark is-medium" = @monster.location.category.capitalize
                 span class="tag is-success is-medium" = @monster.location.name
 
+          - if @monster.level
+            .control
+              .tags.has-addons
+                span class="tag is-dark is-medium" Level
+                span class="tag is-success is-medium" = @monster.level
 
-          .control
-            span class="tag is-info is-medium"
-              span Named
-              span.icon
-                i class="has-text-success fas fa-check"
 
-          .control
-            span class="tag is-info is-medium"
-              span Elite
-              span.icon
-                i class="has-text-success fas fa-check"
+          - if @monster.named
+            .control
+              span class="tag is-info is-medium"
+                span Named
+                span.icon
+                  i class="has-text-success fas fa-check"
+
+          - if @monster.elite
+            .control
+              span class="tag is-info is-medium"
+                span Elite
+                span.icon
+                  i class="has-text-success fas fa-check"
 
 
       .column.is-3
@@ -39,3 +46,5 @@
           .no-screenshot No screenshot, so sad :(
 
 
+    - if can? :edit, @monster
+      a href=edit_monster_path(@monster) edit
