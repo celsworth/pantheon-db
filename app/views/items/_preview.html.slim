@@ -1,0 +1,44 @@
+.item-screenshot
+  .columns.is-mobile.is-gapless.mb-0
+    .column
+      .name.is-size-5 = item.name
+    .column.has-text-right
+      .attrs
+        = item.attrs.map(&:titleize).join(', ')
+  .body
+    - if item.weapon?
+      .columns.is-mobile.is-gapless.mb-0
+        .column
+          div= Item::READABLE_CATEGORIES[item.category]
+          div= "#{item.stats['damage']} Physical damage"
+        .column.has-text-right
+          div= Item::READABLE_SUBCATEGORIES[item.category]
+          div= "#{item.stats['delay']} Delay"
+
+    - elsif item.armor?
+      .columns.is-mobile.is-gapless.mb-0
+        .column
+          div= Item::READABLE_CATEGORIES[item.category]
+          - if item.stats['armor']
+            div= "#{item.stats['armor']} Armor"
+        .column.has-text-right
+          div= item.slot&.titleize
+
+    - item.general_stats.each do |k, v|
+      div
+        = "#{v} #{k.titleize}"
+
+    - if item.classes.any?
+      div
+        = "Class: "
+        = item.classes.map(&:titleize).join(', ')
+
+
+    - if item.required_level
+      div = "Requires Level #{item.required_level}"
+
+
+    - if false # need description in model!
+      .description A helmet made from the skull of a large bear
+
+    .weight.has-text-right Weight: #{item.weight}

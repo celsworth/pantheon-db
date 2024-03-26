@@ -2,7 +2,11 @@
   .container
     .columns
       .column
-        h1.title = @monster.name
+        h1.title
+          = @monster.name
+          - if can? :edit, @monster
+            '
+            a href=edit_monster_path(@monster) edit
 
         .field.is-grouped
           .control
@@ -52,5 +56,3 @@
           .no-screenshot No screenshot, so sad :(
 
 
-    - if can? :edit, @monster
-      a href=edit_monster_path(@monster) edit

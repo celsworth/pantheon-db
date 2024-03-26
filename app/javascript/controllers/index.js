@@ -7,6 +7,9 @@ import { application } from "./application"
 import BooleanAsButtonController from "./boolean_as_button_controller"
 application.register("boolean-as-button", BooleanAsButtonController)
 
+import ButtonTogglerController from "./button_toggler_controller"
+application.register("button-toggler", ButtonTogglerController)
+
 import CopperToPgscController from "./copper_to_pgsc_controller"
 application.register("copper-to-pgsc", CopperToPgscController)
 

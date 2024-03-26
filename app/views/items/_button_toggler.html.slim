@@ -1,0 +1,5 @@
+div data-controller="button-toggler" data-button-toggler-on-classes-value=['has-text-weight-bold', 'is-success'].to_json data-button-toggler-off-classes-value=['is-light', 'is-danger'].to_json
+  input data-button-toggler-target="input" type="hidden" name=name value="#{enabled}"
+  // classes set by button-toggler js
+  button.button.is-fullwidth type="button" data-button-toggler-target="button" data-action="button-toggler#toggle"
+    = label

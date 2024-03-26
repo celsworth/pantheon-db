@@ -21,7 +21,7 @@ class Item < ApplicationRecord
   META_CATEGORIES = {
     'armor' => %w[cloth_armor leather_armor chain_armor plate_armor].freeze,
     'weapon' => %w[club_weapon_1h dagger_weapon_1h fist_weapon_1h sword_weapon_1h
-                   polearm_2h quarter_staff_2h].freeze
+                   polearm_2h bo_staff_2h quarter_staff_2h].freeze
   }.freeze
   CATEGORIES = %w[general schematic container clickie scroll
                   potion ingredient food drink
@@ -31,15 +31,31 @@ class Item < ApplicationRecord
                .freeze
   CATEGORIES_CAMEL = CATEGORIES.map { |w| w.camelize(:lower) }
 
-  # this should be in the view layer really
+  # this should be in the view layer really. this is top-left of previews
   READABLE_CATEGORIES = CATEGORIES.map { |c| [c, c.titleize] }.to_h.tap do |c|
     c['club_weapon_1h'] = 'One-Handed Club'
     c['dagger_weapon_1h'] = 'One-Handed Dagger'
     c['fist_weapon_1h'] = 'One-Handed Fist Weapon'
     c['sword_weapon_1h'] = 'One-Handed Sword'
     c['polearm_2h'] = 'Two-Handed Polearm'
+    c['bo_staff_2h'] = 'Two-Handed Bo Staff'
     c['quarter_staff_2h'] = 'Two-Handed Quarter Staff'
+
+    c['cloth_armor'] = 'Cloth'
+    c['leather_armor'] = 'Leather'
+    c['chain_armor'] = 'Chain'
+    c['plate_armor'] = 'Plate'
   end.freeze
+
+  READABLE_SUBCATEGORIES = {
+    'club_weapon_1h' => 'Crushing Weapon',
+    'fist_weapon_1h' => 'Hand-to-Hand Weapon',
+    'dagger_weapon_1h' => 'Dagger Weapon',
+    'sword_weapon_1h' => 'Blade Weapon',
+    'polearm_2h' => 'Spear Weapon',
+    'bo_staff_2h' => 'Stave Weapon',
+    'quarter_staff_2h' => 'Stave Weapon'
+  }.freeze
 
   CATEGORIES_FOR_SELECT = READABLE_CATEGORIES.invert.to_a.sort.freeze
 
@@ -117,15 +133,8 @@ class Item < ApplicationRecord
     category.in?(META_CATEGORIES['weapon'])
   end
 
-  # if the item is armor, return the type of armor, ie cloth_armor -> cloth
-  # TODO: hash? replace weapon? also?
-  def armor
-    case category
-    when 'cloth_armor' then 'cloth'
-    when 'leather_armor' then 'leather'
-    when 'chain_armor' then 'chain'
-    when 'plate_armor' then 'plate'
-    end
+  def armor?
+    category.in?(META_CATEGORIES['armor'])
   end
 
   def general_stats
@@ -136,31 +145,6 @@ class Item < ApplicationRecord
 
   def available_stats
     Item::STATS - stats.keys
-  end
-
-  def weapon_type
-    case category
-    when 'club_weapon_1h' then 'One-Handed Club'
-    when 'dagger_weapon_1h' then 'One-Handed Dagger'
-    when 'fist_weapon_1h' then 'One-Handed Fist Weapon'
-    when 'sword_weapon_1h' then 'One-Handed Sword'
-    when 'polearm_2h' then 'Two-Handed Polearm'
-    when 'quarter_staff_2h' then 'Two-Handed Quarter Staff'
-    else weapon_type
-    end
-  end
-
-  def subweapon_type
-    # just guessing..
-    case category
-    when 'club_weapon_1h' then 'Crushing Weapon'
-    when 'fist_weapon_1h' then 'Hand-to-Hand Weapon'
-    when 'dagger_weapon_1h' then 'Dagger Weapon'
-    when 'sword_weapon_1h' then 'Blade Weapon'
-    when 'polearm_2h' then 'Spear Weapon'
-    when 'quarter_staff_2h' then 'Stave Weapon'
-    else '? unknown weapon-type ?'
-    end
   end
 
   private

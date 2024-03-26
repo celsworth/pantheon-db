@@ -1,6 +1,14 @@
+// TODO..
+//  slot - only show for certain categories (new stimulus controller? where is the src?)
+//  classes - row of small buttons?
+//  attrs - row of small buttons?
+
 .section data-controller='dynamic-stats' data-dynamic-stats-url-value=item_dynamic_stats_path(@item)
   .container
-    h1.title = @item.name
+    h1.title
+      = @item.name
+      '
+      a href=item_path(@item) [back]
 
     = render partial: 'partials/message' if flash.notice
 
@@ -34,17 +42,39 @@
               = f.text_field :weight, class: 'input is-medium'
 
       .columns
-        .column.is-1
+        .column.is-2
           .field
             label.label Req Level
             .control
               = f.number_field :required_level, min: 1, max: 50, class: 'input'
+        .column.is-2
+          .field
+            label.label Slot
+            .control
+              .select.is-fullwidth
+                = f.select :slot, options_for_select(Item::SLOTS, @item.slot), include_blank: ''
+        .column data-controller="copper-to-pgsc"
+          = render partial: 'partials/pgsc', locals: { label: 'Sell Price', name: 'item[sell_price]', value: @item.sell_price }
+        .column data-controller="copper-to-pgsc"
+          = render partial: 'partials/pgsc', locals: { label: 'Buy Price', name: 'item[buy_price]', value: @item.buy_price }
 
       .columns
-        .column.is-6 data-controller="copper-to-pgsc"
-          = render partial: 'partials/pgsc', locals: { label: 'Sell Price', name: 'item[sell_price]', value: @item.sell_price }
-        .column.is-6 data-controller="copper-to-pgsc"
-          = render partial: 'partials/pgsc', locals: { label: 'Buy Price', name: 'item[buy_price]', value: @item.buy_price }
+        .column.is-8
+          .field
+            label.label Classes
+            .columns.is-multiline.is-mobile
+              - Item::CLASSES.each do |kls_slug|
+                .column.is-2-tablet.is-half-mobile
+                  = render partial: 'button_toggler', locals: { enabled: @item.classes.include?(kls_slug), name: "classes[#{kls_slug}]", label: kls_slug.titleize }
+
+        .column.is-4
+          .field
+            label.label Attributes
+            .columns.is-multiline.is-mobile
+              - Item::ATTRS.each do |attr|
+                .column.is-4-tablet.is-half-mobile
+                  = render partial: 'button_toggler', locals: { enabled: @item.attrs.include?(attr), name: "attrs[#{attr}]", label: attr.titleize }
+
 
       = render partial: 'items/dynamic_stats_form', locals: { item: @item }
 
@@ -62,8 +92,14 @@
             .control
               = f.text_area :private_notes, class: 'textarea'
 
-      .field.is-grouped
-        .control
-          button class="button is-link" type="submit" Save
-        .control
-          a class="button is-danger" href=item_path(@item) Cancel
+      .columns
+        .column
+          .field.is-grouped
+            .control
+              button class="button is-link" type="submit" Save
+            .control
+              a class="button is-danger" href=item_path(@item) Cancel
+
+        .column
+          div style="margin-left: auto"
+            = render partial: 'preview', locals: { item: @item }

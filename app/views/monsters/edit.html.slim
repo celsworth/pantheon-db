@@ -1,6 +1,8 @@
 .section data-controller="jumploc-parser"
   .container
     h1.title = @monster.name
+    '
+    a herf=monster_path(@monster) [back]
 
     = render partial: 'partials/message' if flash.notice
 

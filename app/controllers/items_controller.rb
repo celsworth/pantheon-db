@@ -15,6 +15,8 @@ class ItemsController < ApplicationController
   def update
     return head 403 unless can? :edit, item
 
+    item.attrs = toggler_params(params[:attrs])
+    item.classes = toggler_params(params[:classes])
     if item.update(item_params)
       redirect_to edit_item_path(item), notice: 'Changes Saved!'
     else
@@ -37,9 +39,15 @@ class ItemsController < ApplicationController
   end
 
   def item_params
-    params.require(:item).permit(:id, :name, :category, :required_level,
-                                 :weight, :sell_price, :buy_price,
-                                 :public_notes, :private_notes,
-                                 stats: {})
+    params.require(:item).permit(:id, :name, :category, :weight,
+                                 :required_level, :slot,
+                                 :sell_price, :buy_price,
+                                 :public_notes, :private_notes)
+  end
+
+  def toggler_params(prm)
+    prm.to_unsafe_h.map do |attr, v|
+      v == 'true' ? attr : nil
+    end.compact
   end
 end
