@@ -58,7 +58,7 @@ class Item < ApplicationRecord
              spell_power spell_crit_chance
              health mana armor
              block_rating dodge parry
-             delay
+             haste_percent delay
              endurance
              health_recovery_while_resting mana_recovery_while_resting
              fire_resist cold_resist poison_resist chemical_resist nature_resist
