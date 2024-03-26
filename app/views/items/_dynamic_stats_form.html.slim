@@ -6,7 +6,7 @@
       = render partial: 'stat_item', locals: { k: 'damage', v: item.stats['damage'], removable: false }
       = render partial: 'stat_item', locals: { k: 'delay', v: item.stats['delay'], removable: false }
 
-    - if item.armor?
+    - if item.armor
       - rendered_stats = %w[armor]
       = render partial: 'stat_item', locals: { k: 'armor', v: item.stats['armor'], removable: false }
 
