@@ -3,6 +3,8 @@
 class Discord
   attr_reader :access_token
 
+  PETRICHOR_GUILD_ID = '696004691649233007'
+
   PETRICHOR_RECRUIT_ROLE_ID = '696006580096860241'
   PETRICHOR_MEMBER_ROLE_ID = '696006207210782810'
   PETRICHOR_SMS_ROLE_ID = '1183355012202643536'
@@ -17,6 +19,7 @@ class Discord
                                            token_url: '/api/v10/oauth2/token')
     end
   end
+
   def initialize(access_token:)
     @access_token = access_token
   end
@@ -25,7 +28,7 @@ class Discord
     return nil unless access_token
 
     key = "discord-user-for-#{access_token}"
-    Rails.cache.fetch(key, expires_in: 1.hour) do
+    Rails.cache.fetch(key, expires_in: 1.week) do
       response = access.get('/api/v10/users/@me')
       body = JSON.parse(response.body)
       body['username']
@@ -47,12 +50,12 @@ class Discord
   end
 
   # return the Petrichor guild object, or nil
+  # (not currently used)
   def petrichor_object
     return nil unless access_token
 
     key = "discord-petrichor_object-#{access_token}"
     Rails.cache.fetch(key, expires_in: 1.hour) do
-      Rails.logger.info 'Get Guilds'
       response = access.get('/api/v10/users/@me/guilds')
       body = JSON.parse(response.body)
       body.find { _1['name'] == 'PETRICHOR [EU]-GUILD' }
@@ -64,13 +67,12 @@ class Discord
 
     key = "discord-petrichor_user_roles-#{access_token}"
     Rails.cache.fetch(key, expires_in: 1.hour) do
-      petrichor = petrichor_object
-      return [] unless petrichor
-
-      Rails.logger.info 'Get Guild Roles'
-      response = access.get("/api/v10/users/@me/guilds/#{petrichor['id']}/member")
+      response = access.get("/api/v10/users/@me/guilds/#{PETRICHOR_GUILD_ID}/member")
       body = JSON.parse(response.body)
       body['roles']
     end
+  rescue StandardError
+    # we're assuming that the user is not in our guild if we get here, so has no roles.
+    []
   end
 end
