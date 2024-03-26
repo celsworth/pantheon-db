@@ -52,13 +52,13 @@
                   div= @item.subweapon_type
                   div= "#{@item.stats['delay']} Delay"
 
-            - elsif @item.armor?
+            - elsif armor_type = @item.armor
               .columns.is-mobile.is-gapless.mb-0
                 .column
-                  div TODO Heavy Leather
+                  div= armor_type.titleize
                   div= "#{@item.stats['armor']} Armor"
                 .column.has-text-right
-                  div= @item.slot.titleize
+                  div= @item.slot&.titleize
 
             - @item.general_stats.each do |k, v|
               div

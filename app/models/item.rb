@@ -117,13 +117,20 @@ class Item < ApplicationRecord
     category.in?(META_CATEGORIES['weapon'])
   end
 
-  def armor?
-    category.in?(META_CATEGORIES['armor'])
+  # if the item is armor, return the type of armor, ie cloth_armor -> cloth
+  # TODO: hash? replace weapon? also?
+  def armor
+    case category
+    when 'cloth_armor' then 'cloth'
+    when 'leather_armor' then 'leather'
+    when 'chain_armor' then 'chain'
+    when 'plate_armor' then 'plate'
+    end
   end
 
   def general_stats
     stats.sort.reject do |k, _v|
-      %w[damage delay].include?(k)
+      %w[damage delay armor].include?(k)
     end
   end
 
