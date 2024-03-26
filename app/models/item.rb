@@ -61,7 +61,8 @@ class Item < ApplicationRecord
              delay
              endurance
              health_recovery_while_resting mana_recovery_while_resting
-             fire_resist cold_resist poison_resist chemical_resist nature_resist magic_resist
+             fire_resist cold_resist poison_resist chemical_resist nature_resist
+             magic_resist shock_resist
              strength stamina constitution agility dexterity intellect wisdom charisma].freeze
   STATS_CAMEL = STATS.map { |w| w.camelize(:lower) }
 
