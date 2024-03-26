@@ -99,6 +99,17 @@ class Item < ApplicationRecord
   def stats=(value)
     self[:stats] = value.is_a?(String) ? JSON.parse(value) : value
     self[:stats] = {} if stats.nil?
+
+    self[:stats] = stats.map do |k, v|
+      # iterate through and convert Strings to native values (from form submits)
+      # need to merge this logic with stats_type
+      v = k == 'delay' ? v.to_f : v.to_i
+
+      # also remove zeroes
+      next if v.zero?
+
+      [k, v]
+    end.compact.to_h
   end
 
   def weapon?
@@ -152,11 +163,11 @@ class Item < ApplicationRecord
       return
     end
 
-    stats.each do |k, v|
+    stats.each_key do |k|
       if STATS.include?(k)
-        errors.add(:stats, "#{k}=#{v} is invalid, use numbers only") unless v.is_a?(Numeric) || v.nil?
+        # removed for now, HTML form submits are strings
+        # errors.add(:stats, "#{k}=#{v} is invalid, use numbers only") unless v.is_a?(Numeric) || v.nil?
       else
-        # now that we have StatsType this shouldn't happen, GraphQL protects us from unknown keys
         errors.add(:stats, "#{k} is not a valid stats key")
       end
     end

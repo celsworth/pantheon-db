@@ -14,6 +14,11 @@ export default class extends Controller {
     return new URLSearchParams(new FormData(this.formTarget));
   }
 
+  change_category() {
+    const queryString = this.qsFromForm();
+    this.turboFrameTarget.src = this.urlValue + '?' + queryString.toString();
+  }
+
   add_stat() {
     const queryString = this.qsFromForm();
     queryString.set('add_stat', this.addStatTarget.value);

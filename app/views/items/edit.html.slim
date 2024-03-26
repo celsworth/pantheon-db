@@ -23,7 +23,7 @@
               span class="has-text-danger" *
             .control
               .select.is-fullwidth.is-medium
-                = f.select :category, options_for_select(Item::CATEGORIES_FOR_SELECT, @item.category)
+                = f.select :category, options_for_select(Item::CATEGORIES_FOR_SELECT, @item.category), {}, 'data-action': 'change->dynamic-stats#change_category'
 
         .column.is-1
           .field

@@ -12,6 +12,16 @@ class ItemsController < ApplicationController
     halt 403 unless can? :edit, item
   end
 
+  def update
+    return head 403 unless can? :edit, item
+
+    if item.update(item_params)
+      redirect_to edit_item_path(item), notice: 'Changes Saved!'
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
   def dynamic_stats
     item = Item.new(item_params)
     item.stats.delete(params[:remove_stat]) if params[:remove_stat]

@@ -10,9 +10,14 @@
       - rendered_stats = %w[armor]
       = render partial: 'stat_item', locals: { k: 'armor', v: item.stats['armor'], removable: false }
 
-    // populated stats, minus any we did above
-    - stats = item.stats.except(*rendered_stats).keys
-    // any manually added stat
+    // populated stats, minus any we did above.
+    // also remove empty keys which does two things: if category changes to weapon then
+    // back out, it removes the empty damage+delay we added.
+    // and also if "add item" is clicked multiple times,
+    // only the most recent one stays (previous ones are empty and thus removed here)
+    - stats = item.stats.except(*rendered_stats).select{|k, v| v.present? }.keys
+
+    // any manually added stat; note stats is now an array of slugs
     - stats << add_stat if defined?(add_stat) && add_stat.present?
     - stats.sort.each do |k|
       = render partial: 'stat_item', locals: { k:, v: item.stats[k], removable: true }
@@ -23,4 +28,4 @@
       .field
         .control
           .select.is-fullwidth
-            = select_tag 'add_stat', options_for_select(Item::STATS - rendered_stats - stats), include_blank: '', data: { action: 'change->dynamic-stats#add_stat', 'dynamic-stats-target': 'addStat' }
+            = select_tag 'add_stat', options_for_select(Item::STATS - Array(rendered_stats) - stats), include_blank: '', data: { action: 'change->dynamic-stats#add_stat', 'dynamic-stats-target': 'addStat' }
