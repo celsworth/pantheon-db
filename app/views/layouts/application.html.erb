@@ -46,6 +46,9 @@
         <div id="navbar-menu" class="navbar-menu">
           <div class="navbar-start">
             <a class="navbar-item has-text-white" href="/maps/1">Map</a>
+            <% if guild_member? %>
+              <a class="navbar-item has-text-white" href="/items">Items</a>
+            <% end %>
 
             <!--div class="navbar-item has-dropdown is-hoverable">
               <a class="navbar-link has-text-white"> Items </a>

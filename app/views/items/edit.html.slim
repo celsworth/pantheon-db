@@ -64,7 +64,7 @@
             label.label Classes
             .columns.is-multiline.is-mobile
               - Item::CLASSES.each do |kls_slug|
-                .column.is-2-tablet.is-half-mobile
+                .column.is-one-fifth-tablet.is-half-mobile
                   = render partial: 'button_toggler', locals: { enabled: @item.classes.include?(kls_slug), name: "classes[#{kls_slug}]", label: kls_slug.titleize }
 
         .column.is-4

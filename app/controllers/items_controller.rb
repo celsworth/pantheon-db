@@ -6,6 +6,10 @@ class ItemsController < ApplicationController
   # was old elm stuff
   # def new; end
 
+  def index
+    @items = Item.order(:name)
+  end
+
   def show; end
 
   def edit
@@ -15,9 +19,7 @@ class ItemsController < ApplicationController
   def update
     return head 403 unless can? :edit, item
 
-    item.attrs = toggler_params(params[:attrs])
-    item.classes = toggler_params(params[:classes])
-    if item.update(item_params)
+    if update_item
       redirect_to edit_item_path(item), notice: 'Changes Saved!'
     else
       render :edit, status: :unprocessable_entity
@@ -36,6 +38,12 @@ class ItemsController < ApplicationController
 
   def item
     @item ||= Item.find(params[:id])
+  end
+
+  def update_item
+    item.attrs = toggler_params(params[:attrs])
+    item.classes = toggler_params(params[:classes])
+    item.update(item_params)
   end
 
   def item_params

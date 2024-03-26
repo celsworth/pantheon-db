@@ -4,10 +4,10 @@ class Ability
   include CanCan::Ability
 
   def initialize(user)
-    return unless user.present?
-
     # not really bothering with read perms yet, everything is public
     can :read, :all
+
+    return unless user.present?
 
     if user.admin?
       admin_abilities

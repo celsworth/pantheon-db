@@ -1,0 +1,28 @@
+.section
+  .container
+    table.table
+      thead
+        tr
+          th Name
+          th Category
+          - if can? :edit, Item
+            th
+
+      tbody
+        - @items.each do |item|
+          tr
+            td
+              - if can? :read, item
+                a href=item_path(item)
+                  = item.name
+              - else
+                = item.name
+
+            td
+              = Item::READABLE_CATEGORIES[item.category]
+
+            - if can? :edit, item
+              td
+                a href=edit_item_path(item) edit
+
+

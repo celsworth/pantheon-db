@@ -14,9 +14,12 @@
         - @monsters.each do |monster|
           tr
             td
-              - if can? :show, monster
+              - if can? :read, monster
                 a href=monster_path(monster)
                   = monster.name
+              - else
+                = monster.name
+
             td= monster.zone.name
             td
               - if monster.named
