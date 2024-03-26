@@ -27,7 +27,7 @@ class MonstersController < ApplicationController
   private
 
   def monster
-    @monster ||= Monster.find_by(id: params[:id])
+    @monster ||= Monster.find(params[:id])
   end
 
   def update_monster

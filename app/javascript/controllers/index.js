@@ -7,6 +7,12 @@ import { application } from "./application"
 import BooleanAsButtonController from "./boolean_as_button_controller"
 application.register("boolean-as-button", BooleanAsButtonController)
 
+import CopperToPgscController from "./copper_to_pgsc_controller"
+application.register("copper-to-pgsc", CopperToPgscController)
+
+import DynamicStatsController from "./dynamic_stats_controller"
+application.register("dynamic-stats", DynamicStatsController)
+
 import ElmItemCreateController from "./elm_item_create_controller"
 application.register("elm-item-create", ElmItemCreateController)
 

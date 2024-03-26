@@ -1,0 +1,26 @@
+= turbo_frame_tag 'dynamicStatsFrame', 'data-dynamic-stats-target': 'turboFrame'
+  .columns.is-multiline
+    // use category to always render certain fields
+    - if item.weapon?
+      - rendered_stats = %w[damage delay]
+      = render partial: 'stat_item', locals: { k: 'damage', v: item.stats['damage'], removable: false }
+      = render partial: 'stat_item', locals: { k: 'delay', v: item.stats['delay'], removable: false }
+
+    - if item.armor?
+      - rendered_stats = %w[armor]
+      = render partial: 'stat_item', locals: { k: 'armor', v: item.stats['armor'], removable: false }
+
+    // populated stats, minus any we did above
+    - stats = item.stats.except(*rendered_stats).keys
+    // any manually added stat
+    - stats << add_stat if defined?(add_stat) && add_stat.present?
+    - stats.sort.each do |k|
+      = render partial: 'stat_item', locals: { k:, v: item.stats[k], removable: true }
+
+
+    .column.is-2
+      label.label Add Stat..
+      .field
+        .control
+          .select.is-fullwidth
+            = select_tag 'add_stat', options_for_select(Item::STATS - rendered_stats - stats), include_blank: '', data: { action: 'change->dynamic-stats#add_stat', 'dynamic-stats-target': 'addStat' }

@@ -30,7 +30,10 @@ Rails.application.routes.draw do
 
   resources :monsters, only: %i[index show edit update]
 
-  resources :items, only: %i[index show edit update]
+  resources :items, only: %i[index show edit update] do
+    get 'dynamic_stats'
+  end
+
   resources :locations, only: [] do
     get 'select_for_category', on: :collection, to: 'locations#select_for_category'
   end

@@ -57,18 +57,19 @@
         .column
           .field
             label.label Public Notes
-            = f.text_area :public_notes, class: 'textarea'
+            .control
+              = f.text_area :public_notes, class: 'textarea'
 
         .column
           .field
             label.label Private Notes
-            = f.text_area :private_notes, class: 'textarea'
+            .control
+              = f.text_area :private_notes, class: 'textarea'
 
       .columns
         .column
           .file
             label class="file-label"
-              //= f.file_field  :screenshot
               = file_field_tag :screenshot, class: 'file-input'
 
               span class="file-cta"

@@ -1,0 +1,11 @@
+.column.is-2
+  label.label = k.titleize
+  .field class=('has-addons' if removable)
+    .control
+      input.input type="text" name="item[stats][#{k}]" value=v
+
+    - if removable
+      .control
+        button.button type="button" data-dynamic-stats-remove-stat-key-param=k data-action="dynamic-stats#remove_stat"
+          span.icon
+            i.fas.fa-times

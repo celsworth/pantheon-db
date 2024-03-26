@@ -8,7 +8,28 @@ class ItemsController < ApplicationController
 
   def show; end
 
+  def edit
+    halt 403 unless can? :edit, item
+  end
+
+  def dynamic_stats
+    item = Item.new(item_params)
+    item.stats.delete(params[:remove_stat]) if params[:remove_stat]
+    add_stat = params[:add_stat] if params[:add_stat].present?
+
+    render partial: 'items/dynamic_stats_form', locals: { item:, add_stat: }
+  end
+
+  private
+
   def item
-    @item ||= Item.find_by(id: params[:id])
+    @item ||= Item.find(params[:id])
+  end
+
+  def item_params
+    params.require(:item).permit(:id, :name, :category, :required_level,
+                                 :weight, :sell_price, :buy_price,
+                                 :public_notes, :private_notes,
+                                 stats: {})
   end
 end

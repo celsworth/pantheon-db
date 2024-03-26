@@ -36,7 +36,7 @@
 
       .column.is-6
         .item-screenshot
-          .columns.is-gapless.mb-0
+          .columns.is-mobile.is-gapless.mb-0
             .column
               .name.is-size-5 = @item.name.titleize
             .column.has-text-right
@@ -44,7 +44,7 @@
                 = @item.attrs.map(&:titleize).join(', ')
           .body
             - if @item.weapon?
-              .columns.is-gapless.mb-0
+              .columns.is-mobile.is-gapless.mb-0
                 .column
                   div= @item.weapon_type
                   div= "#{@item.stats['damage']} Physical damage"
@@ -53,7 +53,7 @@
                   div= "#{@item.stats['delay']} Delay"
 
             - elsif @item.armor?
-              .columns.is-gapless.mb-0
+              .columns.is-mobile.is-gapless.mb-0
                 .column
                   div TODO Heavy Leather
                   div= "#{@item.stats['armor']} Armor"
