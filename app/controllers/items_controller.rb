@@ -9,7 +9,7 @@ class ItemsController < ApplicationController
   def show; end
 
   def edit
-    halt 403 unless can? :edit, item
+    head 403 unless can? :edit, item
   end
 
   def update

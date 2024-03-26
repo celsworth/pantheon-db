@@ -17,6 +17,9 @@ class UsersController < ApplicationController
   end
 
   def oauth2_callback
+    # we don't get a code if user cancels
+    redirect_to root_path unless params[:code]
+
     oauth_client = Discord.oauth_client
     tokens = oauth_client.auth_code.get_token(params[:code],
                                               redirect_uri: callback_url).response.parsed
