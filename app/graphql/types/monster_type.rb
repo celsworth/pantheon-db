@@ -10,6 +10,8 @@ module Types
     field :elite, Boolean, null: false
     field :named, Boolean, null: false
 
+    field :public_notes, String
+
     field :zone, ZoneType, null: false, description: <<~DESC
       Shortcut for location -> zone. May be removed.
     DESC

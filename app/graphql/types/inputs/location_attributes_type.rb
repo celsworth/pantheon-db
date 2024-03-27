@@ -8,6 +8,8 @@ module Types
       argument :zone_id, ID
 
       argument :name, String
+      argument :subtitle, String, required: false
+      argument :public_notes, String, required: false
       argument :category, LocationCategoryType
 
       argument :loc_x, Float, required: false

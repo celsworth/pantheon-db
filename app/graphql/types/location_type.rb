@@ -15,8 +15,11 @@ module Types
     field :id, ID, null: false
 
     field :name, String, null: false
+    field :subtitle, String
     field :zone, ZoneType, null: false
     field :category, LocationCategoryType, null: false
+
+    field :public_notes, String
 
     field :loc_x, Float
     field :loc_y, Float

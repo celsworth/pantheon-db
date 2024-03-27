@@ -11,6 +11,7 @@ module Types
       argument :sell_price, Integer, required: false
       argument :weight, Float
       argument :required_level, Integer, required: false
+      argument :public_notes, String, required: false
 
       argument :category, ItemCategoryType, required: false
       argument :slot, ItemSlotType, required: false

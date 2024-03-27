@@ -7,6 +7,7 @@ module Types
 
       argument :name, String
       argument :location_id, ID
+      argument :public_notes, String, required: false
 
       argument :level, Integer, required: false
       argument :elite, Boolean, required: false

@@ -11,6 +11,9 @@ module Types
     field :weight, Float, null: false
     field :required_level, Integer
 
+    field :description, String
+    field :public_notes, String
+
     field :category, ItemCategoryType
     field :slot, ItemSlotType
 
