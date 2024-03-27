@@ -1,28 +1,6 @@
-.section
-  .container
-    table.table
-      thead
-        tr
-          th Name
-          th Category
-          - if can? :edit, Item
-            th
+= turbo_frame_tag 'itemSearchForm'
+  .section
+    .container
+      .block = render partial: 'search'
 
-      tbody
-        - @items.each do |item|
-          tr
-            td
-              - if can? :read, item
-                a href=item_path(item)
-                  = item.name
-              - else
-                = item.name
-
-            td
-              = Item::READABLE_CATEGORIES[item.category]
-
-            - if can? :edit, item
-              td
-                a href=edit_item_path(item) edit
-
-
+      = render partial: 'items/list'

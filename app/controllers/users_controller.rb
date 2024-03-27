@@ -6,7 +6,7 @@ class UsersController < ApplicationController
 
     oauth_client = Discord.oauth_client
     redirect_to oauth_client.auth_code.authorize_url(redirect_uri: callback_url,
-                                                     scope: 'identify guilds guilds.members.read'),
+                                                     scope: 'identify guilds.members.read'),
                 allow_other_host: true
   end
 

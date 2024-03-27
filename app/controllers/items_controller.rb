@@ -3,17 +3,36 @@
 class ItemsController < ApplicationController
   before_action :item, only: %i[show]
 
-  # was old elm stuff
-  # def new; end
+  def search
+    service = ItemSearch.new(name: params[:name])
+    @items = service.search.includes(:dropped_by).order(:name)
+    render partial: 'items/list'
+  end
+
+  def new
+    @item = Item.new
+  end
 
   def index
-    @items = Item.order(:name)
+    @items = items
   end
 
   def show; end
 
   def edit
     head 403 unless can? :edit, item
+  end
+
+  def create
+    head 403 unless can? :create, Item
+
+    @item = Item.new
+
+    if update_item(item_params)
+      redirect_to edit_item_path(item), notice: 'Changes Saved!'
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
 
   def update
@@ -35,6 +54,11 @@ class ItemsController < ApplicationController
   end
 
   private
+
+  def items
+    # todo work out why this includes isn't automatic
+    Item.order(:name).includes(:dropped_by)
+  end
 
   def item
     @item ||= Item.find(params[:id])

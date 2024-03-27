@@ -28,10 +28,11 @@ Rails.application.routes.draw do
 
   resources :maps, only: %i[show] # elm
 
-  resources :monsters, only: %i[index show edit update]
+  resources :monsters, only: %i[index show new edit create update]
 
-  resources :items, only: %i[index show edit update] do
-    get 'dynamic_stats'
+  resources :items, only: %i[index show new edit create update] do
+    get 'search', on: :collection
+    get 'dynamic_stats', on: :collection
   end
 
   resources :locations, only: [] do

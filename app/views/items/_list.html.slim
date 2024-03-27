@@ -1,0 +1,33 @@
+= turbo_frame_tag 'itemList'
+  table.table
+    thead
+      tr
+        th Name
+        th Category
+        th Drop
+        - if can? :edit, Item
+          th
+
+    tbody
+      - @items.each do |item|
+        tr
+          td
+            - if can? :read, item
+              a data-turbo-frame="_top" href=item_path(item)
+                = item.name
+            - else
+              = item.name
+
+          td
+            = Item::READABLE_CATEGORIES[item.category]
+
+          td
+            - if drop = item.dropped_by.first
+              a data-turbo-frame="_top" href=monster_path(drop)
+                = drop.name
+
+          - if can? :edit, item
+            td
+              a data-turbo-frame="_top" href=edit_item_path(item) edit
+
+

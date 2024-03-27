@@ -46,20 +46,32 @@
         <div id="navbar-menu" class="navbar-menu">
           <div class="navbar-start">
             <a class="navbar-item has-text-white" href="/maps/1">Map</a>
+
             <% if guild_member? %>
-              <a class="navbar-item has-text-white" href="/items">Items</a>
+              <div class="navbar-item has-dropdown is-hoverable">
+                <a href="<% monsters_path %>" class="navbar-link has-text-white"> Mobs </a>
+
+                <div class="navbar-dropdown">
+                  <a href="<%= monsters_path %>" class="navbar-item"> List </a>
+                  <a href="<%= new_monster_path %>" class="navbar-item"> New </a>
+                </div>
+              </div>
+            <% else %>
+              <a href="<%= monsters_path %>" class="navbar-item has-text-white"> Mobs </a>
             <% end %>
 
-            <!--div class="navbar-item has-dropdown is-hoverable">
-              <a class="navbar-link has-text-white"> Items </a>
+            <% if guild_member? %>
+              <div class="navbar-item has-dropdown is-hoverable">
+                <a href="<% items_path %>" class="navbar-link has-text-white"> Items </a>
 
-              <div class="navbar-dropdown">
-                <a class="navbar-item"> List </a>
-                <a class="navbar-item"> Create </a>
-                <hr class="navbar-divider">
-                <a class="navbar-item"> Report an issue </a>
+                <div class="navbar-dropdown">
+                  <a href="<%= items_path %>" class="navbar-item"> List </a>
+                  <a href="<%= new_item_path %>" class="navbar-item"> New </a>
+                </div>
               </div>
-            </div-->
+            <% else %>
+              <a class="navbar-item has-text-white" href="/items">Items</a>
+            <% end %>
           </div>
 
           <div class="navbar-end">

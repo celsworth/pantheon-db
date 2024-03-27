@@ -1,0 +1,94 @@
+doctype html
+html
+  head
+    title Pantheon Database
+    meta name="viewport" content="width=device-width,initial-scale=1"
+    meta name="turbo-prefetch" content="false"
+    = csrf_meta_tags
+    = csp_meta_tag
+
+    = stylesheet_link_tag 'application', 'data-turbo-track': 'reload'
+    link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'
+    = javascript_include_tag 'application', 'data-turbo-track': 'reload', type: 'module'
+
+    javascript:
+      document.addEventListener('DOMContentLoaded', () => {
+        const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+        $navbarBurgers.forEach( e => {
+          e.addEventListener('click', () => {
+            const target = e.dataset.target;
+            const $target = document.getElementById(target);
+            e.classList.toggle('is-active');
+            $target.classList.toggle('is-active');
+          });
+        });
+      });
+
+  body
+    nav.navbar.is-black
+      .container
+        .navbar-brand
+          a.navbar-item href='https://petrichorguild.eu'
+            img.site-logo.mobile src='/images/petrichor-mobile.png' alt=''
+            img.site-logo.desktop src='/images/petrichor-desktop.png' alt=''
+          .navbar-item.is-size-5.is-hidden-desktop: span.stamp BETA
+          a.navbar-burger role='button' aria-label='menu' aria-expanded='false' data-target='navbar-menu'
+            span aria-hidden='true'
+            span aria-hidden='true'
+            span aria-hidden='true'
+
+        #navbar-menu.navbar-menu
+          .navbar-start
+            a.navbar-item.has-text-white href='/maps/1' Map
+
+            - if guild_member?
+              .navbar-item.has-dropdown.is-hoverable
+                a.navbar-link.has-text-white href=monsters_path Mobs
+                .navbar-dropdown
+                  a.navbar-item href=monsters_path List
+                  a.navbar-item href=new_monster_path New
+            - else
+                a.navbar-item.has-text-white href=monsters_path Mobs
+
+            - if guild_member?
+              .navbar-item.has-dropdown.is-hoverable
+                a.navbar-link.has-text-white href=items_path Items
+                .navbar-dropdown
+                  a.navbar-item href=items_path List
+                  a.navbar-item href=new_item_path New
+            - else
+                a.navbar-item.has-text-white href=items_path Items
+
+          .navbar-end
+            .navbar-item.is-size-3.is-hidden-mobile
+              span.stamp BETA
+
+            - if current_user
+              .navbar-item
+                span = current_user.username
+              - if guild_member?
+                .navbar-item
+                  span.icon title='Petrichor Guild Member'
+                    i.fa.fa-lg.fa-key
+              .navbar-item
+                form method='post' action=logout_path
+                  button.button type='submit' title='Log out'
+                    span.icon: i.fa.fa-lg.fa-right-from-bracket
+              - if current_user.admin?
+                .navbar-item
+                  a.button href='/admin'
+                    span.icon: i.fa.fa-lg.fa-hammer
+
+            - else
+              .navbar-item
+                a.button href=login_path
+                  span.icon: i.fa.fa-lg.fa-right-to-bracket
+
+    = yield
+
+    footer.footer
+      p.has-text-centered
+        | Please report feedback and bugs to
+        a href='https://discord.com/channels/696004691649233007/1220475635864961146'
+          |< #map-feedback on Petrichor Discord

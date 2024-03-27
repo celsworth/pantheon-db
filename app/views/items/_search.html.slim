@@ -1,0 +1,10 @@
+= form_tag search_items_path, method: 'get', 'data-controller': 'realtime-search', 'data-turbo-frame': 'itemList'
+  .columns
+    .column
+      .field
+        label.label Search
+        .control.has-icons-left
+          input.input name="name" value=params[:name] type="text" placeholder="Search" data-action='realtime-search#search'
+          span class='icon is-left'
+            i class='fas fa-magnifying-glass'
+

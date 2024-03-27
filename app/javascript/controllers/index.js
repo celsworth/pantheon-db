@@ -28,5 +28,8 @@ application.register("elm-resource-create", ElmResourceCreateController)
 import JumplocParserController from "./jumploc_parser_controller"
 application.register("jumploc-parser", JumplocParserController)
 
+import RealtimeSearchController from "./realtime_search_controller"
+application.register("realtime-search", RealtimeSearchController)
+
 import TurboLoaderController from "./turbo_loader_controller"
 application.register("turbo-loader", TurboLoaderController)
