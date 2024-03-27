@@ -56,7 +56,7 @@ class ItemsController < ApplicationController
   private
 
   def items
-    # todo work out why this includes isn't automatic
+    # TODO: work out why this includes isn't automatic
     Item.order(:name).includes(:dropped_by)
   end
 
@@ -74,7 +74,8 @@ class ItemsController < ApplicationController
     params.require(:item).permit(:id, :name, :category, :weight,
                                  :required_level, :slot,
                                  :sell_price, :buy_price,
-                                 :public_notes, :private_notes)
+                                 :public_notes, :private_notes,
+                                 stats: {})
   end
 
   def toggler_params(prm)
