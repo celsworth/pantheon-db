@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["locationCategory", "locationSelect", "selectedId"];
+  static targets = ["category", "select", "selectedId"];
 
   static values = {
     url: String
@@ -12,9 +12,9 @@ export default class extends Controller {
 
   load() {
     const urlParams = new URLSearchParams();
-    urlParams.set('category', this.locationCategoryTarget.value);
+    urlParams.set('category', this.categoryTarget.value);
     urlParams.set('selected_id', this.selectedIdTarget.value);
-    this.locationSelectTarget.src = this.urlValue + '?' + urlParams.toString();
+    this.selectTarget.src = this.urlValue + '?' + urlParams.toString();
   }
 }
 

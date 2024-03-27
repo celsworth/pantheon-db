@@ -32,16 +32,16 @@
 
       .columns
         .column.is-5
-          .field data-controller="turbo-loader" data-turbo-loader-url-value=select_for_category_locations_path
+          .field data-controller="location-filter" data-location-filter-url-value=select_for_category_locations_path
             label.label
               span Location
               span class="has-text-danger" *
-            input type="hidden" value=@monster.location_id data-turbo-loader-target="selectedId"
+            input type="hidden" value=@monster.location_id data-location-filter-target="selectedId"
             .columns
               .column.is-4
                 .select.is-fullwidth
-                  select[data-turbo-loader-target="locationCategory"
-                         data-action="turbo-loader#load"]
+                  select[data-location-filter-target="category"
+                         data-action="location-filter#load"]
                     - s = @monster.location.category
                     option selected=(s == 'zone') value="zone" Zone
                     option selected=(s == 'dungeon') value="dungeon" Dungeon

@@ -3,10 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["input", "button"];
 
-  static values = {
-    onClasses: Array,
-    offClasses: Array
-  }
+  static classes = ['on', 'off'];
 
   connect() {
     this.setButtonState();
@@ -19,11 +16,11 @@ export default class extends Controller {
 
   setButtonState() {
     if (this.inputTarget.value == 'true') {
-      this.buttonTarget.classList.add(...this.onClassesValue);
-      this.buttonTarget.classList.remove(...this.offClassesValue);
+      this.buttonTarget.classList.add(...this.onClasses);
+      this.buttonTarget.classList.remove(...this.offClasses);
     } else {
-      this.buttonTarget.classList.remove(...this.onClassesValue);
-      this.buttonTarget.classList.add(...this.offClassesValue);
+      this.buttonTarget.classList.remove(...this.onClasses);
+      this.buttonTarget.classList.add(...this.offClasses);
     }
   }
 }

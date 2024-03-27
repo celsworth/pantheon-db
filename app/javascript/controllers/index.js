@@ -16,20 +16,17 @@ application.register("copper-to-pgsc", CopperToPgscController)
 import DynamicStatsController from "./dynamic_stats_controller"
 application.register("dynamic-stats", DynamicStatsController)
 
-import ElmItemCreateController from "./elm_item_create_controller"
-application.register("elm-item-create", ElmItemCreateController)
-
 import ElmMapsShowController from "./elm_maps_show_controller"
 application.register("elm-maps-show", ElmMapsShowController)
 
-import ElmResourceCreateController from "./elm_resource_create_controller"
-application.register("elm-resource-create", ElmResourceCreateController)
+import ItemClassSettingController from "./item_class_setting_controller"
+application.register("item-class-setting", ItemClassSettingController)
 
 import JumplocParserController from "./jumploc_parser_controller"
 application.register("jumploc-parser", JumplocParserController)
 
+import LocationFilterController from "./location_filter_controller"
+application.register("location-filter", LocationFilterController)
+
 import RealtimeSearchController from "./realtime_search_controller"
 application.register("realtime-search", RealtimeSearchController)
-
-import TurboLoaderController from "./turbo_loader_controller"
-application.register("turbo-loader", TurboLoaderController)
