@@ -24,6 +24,13 @@
         .column.has-text-right
           div= item.slot&.titleize
 
+    - elsif item.category == 'shield'
+      .columns.is-mobile.is-gapless.mb-0
+        .column
+          div= Item::READABLE_CATEGORIES[item.category]
+          - if item.stats['armor']
+            div= "#{item.stats['armor']} Armor"
+
     - item.general_stats.each do |k, v|
       div
         = "#{v} #{k.titleize}"

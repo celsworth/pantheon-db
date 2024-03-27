@@ -40,22 +40,7 @@
             .control
               = f.text_field :weight, class: 'input is-medium'
 
-      .columns
-        .column.is-2
-          .field
-            label.label Req Level
-            .control
-              = f.number_field :required_level, min: 1, max: 50, class: 'input'
-        .column.is-2
-          .field
-            label.label Slot
-            .control
-              .select.is-fullwidth
-                = f.select :slot, options_for_select(Item::SLOTS, @item.slot), include_blank: ''
-        .column data-controller="copper-to-pgsc"
-          = render partial: 'partials/pgsc', locals: { label: 'Sell Price', name: 'item[sell_price]', value: @item.sell_price }
-        .column data-controller="copper-to-pgsc"
-          = render partial: 'partials/pgsc', locals: { label: 'Buy Price', name: 'item[buy_price]', value: @item.buy_price }
+      = render partial: 'items/dynamic_stats_form', locals: { item: @item }
 
       .columns
         .column.is-8
@@ -74,7 +59,23 @@
                   = render partial: 'button_toggler', locals: { enabled: @item.attrs.include?(attr), name: "attrs[#{attr}]", label: attr.titleize }
 
 
-      = render partial: 'items/dynamic_stats_form', locals: { item: @item }
+
+      .columns
+        .column.is-2
+          .field
+            label.label Req Level
+            .control
+              = f.number_field :required_level, min: 1, max: 50, class: 'input'
+        .column.is-2
+          .field
+            label.label Slot
+            .control
+              .select.is-fullwidth
+                = f.select :slot, options_for_select(Item::SLOTS, @item.slot), include_blank: ''
+        .column data-controller="copper-to-pgsc"
+          = render partial: 'partials/pgsc', locals: { label: 'Sell Price', name: 'item[sell_price]', value: @item.sell_price }
+        .column data-controller="copper-to-pgsc"
+          = render partial: 'partials/pgsc', locals: { label: 'Buy Price', name: 'item[buy_price]', value: @item.buy_price }
 
 
       .columns
