@@ -63,4 +63,4 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
-CMD ["bundle", "exec", "iodine", "-v", "-www", "/rails/public"]
+CMD ["./bin/iodine", "-v", "-www", "/rails/public"]

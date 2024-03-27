@@ -74,7 +74,7 @@ class ItemsController < ApplicationController
     params.require(:item).permit(:id, :name, :category, :weight,
                                  :required_level, :slot,
                                  :sell_price, :buy_price,
-                                 :public_notes, :private_notes,
+                                 :description, :public_notes, :private_notes,
                                  stats: {})
   end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_23_164318) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_27_165819) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -58,6 +58,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_23_164318) do
     t.datetime "updated_at", null: false
     t.text "private_notes"
     t.text "public_notes"
+    t.string "description"
     t.index ["attrs"], name: "index_items_on_attrs"
     t.index ["classes"], name: "index_items_on_classes"
     t.index ["discarded_at"], name: "index_items_on_discarded_at"
@@ -92,6 +93,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_23_164318) do
     t.datetime "updated_at", null: false
     t.text "private_notes"
     t.text "public_notes"
+    t.string "subtitle"
     t.index ["category"], name: "index_locations_on_category"
     t.index ["discarded_at"], name: "index_locations_on_discarded_at"
     t.index ["loc_x", "loc_y"], name: "index_locations_on_loc_x_and_loc_y"

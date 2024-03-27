@@ -16,6 +16,7 @@ class ItemDashboard < Administrate::BaseDashboard
     starts_quest: Field::HasOne,
     rewarded_from_quests: Field::HasMany,
     name: Field::String,
+    description: Field::String,
     category: Field::Select.with_options(collection: Item::CATEGORIES, include_blank: 'none'),
     required_level: Field::Number,
     buy_price: Field::Number,
@@ -38,8 +39,6 @@ class ItemDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i[
     name
     category
-    buy_price
-    sell_price
     weight
     slot
     starts_quest
@@ -50,6 +49,8 @@ class ItemDashboard < Administrate::BaseDashboard
   SHOW_PAGE_ATTRIBUTES = %i[
     name
     category
+    description
+    buy_price
     sell_price
     weight
     required_level
@@ -74,6 +75,7 @@ class ItemDashboard < Administrate::BaseDashboard
   FORM_ATTRIBUTES = %i[
     name
     category
+    description
     buy_price
     sell_price
     weight

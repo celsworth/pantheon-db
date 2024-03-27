@@ -81,6 +81,13 @@
       .columns
         .column
           .field
+            label.label Description
+            .control
+              = f.text_area :description, class: 'textarea'
+
+
+        .column
+          .field
             label.label Public Notes
             .control
               = f.text_area :public_notes, class: 'textarea'

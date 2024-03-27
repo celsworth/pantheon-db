@@ -45,7 +45,7 @@
       div = "Requires Level #{item.required_level}"
 
 
-    - if false # need description in model!
-      .description A helmet made from the skull of a large bear
+    - if item.description
+      .description = item.description
 
     .weight.has-text-right Weight: #{item.weight}

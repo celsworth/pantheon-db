@@ -13,6 +13,7 @@ class LocationDashboard < Administrate::BaseDashboard
     id: Field::Number,
     zone: Field::BelongsTo,
     name: Field::String,
+    subtitle: Field::String,
     category: Field::Select.with_options(collection: Location::CATEGORIES),
     loc_x: Field::Number,
     loc_z: Field::Number,
@@ -42,6 +43,7 @@ class LocationDashboard < Administrate::BaseDashboard
     name
     category
     zone
+    subtitle
     loc_x
     loc_z
     loc_y
@@ -58,6 +60,7 @@ class LocationDashboard < Administrate::BaseDashboard
     name
     category
     zone
+    subtitle
     loc_x
     loc_z
     loc_y
