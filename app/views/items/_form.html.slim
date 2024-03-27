@@ -43,12 +43,31 @@
       = render partial: 'items/dynamic_stats_form', locals: { item: @item }
 
       .columns
-        .column.is-8
-          label.label Classes
-          .columns.is-multiline.is-mobile
+        .column.is-8 data-controller="item-class-setter" data-item-class-setter-button-toggler-outlet=".test"
+          label.label
+            span Classes
+            span<
+              | [tanks:
+            a< data-arg="tanks" data-action="item-class-setter#on" on
+            a< data-arg="tanks" data-action="item-class-setter#off" off
+            span< heals:
+            a< data-arg="heals" data-action="item-class-setter#on" on
+            a< data-arg="heals" data-action="item-class-setter#off" off
+            span< casts:
+            a< data-arg="casts" data-action="item-class-setter#on" on
+            a< data-arg="casts" data-action="item-class-setter#off" off
+            span< dps:
+            a< data-arg="dps" data-action="item-class-setter#on" on
+            a< data-arg="dps" data-action="item-class-setter#off" off
+            span< support:
+            a< data-arg="support" data-action="item-class-setter#on" on
+            a< data-arg="support" data-action="item-class-setter#off" off
+            span
+              | ]
+          .columns.is-multiline.is-mobile.classes
             - Item::CLASSES.each do |kls_slug|
               .column.is-one-fifth-tablet.is-half-mobile
-                = render partial: 'button_toggler', locals: { enabled: @item.classes.include?(kls_slug), name: "classes[#{kls_slug}]", label: kls_slug.titleize }
+                = render partial: 'button_toggler', locals: { enabled: @item.classes.include?(kls_slug), name: "classes[#{kls_slug}]", label: kls_slug.titleize, slug: kls_slug }
 
         .column.is-4
           .field
@@ -56,7 +75,7 @@
             .columns.is-multiline.is-mobile
               - Item::ATTRS.each do |attr|
                 .column.is-4-tablet.is-half-mobile
-                  = render partial: 'button_toggler', locals: { enabled: @item.attrs.include?(attr), name: "attrs[#{attr}]", label: attr.titleize }
+                  = render partial: 'button_toggler', locals: { enabled: @item.attrs.include?(attr), name: "attrs[#{attr}]", label: attr.titleize, slug: attr }
 
 
 

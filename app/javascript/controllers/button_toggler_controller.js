@@ -1,9 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "button"];
-
   static classes = ['on', 'off'];
+  static targets = ["input", "button"];
+  static values = { "slug": String };
+
 
   connect() {
     this.setButtonState();
@@ -11,6 +12,16 @@ export default class extends Controller {
 
   toggle() {
     this.inputTarget.value = this.inputTarget.value == 'true' ? 'false' : 'true';
+    this.setButtonState();
+  }
+
+  enable() {
+    this.inputTarget.value = 'true';
+    this.setButtonState();
+  }
+
+  disable() {
+    this.inputTarget.value = 'false';
     this.setButtonState();
   }
 

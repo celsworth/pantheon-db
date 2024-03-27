@@ -19,8 +19,8 @@ application.register("dynamic-stats", DynamicStatsController)
 import ElmMapsShowController from "./elm_maps_show_controller"
 application.register("elm-maps-show", ElmMapsShowController)
 
-import ItemClassSettingController from "./item_class_setting_controller"
-application.register("item-class-setting", ItemClassSettingController)
+import ItemClassSetterController from "./item_class_setter_controller"
+application.register("item-class-setter", ItemClassSetterController)
 
 import JumplocParserController from "./jumploc_parser_controller"
 application.register("jumploc-parser", JumplocParserController)
