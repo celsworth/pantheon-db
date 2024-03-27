@@ -28,7 +28,7 @@ class ItemsController < ApplicationController
 
     @item = Item.new
 
-    if update_item(item_params)
+    if update_item
       redirect_to edit_item_path(item), notice: 'Changes Saved!'
     else
       render :new, status: :unprocessable_entity
